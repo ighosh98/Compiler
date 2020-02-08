@@ -4,6 +4,13 @@
 #include "lexerDef.h"
 #include "lexer.h"
 
+static int linenum = 1;
+char x[BUFFER_SIZE];
+static int end = 0;
+static int begin = 0;
+int state=0;
+int numTokens=0;
+
 node* create_node()
 {
 	node* temp = (node*)(malloc(sizeof(node)));
@@ -17,11 +24,11 @@ void flush(char* str)
 {
 
 }
-char* keyword_check(char* val)//check if it is a keyword
+char* keyword_check(char* inp)//check if it is a keyword
 {
 	for(int i=0;i<MAX_SIZE;i++)
 	{
-		if(strcmp(val,keyword_dict[i])==0)// it's a keyword
+		if(strcmp(inp,keyword_dict[i])==0)// it's a keyword
 		{
 			char *s = (char*)(malloc(sizeof(char)*(MAX_SIZE+1)));
 			strcpy(s,token_dict[i]);
@@ -33,12 +40,21 @@ char* keyword_check(char* val)//check if it is a keyword
 }
 int remove_lines(char* in,int x)
 {
-
+	while(in[x]=='\r' && in[x++]=='\n'){
+		linenum++;
+		x++;
+	}
+	return x;
 }
 int remove_comments(char* in,int x)
 {
-
-
+	while(!(in[x]=='*' && in[x+1]=='*')){
+		x++;
+		if(in[x] == '\n'){
+			linunum++;	
+		}
+	}
+	return x;
 }
 FILE* reloadBuffer(char* file)// input text from test file into buffer 
 {
@@ -51,5 +67,140 @@ void remove(char* file)
 node* getToken()
 {
 //getch
-
+	char* inp = (char*)malloc(sizeof(char)*(MAX_SIZE+1));
+	char* token = (char*)malloc(sizeof(char)*(MAX_SIZE+1));
+	//flush(inp);
+	//flush(token);
+	char c;
+	int len = 0;
+	while(true){
+		c = x[end];
+		switch(state){
+			case 0:	
+				if(c=='+'){
+					node* lexer = createnode();
+					strcpy(lexer->tk->token,"PLUS");
+					strcpy(lexer->tk->value,'+');
+					lexer->tk->line = linenum;
+					end++;
+					begin=end;
+					state=0;
+					numTokens++;
+					return lexer;
+					break;
+				} else if(c=='-'){
+					node* lexer = createnode();
+					strcpy(lexer->tk->token,"MINUS");
+					strcpy(lexer->tk->value,'-');
+					lexer->tk->line = linenum;
+					end++;
+					begin=end;
+					state=0;
+					numTokens++;
+					return lexer;
+					break;
+				} else if(c=='/'){
+					node* lexer = createnode();
+					strcpy(lexer->tk->token,"DIV");
+					strcpy(lexer->tk->value,'/');
+					lexer->tk->line = linenum;
+					end++;
+					begin=end;
+					state=0;
+					numTokens++;
+					return lexer;
+					break;
+				} else if(c==';'){
+					node* lexer = createnode();
+					strcpy(lexer->tk->token,"SEMCOL");
+					strcpy(lexer->tk->value,';');
+					lexer->tk->line = linenum;
+					end++;
+					begin=end;
+					state=0;
+					numTokens++;
+					len=0;
+					return lexer;
+					break;
+				} else if(c=='['){
+					node* lexer = createnode();
+					strcpy(lexer->tk->token,"SQO");
+					strcpy(lexer->tk->value,'[');
+					lexer->tk->line = linenum;
+					end++;
+					begin=end;
+					state=0;
+					numTokens++;
+					len=0;
+					return lexer;
+					break;
+				} else if(c==']'){
+					node* lexer = createnode();
+					strcpy(lexer->tk->token,"SQC");
+					strcpy(lexer->tk->value,';');
+					lexer->tk->line = linenum;
+					end++;
+					begin=end;
+					state=0;
+					numTokens++;
+					len=0;
+					return lexer;
+					break;
+				} else if(c=='('){
+					node* lexer = createnode();
+					strcpy(lexer->tk->token,"PO");
+					strcpy(lexer->tk->value,';');
+					lexer->tk->line = linenum;
+					end++;
+					begin=end;
+					state=0;
+					numTokens++;
+					len=0;
+					return lexer;
+					break;
+				} else if(c==')'){
+					node* lexer = createnode();
+					strcpy(lexer->tk->token,"PC");
+					strcpy(lexer->tk->value,';');
+					lexer->tk->line = linenum;
+					end++;
+					begin=end;
+					state=0;
+					numTokens++;
+					len=0;
+					return lexer;
+					break;
+				} else if(c==','){
+					node* lexer = createnode();
+					strcpy(lexer->tk->token,"COMMA");
+					strcpy(lexer->tk->value,';');
+					lexer->tk->line = linenum;
+					end++;
+					begin=end;
+					state=0;
+					numTokens++;
+					len=0;
+					return lexer;
+					break;
+				} else if(c=='$'){
+					node* lexer = createnode();
+					strcpy(lexer->tk->token,"END");
+					strcpy(lexer->tk->value,'$');
+					lexer->tk->line = linenum;
+					linenum=1;
+					end=0;
+					begin=0;
+					state=0;
+					return lexer;
+					break;
+				} 
+			case 1:
+				
+			case 2:
+				
+			case 3:
+				
+			case 4:
+		}
+	}
 }
