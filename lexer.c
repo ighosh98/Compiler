@@ -86,8 +86,8 @@ node* getToken()
 			case 0:	
 				if(c=='+'){
 					node* lexer = createnode();
-					strcpy(lexer->tk->token,"PLUS");
-					strcpy(lexer->tk->value,'+');
+					strcpy(lexer->token,"PLUS");
+					strcpy(lexer->value,'+');
 					lexer->tk->line = linenum;
 					end++;
 					begin=end;
@@ -97,8 +97,8 @@ node* getToken()
 					break;
 				} else if(c=='-'){
 					node* lexer = createnode();
-					strcpy(lexer->tk->token,"MINUS");
-					strcpy(lexer->tk->value,'-');
+					strcpy(lexer->token,"MINUS");
+					strcpy(lexer->value,'-');
 					lexer->tk->line = linenum;
 					end++;
 					begin=end;
@@ -108,8 +108,8 @@ node* getToken()
 					break;
 				} else if(c=='/'){
 					node* lexer = createnode();
-					strcpy(lexer->tk->token,"DIV");
-					strcpy(lexer->tk->value,'/');
+					strcpy(lexer->token,"DIV");
+					strcpy(lexer->value,'/');
 					lexer->tk->line = linenum;
 					end++;
 					begin=end;
@@ -119,8 +119,8 @@ node* getToken()
 					break;
 				} else if(c==';'){
 					node* lexer = createnode();
-					strcpy(lexer->tk->token,"SEMCOL");
-					strcpy(lexer->tk->value,';');
+					strcpy(lexer->token,"SEMCOL");
+					strcpy(lexer->value,';');
 					lexer->tk->line = linenum;
 					end++;
 					begin=end;
@@ -131,8 +131,8 @@ node* getToken()
 					break;
 				} else if(c=='['){
 					node* lexer = createnode();
-					strcpy(lexer->tk->token,"SQO");
-					strcpy(lexer->tk->value,'[');
+					strcpy(lexer->token,"SQO");
+					strcpy(lexer->value,'[');
 					lexer->tk->line = linenum;
 					end++;
 					begin=end;
@@ -143,8 +143,8 @@ node* getToken()
 					break;
 				} else if(c==']'){
 					node* lexer = createnode();
-					strcpy(lexer->tk->token,"SQC");
-					strcpy(lexer->tk->value,';');
+					strcpy(lexer->token,"SQC");
+					strcpy(lexer->value,';');
 					lexer->tk->line = linenum;
 					end++;
 					begin=end;
@@ -155,8 +155,8 @@ node* getToken()
 					break;
 				} else if(c=='('){
 					node* lexer = createnode();
-					strcpy(lexer->tk->token,"PO");
-					strcpy(lexer->tk->value,';');
+					strcpy(lexer->token,"PO");
+					strcpy(lexer->value,';');
 					lexer->tk->line = linenum;
 					end++;
 					begin=end;
@@ -167,8 +167,8 @@ node* getToken()
 					break;
 				} else if(c==')'){
 					node* lexer = createnode();
-					strcpy(lexer->tk->token,"PC");
-					strcpy(lexer->tk->value,';');
+					strcpy(lexer->token,"PC");
+					strcpy(lexer->value,';');
 					lexer->tk->line = linenum;
 					end++;
 					begin=end;
@@ -179,8 +179,8 @@ node* getToken()
 					break;
 				} else if(c==','){
 					node* lexer = createnode();
-					strcpy(lexer->tk->token,"COMMA");
-					strcpy(lexer->tk->value,';');
+					strcpy(lexer->token,"COMMA");
+					strcpy(lexer->value,';');
 					lexer->tk->line = linenum;
 					end++;
 					begin=end;
@@ -191,8 +191,8 @@ node* getToken()
 					break;
 				} else if(c=='$'){
 					node* lexer = createnode();
-					strcpy(lexer->tk->token,"END");
-					strcpy(lexer->tk->value,'$');
+					strcpy(lexer->token,"END");
+					strcpy(lexer->value,'$');
 					lexer->tk->line = linenum;
 					linenum=1;
 					end=0;
