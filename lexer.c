@@ -88,7 +88,7 @@ node* getToken()
 					node* lexer = createnode();
 					strcpy(lexer->token,"PLUS");
 					strcpy(lexer->value,'+');
-					lexer->tk->line = linenum;
+					lexer->lineNo = linenum;
 					end++;
 					begin=end;
 					state=0;
@@ -99,7 +99,7 @@ node* getToken()
 					node* lexer = createnode();
 					strcpy(lexer->token,"MINUS");
 					strcpy(lexer->value,'-');
-					lexer->tk->line = linenum;
+					lexer->lineNo = linenum;
 					end++;
 					begin=end;
 					state=0;
@@ -110,7 +110,7 @@ node* getToken()
 					node* lexer = createnode();
 					strcpy(lexer->token,"DIV");
 					strcpy(lexer->value,'/');
-					lexer->tk->line = linenum;
+					lexer->lineNo = linenum;
 					end++;
 					begin=end;
 					state=0;
@@ -121,7 +121,7 @@ node* getToken()
 					node* lexer = createnode();
 					strcpy(lexer->token,"SEMCOL");
 					strcpy(lexer->value,';');
-					lexer->tk->line = linenum;
+					lexer->lineNo = linenum;
 					end++;
 					begin=end;
 					state=0;
@@ -133,7 +133,7 @@ node* getToken()
 					node* lexer = createnode();
 					strcpy(lexer->token,"SQO");
 					strcpy(lexer->value,'[');
-					lexer->tk->line = linenum;
+					lexer->lineNo = linenum;
 					end++;
 					begin=end;
 					state=0;
@@ -145,7 +145,7 @@ node* getToken()
 					node* lexer = createnode();
 					strcpy(lexer->token,"SQC");
 					strcpy(lexer->value,';');
-					lexer->tk->line = linenum;
+					lexer->lineNo = linenum;
 					end++;
 					begin=end;
 					state=0;
@@ -157,7 +157,7 @@ node* getToken()
 					node* lexer = createnode();
 					strcpy(lexer->token,"PO");
 					strcpy(lexer->value,';');
-					lexer->tk->line = linenum;
+					lexer->lineNo = linenum;
 					end++;
 					begin=end;
 					state=0;
@@ -169,7 +169,7 @@ node* getToken()
 					node* lexer = createnode();
 					strcpy(lexer->token,"PC");
 					strcpy(lexer->value,';');
-					lexer->tk->line = linenum;
+					lexer->lineNo = linenum;
 					end++;
 					begin=end;
 					state=0;
@@ -181,7 +181,7 @@ node* getToken()
 					node* lexer = createnode();
 					strcpy(lexer->token,"COMMA");
 					strcpy(lexer->value,';');
-					lexer->tk->line = linenum;
+					lexer->lineNo = linenum;
 					end++;
 					begin=end;
 					state=0;
@@ -193,7 +193,7 @@ node* getToken()
 					node* lexer = createnode();
 					strcpy(lexer->token,"END");
 					strcpy(lexer->value,'$');
-					lexer->tk->line = linenum;
+					lexer->lineNo = linenum;
 					linenum=1;
 					end=0;
 					begin=0;
