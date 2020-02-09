@@ -24,7 +24,9 @@ void flush(char* str)
 {
 
 }
-char* keyword_check(char* inp)//check if it is a keyword
+
+//check if it is a keyword
+char* keyword_check(char* inp)
 {
 	for(int i=0;i<MAX_SIZE;i++)
 	{
@@ -38,14 +40,18 @@ char* keyword_check(char* inp)//check if it is a keyword
 	char temp[] = "NO";
 	return temp;	
 }
+
+// Removes newline
 int remove_lines(char* in,int x)
 {
-	while(in[x]=='\r' && in[x++]=='\n'){
+	while(in[x]=='\r' && in[++x]=='\n'){
 		linenum++;
 		x++;
 	}
 	return x;
 }
+
+// Removes comments
 int remove_comments(char* in,int x)
 {
 	while(!(in[x]=='*' && in[x+1]=='*')){
@@ -64,6 +70,7 @@ void remove(char* file)
 {
 
 }
+
 node* getToken()
 {
 //getch
