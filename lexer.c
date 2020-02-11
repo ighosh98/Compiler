@@ -3,14 +3,10 @@
 #include <string.h>
 #include "lexerDef.h"
 #include "lexer.h"
-
-static int linenum = 1;
+//lines are 1 indexed
+static ull linenum = 1;
 char x[BUFFER_SIZE];
-static int end = 0;
-static int begin = 0;
-int state=0;
-int numTokens=0;
-
+//block must be modularized
 node* create_node()
 {
 	node* temp = (node*)(malloc(sizeof(node)));
@@ -41,7 +37,7 @@ char* keyword_check(char* inp)
 	return temp;	
 }
 
-// Removes newline
+// Removes newline '\n' '\r' present in lang spec?
 int remove_lines(char* in,int x)
 {
 	while(in[x]=='\r' && in[++x]=='\n'){
@@ -80,6 +76,7 @@ node* getToken()
 	//flush(token);
 	char c;
 	int len = 0;
+	//need to use peek
 	while(true){
 		c = x[end];
 		switch(state){
@@ -131,7 +128,7 @@ node* getToken()
 					break;
 				} else if(c=='['){
 					node* lexer = createnode();
-					strcpy(lexer->token,"SQO");
+					strcpy(lexer->token,"SQBO");
 					strcpy(lexer->value,'[');
 					lexer->lineNo = linenum;
 					end++;
@@ -143,7 +140,7 @@ node* getToken()
 					break;
 				} else if(c==']'){
 					node* lexer = createnode();
-					strcpy(lexer->token,"SQC");
+					strcpy(lexer->token,"SQBC");
 					strcpy(lexer->value,';');
 					lexer->lineNo = linenum;
 					end++;
@@ -155,7 +152,7 @@ node* getToken()
 					break;
 				} else if(c=='('){
 					node* lexer = createnode();
-					strcpy(lexer->token,"PO");
+					strcpy(lexer->token,"BO");
 					strcpy(lexer->value,';');
 					lexer->lineNo = linenum;
 					end++;
@@ -167,7 +164,7 @@ node* getToken()
 					break;
 				} else if(c==')'){
 					node* lexer = createnode();
-					strcpy(lexer->token,"PC");
+					strcpy(lexer->token,"BC");
 					strcpy(lexer->value,';');
 					lexer->lineNo = linenum;
 					end++;
@@ -192,7 +189,7 @@ node* getToken()
 				} else if(c=='$'){
 					node* lexer = createnode();
 					strcpy(lexer->token,"END");
-					strcpy(lexer->value,'$');
+					strcpy(lexer->value,'$');//$ is End of string marker?
 					lexer->lineNo = linenum;
 					linenum=1;
 					end=0;
