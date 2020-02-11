@@ -11,7 +11,7 @@ Function prototype for Lexer
 #define _lexer_
 
 #include <stdio.h>
-#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "lexerDef.h"
 extern node* create_node();
