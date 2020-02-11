@@ -7,8 +7,6 @@ G Adityan	 2016B1A70929P
 /*
 Data structures used by lexer
 */
-
-
 #ifndef _lexerdef_
 #define _lexerdef_
 
@@ -16,8 +14,12 @@ Data structures used by lexer
 #define BUFFER_SIZE 4096 //4KB 
 #define MAX_LENGTH 20
 typedef unsigned long long ull;
-//check if we should use enum
-int state;
+//check if we should use enum for tokens
+extern int state =0;
+static int end = 0;
+static int begin = 0;
+int numTokens=0;
+
 ull line;
 //discuss if code should be optimized further
 
@@ -31,7 +33,6 @@ const char* keyword_dict[MAX_SIZE]={"integer","real","boolean","of","array","sta
 
 typedef char* buffer;
 /*Handling multiple data types is left*/
-
 typedef struct 
 {
 	char* token;
