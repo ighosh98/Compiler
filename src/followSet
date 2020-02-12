@@ -17,3 +17,5 @@ FOLLOW(<arithmeticExpr>) = {SEMICOL, BC}
 FOLLOW(<R>) = {PLUS,MINUS}
 FOLLOW(<term>) = {PLUS,MINUS}
 FOLLOW(<default>)={END}
+FOLLOW(<X1>) = {DEFAULT}
+FOLLOW(<caseStmt>) = {DEFAULT}

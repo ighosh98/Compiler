@@ -3,6 +3,7 @@
 <default> = {DEFAULT} U {e}
 <value> = {NUM} U {TRUE} U {FALSE}
 <caseStmt> = {CASE}
+<X1> = {CASE} U {e}
 <conditionalStmt> = {SWITCH}
 <declare> = {DECLARE}
 <relationalOP> = {LT} U {LE} U {GT} U {GE} U {EQ} U {NE}
