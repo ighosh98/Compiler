@@ -10,6 +10,9 @@ Data structures used by lexer
 #ifndef _lexerdef_
 #define _lexerdef_
 
+#include <stdio.h>
+#include <stdio.h>
+#include <string.h>
 #define MAX_SIZE 30
 #define BUFFER_SIZE 4096 //4KB 
 #define MAX_LENGTH 20
