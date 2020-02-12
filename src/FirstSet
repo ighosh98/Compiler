@@ -34,17 +34,17 @@
 <ioStmt> = {GET_VALUE} U {PRINT}
 <statement>  = {GET_VALUE,PRINT} U {ID,SQBO,USE} U {DECLARE} U  {SWITCH} U {FOR,WHILE}
 <statements> = {GET_VALUE,PRINT,ID,SQBO,USE} U {e}
-<moduleDef>  = {START}
+<moduleDef>  = {START} = {DEF}
 <type> = {INTEGER} U {REAL} U {BOOLEAN}
 <dataType> = {INTEGER} U {REAL} U {BOOLEAN} U {ARRAY}
-<inputPlist> = {ID}
-<M> = {COMMA} U {e}
-<outputPlist> = {ID}
-<M1> = {COMMA} U {e}
-<ret>  = {RETURNS} U {e}
-<module>  = {DEF}
-<driverModule = {DEF}  ==  {DEF}U{$}
-<otherModules>  = {DEF} U {e}
+<inputPlist> = {ID} == 
+<M> = {COMMA} U {e} == 
+<outputPlist> = {ID} == 
+<M1> = {COMMA} U {e} == 
+<ret>  = {RETURNS} U {e}  == 
+<module>  = {DEF}  == 
+<driverModule = {DEF}  ==  {DEF}
+<otherModules>  = {DEF} U {e} == {DEF}
 <moduleDeclaration>  = {DECLARE} == {DECLARE}
-<moduleDeclarations>  = {DECLARE} U {e}  ==  
+<moduleDeclarations>  = {DECLARE} U {e}  == {} 
 <program>  = {DECLARE,DEF,e}  == {$}
