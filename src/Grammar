@@ -8,7 +8,6 @@
 ***
 <input_plist> -->  <input_plist> COMMA ID COLON <dataType> | ID COLON <dataType>
 ***
-
 <input_plist> -->  ID COLON <dataType>  <M>
 <M> --> COMMA ID COLON <dataType> <M>|ε
 ***
@@ -71,4 +70,4 @@
 ***
 <booleanExpr> --> PQ
 <Q> --> <op><booleanExpr>Q|ε
-<P>-->
+<P>--><arithmeticExpr> <relationalOp>arithmeticExpr> |BO <booleanExpr> BC
