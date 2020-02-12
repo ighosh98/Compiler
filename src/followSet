@@ -1,0 +1,19 @@
+FOLLOW(<moduleDeclarations>)  = {DEF, DRIVERDEF}
+FOLLOW(<otherModules>) = {DEF}
+FOLLOW(<ret>) ={START}
+FOLLOW(<M>) = = {SQBC}
+FOLLOW(<input_plist>) = {SQBC}
+FOLLOW(<M1>) = {SQBC}
+FOLLOW(<output_plist>) = {SQBC}
+FOLLOW(<statements>) = {END}
+FOLLOW(<whichID>) = FOLLOW(<var>)= {BC}
+FOLLOW(<optional>) = {USE}
+FOLLOW(<N1>) = FOLLOW(<select>) = {AND, OR}
+FOLLOW(<N>) = {SEMICOL}
+FOLLOW(<arithBoolExpr>) ={SEMICOL}
+FOLLOW(<expression>) = {SEMICOL}
+FOLLOW(<K>) = {SEMICOL, BC}
+FOLLOW(<arithmeticExpr>) = {SEMICOL, BC}
+FOLLOW(<R>) = {PLUS,MINUS}
+FOLLOW(<term>) = {PLUS,MINUS}
+FOLLOW(<default>)={END}

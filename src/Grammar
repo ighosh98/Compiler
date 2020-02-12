@@ -6,7 +6,7 @@
 
 <otherModules> -->  <module><otherModules>| ε
 
-<driverModule> -->  DEF DRIVER PROGRAM ENDDEF <moduleDef>
+<driverModule> --> DRIVERDEF DRIVER PROGRAM DRIVERENDDEF <moduleDef>
 
 <module> -->  DEF MODULE ID ENDDEF TAKES INPUT SQBO <input_plist> SQBC SEMICOL <ret> <moduleDef>
 
@@ -57,7 +57,7 @@
 
 //First set of arithmeticExpr and booleanExpr was same.
 // Therefore modify rules to make LL(1). 
-<expression> --> <arithBoolExpr>
+<expression> --> <arithBoolExpr>|MINUS BO <arithmeticExpr> BC|PLUS BO <arithmeticExpr> BC
 
 <arithBoolExpr> --> <select><N>| BO <arithBoolExpr> BC
 <N> --> <logicalOp> <select> <N>|ε
@@ -86,7 +86,8 @@
 
 <condionalStmt> --> SWITCH BO ID BC START <caseStmt><default> END
 
-<caseStmt> --> CASE <value> COLON <statements> BREAK SEMICOL <caseStmt>
+<caseStmt> -> CASE <value> COLON <statements> BREAK SEMICOL <X1>
+<X1> -> CASE <value> COLON <statements> BREAK SEMICOL <X1> | ε
 
 <value> --> NUM | TRUE | FALSE
 
@@ -94,4 +95,4 @@
 
 <iterativeStmt> --> FOR BO ID IN <range> BC START <statements> END |WHILE BO <booleanExpr> BC START <statements> END
 
-<range> --> NUM RANGEOP NUM
+<range> --> NUM RANGEOP NUM | ID RANGEOP ID 

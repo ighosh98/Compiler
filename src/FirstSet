@@ -1,4 +1,4 @@
-<range> = {NUM}
+<range> = {NUM,ID}
 <iterativeStmt> = {FOR,WHILE}
 <default> = {DEFAULT} U {e}
 <value> = {NUM} U {TRUE} U {FALSE}
@@ -15,7 +15,7 @@
 <term> = {ID,NUM,RNUM}
 <K> = {PLUS,MINUS} U {e}
 <arithmeticExpr> = {ID,NUM,RNUM}
-<expression>  = {BO,ID,NUM,RNUM}
+<expression>  = {BO,ID,NUM,RNUM,PLUS,MINUS}
 <arithBoolExpr> = {BO,ID,NUM,RNUM}
 <N> ={AND,OR} U {e}
 <select> = {BO,ID,NUM,RNUM}
@@ -43,7 +43,7 @@
 <M1> = {COMMA} U {e} == 
 <ret>  = {RETURNS} U {e}  == 
 <module>  = {DEF}  == 
-<driverModule = {DEF}  ==  {DEF}
+<driverModule = {DRIVERDEF}  ==  {DRIVERDEF}
 <otherModules>  = {DEF} U {e} == {DEF}
 <moduleDeclaration>  = {DECLARE} == {DECLARE}
 <moduleDeclarations>  = {DECLARE} U {e}  == {} 
