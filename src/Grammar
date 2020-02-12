@@ -59,10 +59,6 @@
 // Therefore modify rules to make LL(1). 
 <expression> --> <arithBoolExpr>
 
-***
-<arithBoolExpr> --> <arithBoolExpr> <logicalOp> <select> | <select>
-<select> --> <select> <relationalOp> <arithmeticExpr> | <arithmeticExpr> 
-***
 <arithBoolExpr> --> <select><N>
 <N> --> <logicalOp> <select> <N>|ε
 <select> --> <arithmeticExpr><N1>

@@ -15,9 +15,11 @@
 <term> = {BO,ID,NUM,RNUM}
 <K> = {ADD,MINUS} U {e}
 <arithmeticExpr> = {BO,ID,NUM,RNUM}
-////<expression>  = {BO,ID,NUM,RNUM} U {BO,ID,NUM,RNUM}
-////<arithBoolExpr> = {}
-////<select> = {}
+<expression>  = {BO,ID,NUM,RNUM}
+<arithBoolExpr> = {BO,ID,NUM,RNUM}
+<N> ={AND,OR} U {e}
+<select> = {BO,ID,NUM,RNUM}
+<N1> = {LT,LE,GT,GE,EQ,NE} U {e}
 <idList> = {ID}
 <L> = {COMMA} U {e}
 <optional> = {SQBO} U {e}
