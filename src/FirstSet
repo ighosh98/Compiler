@@ -9,12 +9,12 @@
 <logicalOp> = {AND,OR}
 <addOp>  = {PLUS,MINUS}
 <mulOp> = {MUL,DIV}
-<factor> = {BO}U{ID,NUM,RNUM}
+<factor> = {ID,NUM,RNUM}
 <var>  = {ID,NUM,RNUM}
 <R> = {MUL,DIV} U {e}
-<term> = {BO,ID,NUM,RNUM}
-<K> = {ADD,MINUS} U {e}
-<arithmeticExpr> = {BO,ID,NUM,RNUM}
+<term> = {ID,NUM,RNUM}
+<K> = {PLUS,MINUS} U {e}
+<arithmeticExpr> = {ID,NUM,RNUM}
 <expression>  = {BO,ID,NUM,RNUM}
 <arithBoolExpr> = {BO,ID,NUM,RNUM}
 <N> ={AND,OR} U {e}

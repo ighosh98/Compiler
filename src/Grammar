@@ -59,12 +59,10 @@
 // Therefore modify rules to make LL(1). 
 <expression> --> <arithBoolExpr>
 
-<arithBoolExpr> --> <select><N>
+<arithBoolExpr> --> <select><N>| BO <arithBoolExpr> BC
 <N> --> <logicalOp> <select> <N>|ε
 <select> --> <arithmeticExpr><N1>
 <N1> --> <relationalOp> <arithmeticExpr><N1>|ε
-
-<arithBoolExpr> --> BO <arithBoolExpr> BC
 
 
 <arithmeticExpr> --> <term> <K>
@@ -75,7 +73,7 @@
 <R> --> <mulOp><factor> <R>|ε	    //handling precedence and
 				    //removing left recursion
 
-<factor> --> BO <arithmeticExpr> BC | <var>
+<factor> --> <var> // BO precedence included above
 
 <addOp> -->  PLUS | MINUS           //precedence
 <mulOp> -->  MUL | DIV
