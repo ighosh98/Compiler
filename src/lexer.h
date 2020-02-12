@@ -1,6 +1,7 @@
-#include<stdio.h>
 #ifndef LEXER_FILE
 #define LEXER_FILE
+#include<stdio.h>
+
 typedef enum type{ID,NUM,REAL,ASSIGNOP} type;
 typedef struct token{
     char* str;
@@ -8,11 +9,11 @@ typedef struct token{
     struct token * next;    
 }token;
 
-token *getNextToken();
+extern token *getNextToken();
 
-FILE* getStream(FILE *fp);
+extern FILE* getStream(FILE *fp);
 
-void removeComments(char* testfile, char* cleanfile);
+extern void removeComments(char* testfile, char* cleanfile);
 
-int getLineNumber();
+extern int getLineNumber();
 #endif

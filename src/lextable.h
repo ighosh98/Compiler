@@ -1,8 +1,7 @@
-#include<stdio.h>
-#include "lexer.h"
-
 #ifndef LEXTABLE
 #define LEXTABLE
+#include<stdio.h>
+#include "lexer.h"
 
 typedef struct lextable
 {
@@ -13,11 +12,11 @@ typedef struct lextable
 
 //lextable expandTable(lextable table);
 
-lextable getLexTable(int n);
+extern lextable getLexTable(int n);
 
-token* insertTable(lextable table, char* str, type tag);
+extern token* insertTable(lextable table, char* str, type tag);
 
-token* searchTable(lextable table, char* str);
+extern token* searchTable(lextable table, char* str);
 
 //void deleteTable(lextable table);
 

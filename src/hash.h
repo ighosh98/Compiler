@@ -1,8 +1,7 @@
-#include<stdio.h>
-
 #ifndef HASHFUNC
 #define HASHFUNC
+#include<stdio.h>
 
-unsigned long hashf(char * str);
+extern unsigned long hashf(char * str);
 
 #endif
