@@ -63,14 +63,14 @@
 
 
 <arithmeticExpr> --> <term> <K>
-<K> --> <addOp> <term><K>| <K>      //handling precedence and 
+<K> --> <addOp> <term><K>| e      //handling precedence and 
 				    //removing left recursion
 
 <term> --> <factor><R>              
 <R> --> <mulOp><factor> <R>|ε	    //handling precedence and
 				    //removing left recursion
 
-<factor> --> BO <arithmeticExpr> BC | var>
+<factor> --> BO <arithmeticExpr> BC | <var>
 
 <addOp> -->  PLUS | MINUS           //precedence
 <mulOp> -->  MUL | DIV

@@ -7,34 +7,42 @@
 <declare> = {DECLARE}
 <relationalOP> = {LT} U {LE} U {GT} U {GE} U {EQ} U {NE}
 <logicalOp> = {AND,OR}
-<op>  = {PLUS,MINUS,MUL,DIV}
+<addOp>  = {PLUS,MINUS}
+<mulOp> = {MUL,DIV}
 <factor> = {BO}U{ID,NUM,RNUM}
 <var>  = {ID,NUM,RNUM}
+<R> = {MUL,DIV} U {e}
 <term> = {BO,ID,NUM,RNUM}
+<K> = {ADD,MINUS} U {e}
 <arithmeticExpr> = {BO,ID,NUM,RNUM}
 ////<expression>  = {BO,ID,NUM,RNUM} U {BO,ID,NUM,RNUM}
+////<arithBoolExpr> = {}
+////<select> = {}
 <idList> = {ID}
+<L> = {COMMA} U {e}
 <optional> = {SQBO} U {e}
 <moduleReuseStmt>  = {SQBO,USE}
-<index> = {NUM,ID}
+<index> = {NUM} U {ID}
 <lvalueARRStmt> = {SQBO}
 <lvalueIDStmt> = {ASSIGNOP}
 <whichStmt>  = {SQBO} U {ASSIGNOP}
 <assignmentStmt> = {ID}
 <simpleStmt> = {ID} U {SQBO,USE}
-<whichId> = {SQBO,e}
-<ioStmt> = {GET_VALUE, PRINT}
+<whichId> = {SQBO} U {e}
+<ioStmt> = {GET_VALUE} U {PRINT}
 <statement>  = {GET_VALUE,PRINT} U {ID,SQBO,USE} U {DECLARE} U  {SWITCH} U {FOR,WHILE}
 <statements> = {GET_VALUE,PRINT,ID,SQBO,USE} U {e}
 <moduleDef>  = {START}
-<type> = {INTEGER,REAL,BOOLEAN}
-<dataType> = {INTEGER,REAL,BOOLEAN,ARRAY}
+<type> = {INTEGER} U {REAL} U {BOOLEAN}
+<dataType> = {INTEGER} U {REAL} U {BOOLEAN} U {ARRAY}
 <inputPlist> = {ID}
+<M> = {COMMA} U {e}
 <outputPlist> = {ID}
-<ret>  = {RETURNS,e}
+<M1> = {COMMA} U {e}
+<ret>  = {RETURNS} U {e}
 <module>  = {DEF}
 <driverModule = {DEF}  ==  {DEF}U{$}
 <otherModules>  = {DEF} U {e}
 <moduleDeclaration>  = {DECLARE} == {DECLARE}
-<moduleDeclarations>  = {DECLARE}U{e}  ==  
+<moduleDeclarations>  = {DECLARE} U {e}  ==  
 <program>  = {DECLARE,DEF,e}  == {$}
