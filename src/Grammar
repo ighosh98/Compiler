@@ -6,7 +6,7 @@
 
 <otherModules> -->  <module><otherModules>| ε
 
-<driverModule> -->  DEF DRIVER PROGRAM ENDDEF <moduleDef>
+<driverModule> -->  DEF DRIVER PROGRAM ENDDEF <moduleDef>
 
 <module> -->  DEF MODULE ID ENDDEF TAKES INPUT SQBO <input_plist> SQBC SEMICOL <ret> <moduleDef>
 
@@ -32,7 +32,7 @@
 
 <var> -->  ID <whichId> | NUM | RNUM
 
-<whichId> -->  SQBO ID SQBC | ε
+<whichId> -->  SQBO <index> SQBC | ε   //changed to <index> to allow f					     //or numbers in ar indexing.
 
 <simpleStmt> -->  <assignmentStmt> | <moduleReuseStmt>
 
@@ -53,21 +53,27 @@
 <idList> --> ID<L>
 <L> -->  COMMA ID <L>|ε
 
-<expression> --> <arithBoolExpr> | MINUS BO <arithmeticExpr> BC
+
+//First set of arithmeticExpr and booleanExpr was same.
+// Therefore modify rules to make LL(1). 
+<expression> --> <arithBoolExpr>
 <arithBoolExpr> --> <arithBoolExpr> <logicalOp> <select> | <select>
 <select> --> <select> <relationalOp> <arithmeticExpr> | <arithmeticExpr>
 <arithBoolExpr> --> BO <arithBoolExpr> BC
 
 
 <arithmeticExpr> --> <term> <K>
-<K> --> > <op> <term><K>| <K>
+<K> --> <addOp> <term><K>| <K>      //handling precedence and 
+				    //removing left recursion
 
-<term> --> <factor><R>
-<R>-><op><factor> <R>|ε
+<term> --> <factor><R>              
+<R> --> <mulOp><factor> <R>|ε	    //handling precedence and
+				    //removing left recursion
 
-<factor> --> BO <arithmeticExpr> BC| <var>
+<factor> --> BO <arithmeticExpr> BC | var>
 
-<op> -->  PLUS | MINUS | MUL | DIV
+<addOp> -->  PLUS | MINUS           //precedence
+<mulOp> -->  MUL | DIV
 
 <logicalOp> --> AND | OR
 
