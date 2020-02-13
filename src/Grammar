@@ -73,7 +73,8 @@
 <R> --> <mulOp><factor> <R>|ε	    //handling precedence and
 				    //removing left recursion
 
-<factor> --> <var> // BO precedence included above
+<factor> --> BO <arithmeticExpr> BC
+<factor> --> <var> 
 
 <addOp> -->  PLUS | MINUS           //precedence
 <mulOp> -->  MUL | DIV
@@ -93,6 +94,6 @@
 
 <default> --> DEFAULT COLON <statements> BREAK SEMICOL | ε
 
-<iterativeStmt> --> FOR BO ID IN <range> BC START <statements> END |WHILE BO <booleanExpr> BC START <statements> END
+<iterativeStmt> --> FOR BO ID IN <range> BC START <statements> END |WHILE BO <arithBoolExpr> BC START <statements> END
 
 <range> --> NUM RANGEOP NUM | ID RANGEOP ID 
