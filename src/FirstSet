@@ -10,7 +10,7 @@
 <logicalOp> = {AND,OR}
 <addOp>  = {PLUS,MINUS}
 <mulOp> = {MUL,DIV}
-<factor> = {ID,NUM,RNUM}
+<factor> = {BO,ID,NUM,RNUM}
 <var>  = {ID,NUM,RNUM}
 <R> = {MUL,DIV} U {e}
 <term> = {ID,NUM,RNUM}
