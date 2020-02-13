@@ -38,14 +38,14 @@
 <moduleDef>  = {START} = {DEF}
 <type> = {INTEGER} U {REAL} U {BOOLEAN}
 <dataType> = {INTEGER} U {REAL} U {BOOLEAN} U {ARRAY}
-<inputPlist> = {ID} == 
-<M> = {COMMA} U {e} == 
-<outputPlist> = {ID} == 
-<M1> = {COMMA} U {e} == 
-<ret>  = {RETURNS} U {e}  == 
-<module>  = {DEF}  == 
-<driverModule = {DRIVERDEF}  ==  {DRIVERDEF}
-<otherModules>  = {DEF} U {e} == {DEF}
-<moduleDeclaration>  = {DECLARE} == {DECLARE}
-<moduleDeclarations>  = {DECLARE} U {e}  == {} 
-<program>  = {DECLARE,DEF,e}  == {$}
+<inputPlist> = {ID}  
+<M> = {COMMA} U {e}  
+<outputPlist> = {ID}  
+<M1> = {COMMA} U {e} 
+<ret>  = {RETURNS} U {e} 
+<module>  = {DEF}  
+<driverModule = {DRIVERDEF}  
+<otherModules>  = {DEF} U {e} 
+<moduleDeclaration>  = {DECLARE} 
+<moduleDeclarations>  = {DECLARE} U {e}   
+<program>  = {DECLARE,DEF,e}  
