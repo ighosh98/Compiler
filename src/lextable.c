@@ -1,9 +1,7 @@
 #include<stdio.h>
-#include"lextable.h"
 #include<stdlib.h>
 #include<string.h>
 #include"hash.h"
-#include "lexer.h"
 #include "lextable.h"
 token *makeToken(char* str,type tag)
 {
@@ -45,7 +43,7 @@ token* searchTable(lextable table, char* str)
     return searchChain(table.ar[index], str);
 }
 
-lextable getLexTable(int n)
+struct lextable getLexTable(int n)
 {
     lextable temp;
     temp.ar= (token **)malloc(sizeof(token *)*n);

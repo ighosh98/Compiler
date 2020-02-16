@@ -5,6 +5,15 @@
 #include<string.h>
 #include<stdbool.h>
 #include<ctype.h>
+#define BUF 4096
+char buffer0[BUF+1];
+char buffer1[BUF+1];
+int lexemeBegin, forward;
+bool lexflag=0, forflag=0;
+FILE* fptr;
+int line;
+int check = 1;
+lextable table;                    
 
 void removeComments(char* testfile, char* cleanfile)
 {
@@ -211,6 +220,7 @@ token* number()
 						return NULL;
 						break;
 			}
+		}
     }
 }
 
@@ -272,55 +282,55 @@ token* operation()
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, Token);
+							return insertTable(table, ans, ID);
 							break;
 					case '-':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, Token);
+							return insertTable(table, ans, ID);
 							break;
 					case '/':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, Token);
+							return insertTable(table, ans, ID);
 							break;
 					case ';':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, Token);
+							return insertTable(table, ans, ID);
 							break;
 					case ',': ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, Token);
+							return insertTable(table, ans, ID);
 							break;
 					case ']': ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, Token);
+							return insertTable(table, ans, ID);
 							break;
 					case '[': ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, Token);
+							return insertTable(table, ans, ID);
 							break;
 					case ')':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, Token);
+							return insertTable(table, ans, ID);
 							break;
 					case '(':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, Token);
+							return insertTable(table, ans, ID);
 							break;
 				}
 			}
@@ -336,7 +346,7 @@ token* operation()
 				{
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table,ans,MULTIPLY);
+					return insertTable(table,ans,MUL);
 				}
 			case 2:
 				if(peek=='<')

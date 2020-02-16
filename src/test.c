@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include<stdbool.h>
-
+#include "lexer.h"
 /*#define BUF 4096
 static char buffer0[BUF+1];
 static char buffer1[BUF+1];
@@ -35,26 +35,8 @@ FILE* getStream(FILE* fptr)
 }*/
 int main()
 {
-    buffer0[BUF]=EOF;
-    buffer1[BUF]=EOF;
-    fptr = fopen("abc.txt","rb");
-    fread(buffer0,1,BUF,fptr);
-    while(fptr)
-    {
-	if(forflag)
-	{
-	    printf("\n\n\n BUFFER1");
-	    while(buffer1[forward]!=EOF)
-		printf("%c ",buffer1[forward++]);
-	    fptr = getStream(fptr);
-	}
-	else
-	{
-	    printf("\n\n\n BUFFER0");
-	     while(buffer0[forward]!=EOF)
-		printf("%c ",buffer0[forward++]);
-	    fptr = getStream(fptr);
-	}
-
-    }
+    openfile("abc.txt");
+    token* a;
+    while(a = getNextToken())
+	printf("%s\n",a->str);
 }

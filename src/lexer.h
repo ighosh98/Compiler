@@ -2,11 +2,8 @@
 #define LEXER_FILE
 #include<stdio.h>
 #include <stdbool.h>
-#include "lextable.h"
 
-#define BUF 4096
-
-typedef enum{
+typedef enum type{
 PROGRAM,
 MODULEDECLARATIONS,
 OTHERMODULES,
@@ -44,7 +41,6 @@ N3,
 ARITHMETICEXPR,
 OP1,
 TERM,
-//arithmeticExprprime,ARITHMETICEXPR
 OP2,
 FACTOR,
 N4,
@@ -111,8 +107,7 @@ COMMENTMARK,
 ID,
 NUM,
 RNUM,
-eps
-}type;                    
+EPS} type;
 
 
 
@@ -120,16 +115,10 @@ typedef struct token{
     char* str;
     type tag;
     struct token * next;    
-}token;
-char buffer0[BUF+1];
-char buffer1[BUF+1];
-int lexemeBegin, forward;
-bool lexflag=0, forflag=0;
-FILE* fptr;
-int line;
-int check = 1;
-lextable table;                    
+} token;
 token *getNextToken();
+
+void openfile(char * sourcefile);
 
 FILE* getStream(FILE*);
 
