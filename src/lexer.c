@@ -1,13 +1,3 @@
- to content
-Using BITS Pilani University Mail with screen readers
-
-Conversations
-Using 13.25 GB
-Program Policies
-Powered by Google
-Last account activity: 1 hour ago
-Details
-
 #include<stdio.h>
 #include "lexer.h"
 #include<stdlib.h>
