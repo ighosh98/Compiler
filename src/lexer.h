@@ -1,63 +1,63 @@
 #ifndef LEXER_FILE
 #define LEXER_FILE
 #include<stdio.h>
-typedef struct token{
-    char* str;
-    type tag;
-    struct token * next;    
-}token;
-typedef enum terms{
-program,
-moduleDeclarations,
-otherModules,
-driverModule,
-moduleDeclaration,
-moduleDef,
-module,
-input_plist,
+#include <stdbool.h>
+#include "lextable.h"
+
+#define BUF 4096
+
+typedef enum{
+PROGRAM,
+MODULEDECLARATIONS,
+OTHERMODULES,
+DRIVERMODULE,
+MODULEDECLARATION,
+MODULEDEF,
+MODULE,
+INPUT_PLIST,
 N1,
-ret,
-output_plist,
+RET,
+OUTPUT_PLIST,
 N2,
-dataType,
-type,
-range,
-statements,
-statement,
-ioStmt,
-simpleStmt,
-declareStmt,
-condionalStmt,
-iterativeStmt,
-var,
-whichId,
-assignmentStmt,
-moduleReuseStmt,
-whichStmt,
-lvalueIDStmt,
-lvalueARRStmt,
-expression,
-index,
-optional,
-idList,
-idListprime,
-arithmeticExpr,
-op1,
-term,
-arithmeticExprprime,
-op2,
-factor,
+DATATYPE,
+TYPE,
+RANGE,
+STATEMENTS,
+STATEMENT,
+IOSTMT,
+SIMPLESTMT,
+DECLARSTMT,
+CONDITIONALSTMT,
+ITERATIVESTMT,
+VAR,
+WHICHID,
+ASSIGNMENTSTMT,
+MODULEREUSESTMT,
+WHICHSTMT,
+LVALUEIDSTMT,
+LVALUEARRSTMT,
+EXPRESSION,
+INDEX,
+OPTIONAL,
+IDLIST,
+N3,
+ARITHMETICEXPR,
+OP1,
+TERM,
+//arithmeticExprprime,ARITHMETICEXPR
+OP2,
+FACTOR,
 N4,
-arithmeticOrBooleanExpr,
-AnyTerm,
-logicalOp,
-relationalOp,
-caseStmts,
-default,
+ARITHMETICORBOOLEANEXPR,
+ANYTERM,
+LOGICALOP,
+RELATIONALOP,
+CASESTMTS,
+DEFAULT,
 N7,
 N8,
 N9,
-value,
+VALUE,
 $,
 INTEGER,
 REAL,
@@ -67,16 +67,12 @@ ARRAY,
 START,
 END,
 DECLARE,
-MODULE,
 DRIVER,
-PROGRAM,
 GET_VALUE,
 PRINT,
 USE,
 WITH,
 PARAMETERS,
-TRUE,
-FALSE,
 TAKES,
 INPUT,
 RETURNS,
@@ -87,10 +83,10 @@ IN,
 SWITCH,
 CASE,
 BREAK,
-DEFAULT,
 WHILE,
 PLUS,
-MINUS,MUL,
+MINUS,
+MUL,
 DIV,
 LT,
 LE,
@@ -115,13 +111,29 @@ COMMENTMARK,
 ID,
 NUM,
 RNUM,
-eps}terms;                    
-                        
-extern token *getNextToken();
+eps
+}type;                    
 
-extern FILE* getStream(FILE *fp);
 
-extern void removeComments(char* testfile, char* cleanfile);
 
-extern int getLineNumber();
+typedef struct token{
+    char* str;
+    type tag;
+    struct token * next;    
+}token;
+char buffer0[BUF+1];
+char buffer1[BUF+1];
+int lexemeBegin, forward;
+bool lexflag=0, forflag=0;
+FILE* fptr;
+int line;
+int check = 1;
+lextable table;                    
+token *getNextToken();
+
+FILE* getStream(FILE*);
+
+void removeComments(char* testfile, char* cleanfile);
+
+int getLineNumber();
 #endif
