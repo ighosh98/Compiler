@@ -3,6 +3,8 @@
 #include<stdlib.h>
 #include<string.h>
 #include"hash.h"
+#include "lexer.h"
+#include "lextable.h"
 token *makeToken(char* str,type tag)
 {
     token * temp = (token *) malloc(sizeof(token));
