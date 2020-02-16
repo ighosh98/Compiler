@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include<stdbool.h>
-#define BUF 4096
+
+/*#define BUF 4096
 static char buffer0[BUF+1];
 static char buffer1[BUF+1];
 static int lexemeBegin, forward;
@@ -31,7 +32,7 @@ FILE* getStream(FILE* fptr)
 	fclose(fptr);
 	return NULL; //terminate lexical analysis
     }	
-}
+}*/
 int main()
 {
     buffer0[BUF]=EOF;

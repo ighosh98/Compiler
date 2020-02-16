@@ -1,0 +1,32 @@
+<<driver program>>
+start
+declare a,b:integer;
+declare c:boolean;
+a:=21;
+
+** Handling multi line comments
+in the code is a challenge
+**
+**Are you A*Star upto* the 
+challenge?**
+
+
+
+
+
+
+
+
+
+b:=23:
+c:=(b-a>3);
+switch(c)
+start
+case TRUE: b:=100;
+break;
+case FALSE: b:= -100;
+break;
+end
+end
+
+

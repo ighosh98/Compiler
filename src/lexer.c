@@ -15,16 +15,6 @@ Details
 #include<string.h>
 #include<stdbool.h>
 #include<ctype.h>
-#define BUF 4096
-static char buffer0[BUF+1];
-static char buffer1[BUF+1];
-static int lexemeBegin, forward;
-static bool lexflag=0, forflag=0;
-static FILE* fptr;
-int line;
-int check = 1;
-
-lextable table;
 
 void removeComments(char* testfile, char* cleanfile)
 {
