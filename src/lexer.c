@@ -6,8 +6,6 @@
 #include<stdbool.h>
 #include<ctype.h>
 
-
-
 void removeComments(char* testfile, char* cleanfile)
 {
     return;
@@ -52,26 +50,27 @@ token* id()
     char ans[100];
     int len= 0;
     char peek;
+
     while(1)
     {
-	if(!forflag)
-	    peek = buffer0[forward];
-	else
-	    peek = buffer1[forward];
-	forward++;
-	if(peek == EOF)
-	    fptr = getStream(fptr);
-	else
-	{
-	    if(isalpha(peek) || isdigit(peek) || peek == '_')
-		ans[len++] = peek;
-	    else
-	    {
-		ans[len]=0;
-		lexemeBegin = forward;
-		return insertTable(table,ans,ID);
-	    }
-	}
+		if(!forflag)
+			peek = buffer0[forward];
+		else
+			peek = buffer1[forward];
+		
+		if(peek == EOF)
+			fptr = getStream(fptr);
+		else
+		{
+			if(isalpha(peek) || isdigit(peek) || peek == '_')
+				ans[len++] = peek, forward++;
+			else
+			{
+				ans[len]=0;
+				lexemeBegin = forward;
+				return insertTable(table,ans,ID);
+			}
+		}
     }
 }
 
@@ -80,20 +79,138 @@ token* number()
 {
     char ans[100];
     char peek;
+	int len = 0;
+	int state = 0;
     while(1)
     {
-	if(!forflag)
-	    peek = buffer0[forward];
-	else
-	    peek = buffer1[forward];
+		if(!forflag)
+			peek = buffer0[forward];
+		else
+			peek = buffer1[forward];
 
-	if(peek == EOF)
-	    fptr = getStream(fptr);
-	else
-	{
-	
-	    //make dfa for number literals
-	}
+		if(peek == EOF)
+			fptr = getStream(fptr);
+		else
+		{
+		
+			//make dfa for number literals
+			switch(state)
+			{
+				case 0: if(isdigit(peek))
+						{
+							ans[len++] = peek; 
+							forward++;
+							state = 1;
+						}
+						else
+						{
+							printf("Wrong call. The function should not be called without a num\n");
+							return NULL;
+						}
+						break;
+				case 1: if(isdigit(peek))
+						{
+							ans[len++] = peek; 
+							forward++;
+							state = 1;
+						}
+						else if(peek == '.')
+						{
+							ans[len++] = peek;
+							forward++;
+							state = 2;
+						}
+						else
+						{
+							
+							ans[len]=0;
+							lexemeBegin = forward;
+							return insertTable(table,ans,NUM);
+						}
+						break;
+				case 2: if(isdigit(peek))
+						{
+							ans[len++] = peek; 
+							forward++;
+							state = 3;
+						}
+						else if(peek == '.')
+						{
+							forward--;
+							ans[--len]=0;
+							lexemeBegin = forward;
+							return insertTable(table,ans,NUM);
+						}
+						else
+						{
+							return NULL;
+						}
+						break;
+				case 3: if(isdigit(peek))
+						{
+							ans[len++] = peek; 
+							forward++;
+							state = 3;
+						}
+						else if(peek == 'e' || peek == 'E')
+						{
+							ans[len++]=peek;
+							forward++;
+							state = 4;
+						}
+						else
+						{
+							ans[len]=0;
+							lexemeBegin = forward;
+							return insertTable(table,ans, RNUM);
+						}
+						break;
+				case 4: if(peek=='+' || peek=='-')
+						{
+							ans[len++] = peek; 
+							forward++;
+							state = 5;
+						}
+						else if(isdigit(peek))
+						{
+							ans[len++]=peek;
+							forward++;
+							state = 6;
+						}
+						else
+						{
+							return NULL;
+						}
+						break;
+				case 5: if(isdigit(peek))
+						{
+							ans[len++] = peek; 
+							forward++;
+							state = 6;
+						}
+						else
+						{
+							return NULL;
+						}
+						break;
+				case 6: if(isdigit(peek))
+						{
+							ans[len++] = peek; 
+							forward++;
+							state = 6;
+						}
+						else
+						{
+							ans[len]=0;
+							lexemeBegin = forward;
+							return insertTable(table,ans, RNUM);
+						}
+						break;
+				default: 
+						printf("unknown state reached");
+						return NULL;
+						break;
+			}
     }
 }
 
@@ -102,35 +219,281 @@ token* operation()
 {
     char ans[3];
     char peek;
+	int state = 0;
+	int len = 0;
     while(1)
     {
 	if(!forflag)
 	    peek = buffer0[forward];
 	else
 	    peek = buffer1[forward];
-
 	if(peek == EOF)
 	    fptr = getStream(fptr);
 	else
 	{
-	    //if else tree
+	    switch(state)
+		{
+			case 0: 
+			{
+				switch(peek)
+				{
+					case '*': ans[len++]=peek;
+							  forward++;
+							  state = 1;
+							  break;
+					case '<':ans[len++]=peek;
+							  forward++;
+							  state = 2;
+							  break;
+					case '>':ans[len++]=peek;
+							  forward++;
+							  state = 3;
+							  break;
+					case '!':ans[len++]=peek;
+							  forward++;
+							  state = 4;
+							  break;
+					case '=':ans[len++]=peek;
+							  forward++;
+							  state = 5;
+							  break;
+					case ':':ans[len++]=peek;
+							  forward++;
+							  state = 6;
+							  break;
+					case '.':ans[len++]=peek;
+							  forward++;
+							  state = 7;
+							  break;
+					
+					
+					
+					case '+':ans[len++]=peek;
+							ans[len]=0;
+							forward++;
+							lexemeBegin = forward;							
+							return insertTable(table, ans, Token);
+							break;
+					case '-':ans[len++]=peek;
+							ans[len]=0;
+							forward++;
+							lexemeBegin = forward;							
+							return insertTable(table, ans, Token);
+							break;
+					case '/':ans[len++]=peek;
+							ans[len]=0;
+							forward++;
+							lexemeBegin = forward;							
+							return insertTable(table, ans, Token);
+							break;
+					case ';':ans[len++]=peek;
+							ans[len]=0;
+							forward++;
+							lexemeBegin = forward;							
+							return insertTable(table, ans, Token);
+							break;
+					case ',': ans[len++]=peek;
+							ans[len]=0;
+							forward++;
+							lexemeBegin = forward;							
+							return insertTable(table, ans, Token);
+							break;
+					case ']': ans[len++]=peek;
+							ans[len]=0;
+							forward++;
+							lexemeBegin = forward;							
+							return insertTable(table, ans, Token);
+							break;
+					case '[': ans[len++]=peek;
+							ans[len]=0;
+							forward++;
+							lexemeBegin = forward;							
+							return insertTable(table, ans, Token);
+							break;
+					case ')':ans[len++]=peek;
+							ans[len]=0;
+							forward++;
+							lexemeBegin = forward;							
+							return insertTable(table, ans, Token);
+							break;
+					case '(':ans[len++]=peek;
+							ans[len]=0;
+							forward++;
+							lexemeBegin = forward;							
+							return insertTable(table, ans, Token);
+							break;
+				}
+			}
+			break;
+			case 1:
+				if(peek=='*')
+				{
+					ans[len++]=peek;
+					forward++;
+					state=8;					
+				}
+				else
+				{
+					ans[len] = 0;
+					lexemeBegin = forward;
+					return insertTable(table,ans,MULTIPLY);
+				}
+			case 2:
+				if(peek=='<')
+				{
+					ans[len++]= peek;
+					forward++;
+					ans[len] = 0;
+					lexemeBegin = forward;
+					return insertTable(table, ans, DEF);
+				}
+				else if(peek == '=')
+				{
+					ans[len++]= peek;
+					forward++;
+					ans[len] = 0;
+					lexemeBegin = forward;
+					return insertTable(table, ans, LE);	
+				}
+				else
+				{
+					ans[len] = 0;
+					lexemeBegin = forward;
+					return insertTable(table, ans, LT);
+				}
+				break;
+			case 3:
+				if(peek=='>')
+				{
+					ans[len++]= peek;
+					forward++;
+					ans[len] = 0;
+					lexemeBegin = forward;
+					return insertTable(table, ans, ENDDEF);
+				}
+				else if(peek == '=')
+				{
+					ans[len++]= peek;
+					forward++;
+					ans[len] = 0;
+					lexemeBegin = forward;
+					return insertTable(table, ans, GE);	
+				}
+				else
+				{
+					ans[len] = 0;
+					lexemeBegin = forward;
+					return insertTable(table, ans, GT);
+				}
+				break;
+			case 4:
+				if(peek=='=')
+				{
+					ans[len++] = peek;
+					forward++;
+					ans[len] = 0;
+					lexemeBegin = forward;
+					return insertTable(table, ans, NE);
+				}
+				else
+				{
+					return NULL;
+				}
+				break;
+			case 5:
+				if(peek=='=')
+				{
+					ans[len++] = peek;
+					forward++;
+					ans[len] = 0;
+					lexemeBegin = forward;
+					return insertTable(table, ans, EQ);
+				}
+				else
+				{
+					return NULL;
+				}
+				break;
+			case 6:
+				if(peek=='=')
+				{
+					ans[len++]= peek;
+					forward++;
+					ans[len] = 0;
+					lexemeBegin = forward;
+					return insertTable(table, ans, ASSIGNOP);
+				}
+				else
+				{
+					ans[len] = 0;
+					lexemeBegin = forward;
+					return insertTable(table, ans, COLON);
+				}
+				break;
+			case 7:
+				if(peek=='.')
+				{
+					ans[len++] = peek;
+					forward++;
+					ans[len] = 0;
+					lexemeBegin = forward;
+					return insertTable(table, ans, RANGEOP);
+				}
+				else
+				{
+					return NULL;
+				}
+				break;
+			case 8:
+				if(peek=='*')
+				{
+					forward++;
+					state = 9;
+				}
+				else
+				{
+					forward++;
+				}
+				break;
+			case 9: 
+				if(peek == '*')
+				{
+					forward++;
+					return insertTable(table, ans, COMMENTMARK);
+				}
+				else
+				{
+					forward++;
+					state = 8;
+				}
+				break;
+		}
 	}
     }
 }
 
-token* getNextToken(char* sourcefile)
+void openfile(char* sourcefile)
+{
+	fptr = fopen(sourcefile, "rb");
+}
+
+token* getNextToken()
 {
     //initialization code
+	if(!fptr)
+	{
+		printf("file not open\n");
+		exit(1);
+	}	
     if(check)
     {
-	check = 0;
-	table = getLexTable(10);
-	fptr = fopen(sourcefile, "rb");
-	int count = fread(buffer0, 1, BUF,fptr);
-	line = 1;
-	buffer0[count]=EOF; //sentinel value to mark the end of buffer
-	lexemeBegin = 0;
-	forward = 0;
+		check = 0;
+		table = getLexTable(100);
+		int count = fread(buffer0, 1, BUF,fptr);
+		line = 1;
+		buffer0[count]=EOF; //sentinel value to mark the end of buffer
+		lexemeBegin = 0;
+		forward = 0;
     }
     while(1)
     {
@@ -167,14 +530,16 @@ token* getNextToken(char* sourcefile)
 	    case 'o': case 'p': case 'q': case 'r': case 's':
 	    case 't': case 'u': case 'v': case 'w': case 'x':
 	    case 'y': case 'z':
-		    {token* temp = id();
-		    if(strlen(temp->str)>20) //raise error
 		    {
-			printf("Token Length error: Line %d\n",line);
-		    }
-		    else
-			return temp;
-		    break;}
+				token* temp = id();
+				if(strlen(temp->str)>20) //raise error
+				{
+				printf("Token Length error: Line %d\n",line);
+				}
+				else
+					return temp;
+				break;
+			}
 	    
 
 	    case '0': case '1': case '2': case '3': case '4':    // tokenize a INT or REAL.
@@ -185,8 +550,7 @@ token* getNextToken(char* sourcefile)
 			else
 			{
 			    printf("Invalid Number Error: Line %d\n", line);
-			    lexemeBegin++;
-			    forward++;
+			    lexemeBegin = forward;
 			}
 			break;
 		    }
@@ -203,8 +567,7 @@ token* getNextToken(char* sourcefile)
 			else
 			{
 			    printf("Invalid Operation Error: Line %d\n",line);
-			    lexemeBegin++;
-			    forward++;
+			    lexemeBegin = forward;
 			}
 		    break;}
 
