@@ -106,8 +106,6 @@ token* number()
 			fptr = getStream(fptr);
 		else
 		{
-			if(isalpha(peek))
-			    return NULL;
 		
 			//make dfa for number literals
 			switch(state)
@@ -138,10 +136,14 @@ token* number()
 						}
 						else
 						{
-							
+						    if(isalpha(peek))
+							return NULL;
+						    else
+						    {
 							ans[len]=0;
 							lexemeBegin = forward;
 							return insertTable(table,ans,NUM);
+						    }
 						}
 						break;
 				case 2: if(isdigit(peek))
@@ -356,6 +358,7 @@ token* operation()
 					lexemeBegin = forward;
 					return insertTable(table,ans,MUL);
 				}
+				break;
 			case 2:
 				if(peek=='<')
 				{
@@ -586,7 +589,14 @@ token* getNextToken()
 		    {
 			token* temp = operation();
 			if(temp)
-			    return temp;
+			{
+			    if(temp->tag == COMMENTMARK)
+			    {
+				printf("Ignoring Comment\n");
+			    }
+			    else
+				return temp;
+			}
 			else
 			{
 			    printf("Invalid Operation Error: Line %d\n",line);
@@ -596,7 +606,7 @@ token* getNextToken()
 
 	    default:
 		{
-		    printf("Unrecognized Symbol Error: Line %d\n", line);
+		    printf("Invalid Symbol Error: Line %d\n", line);
 		    lexemeBegin++;
 		    forward++;
 		    break;

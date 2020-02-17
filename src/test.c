@@ -35,7 +35,7 @@ FILE* getStream(FILE* fptr)
 }*/
 int main()
 {
-    openfile("abc.txt");
+    openfile("lextest.txt");
     token* a;
     while(a = getNextToken())
 	printf("%d: %s: %d\n",a->tag,a->str,getLineNumber());
