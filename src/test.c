@@ -38,5 +38,5 @@ int main()
     openfile("abc.txt");
     token* a;
     while(a = getNextToken())
-	printf("%s\n",a->str);
+	printf("%d: %s: %d\n",a->tag,a->str,getLineNumber());
 }

@@ -56,6 +56,7 @@ FILE* getStream(FILE* fptr)
 
 token* id()
 {
+ //   printf("inside id\n");
     char ans[100];
     int len= 0;
     char peek;
@@ -72,7 +73,10 @@ token* id()
 		else
 		{
 			if(isalpha(peek) || isdigit(peek) || peek == '_')
-				ans[len++] = peek, forward++;
+			{
+			    ans[len++] = peek; 
+			    forward++;
+			}
 			else
 			{
 				ans[len]=0;
@@ -86,6 +90,7 @@ token* id()
 
 token* number()
 {
+    //printf("inside number\n");
     char ans[100];
     char peek;
 	int len = 0;
@@ -101,6 +106,8 @@ token* number()
 			fptr = getStream(fptr);
 		else
 		{
+			if(isalpha(peek))
+			    return NULL;
 		
 			//make dfa for number literals
 			switch(state)
@@ -227,6 +234,7 @@ token* number()
 
 token* operation()
 {
+    //printf("inside operation\n");
     char ans[3];
     char peek;
 	int state = 0;
@@ -462,6 +470,8 @@ token* operation()
 				}
 				else
 				{
+					if(peek == '\n')
+					    line++;
 					forward++;
 				}
 				break;
@@ -490,11 +500,12 @@ void openfile(char* sourcefile)
 token* getNextToken()
 {
     //initialization code
-	if(!fptr)
-	{
-		printf("file not open\n");
-		exit(1);
-	}	
+    if(!fptr)
+    {
+	printf("Error: Source File Not Open\nCheck if File Exists\nCheck if openfile function is called.\n");
+	exit(1);
+    	return NULL;
+    }	
     if(check)
     {
 		check = 0;
@@ -507,6 +518,8 @@ token* getNextToken()
     }
     while(1)
     {
+	if(!fptr)
+	    return NULL;
 	//start state for the dfa
 	char peek;
 	if(!forflag)

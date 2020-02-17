@@ -5,8 +5,10 @@
 #include "lextable.h"
 token *makeToken(char* str,type tag)
 {
+    char * str1 = (char *)malloc((strlen(str)+1)*sizeof(char));
+    strcpy(str1,str);
     token * temp = (token *) malloc(sizeof(token));
-    temp->str = str;
+    temp->str = str1;
     temp->tag = tag;
     temp->next = NULL;
     return temp;
