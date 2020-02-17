@@ -45,7 +45,7 @@ token* searchTable(lextable table, char* str)
     return searchChain(table.ar[index], str);
 }
 
-struct lextable getLexTable(int n)
+lextable getLexTable(int n)
 {
     lextable temp;
     temp.ar= (token **)malloc(sizeof(token *)*n);
