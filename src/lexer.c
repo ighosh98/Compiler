@@ -15,6 +15,22 @@ int line;
 int check = 1;
 lextable table;                    
 
+
+char* symbol_map[] = {"PROGRAM", "MODULEDECLARATIONS","OTHERMODULES","DRIVERMODULE",
+    "MODULEDECLARATION","MODULEDEF","MODULE","INPUT_PLIST","N1","RET","OUTPUT_PLIST",
+    "N2","DATATYPE","TYPE","RANGE","STATEMENTS","STATEMENT","IOSTMT","SIMPLESTMT","DECLARSTMT",
+    "CONDITIONALSTMT","ITERATIVESTMT","VAR","WHICHID","ASSIGNMENTSTMT","MODULEREUSESTMT",
+    "WHICHSTMT","LVALUEIDSTMT","LVALUEARRSTMT","EXPRESSION","INDEX","OPTIONAL","IDLIST","N3",
+    "ARITHMETICEXPR","OP1","TERM","OP2","FACTOR","N4","ARITHMETICORBOOLEANEXPR","ANYTERM",
+    "LOGICALOP","RELATIONALOP","CASESTMTS","DEFAULT","N7","N8","N9","VALUE",                            //Non-Terminals
+    "$",
+    "INTEGER","REAL","BOOLEAN","OF","ARRAY","START","END","DECLARE","DRIVER","GET_VALUE","PRINT",
+    "USE","WITH","PARAMETERS","TAKES","INPUT","RETURNS","AND","OR","FOR","IN","SWITCH","CASE","BREAK",
+    "WHILE","PLUS","MINUS","MUL","DIV","LT","LE","GE","GT","EQ","NE","DEF","ENDDEF","DRIVERDEF","DRIVERENDDEF",
+    "COLON","RANGEOP","SEMICOL","COMMA","ASSIGNOP","SQBO","SQBC","BO","BC","COMMENTMARK","ID","NUM","RNUM",
+    "EPS","FALSE1","TRUE1"};                                                                          //Terminals
+
+
 void removeComments(char* testfile, char* cleanfile)
 {
     return;
@@ -292,55 +308,55 @@ token* operation()
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, ID);
+							return insertTable(table, ans, PLUS);
 							break;
 					case '-':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, ID);
+							return insertTable(table, ans, MINUS);
 							break;
 					case '/':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, ID);
+							return insertTable(table, ans, DIV);
 							break;
 					case ';':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, ID);
+							return insertTable(table, ans, SEMICOL);
 							break;
 					case ',': ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, ID);
+							return insertTable(table, ans, COMMA);
 							break;
 					case ']': ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, ID);
+							return insertTable(table, ans, SQBC);
 							break;
 					case '[': ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, ID);
+							return insertTable(table, ans, SQBO);
 							break;
 					case ')':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, ID);
+							return insertTable(table, ans, BC);
 							break;
 					case '(':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;							
-							return insertTable(table, ans, ID);
+							return insertTable(table, ans, BO);
 							break;
 				}
 			}
@@ -500,6 +516,14 @@ void openfile(char* sourcefile)
 	fptr = fopen(sourcefile, "rb");
 }
 
+void init_lextable()
+{
+	table = getLexTable(100);
+	insertTable(table, "TRUE",TRUE1);
+	
+	
+}
+
 token* getNextToken()
 {
     //initialization code
@@ -512,7 +536,7 @@ token* getNextToken()
     if(check)
     {
 		check = 0;
-		table = getLexTable(100);
+		init_lextable();
 		int count = fread(buffer0, 1, BUF,fptr);
 		line = 1;
 		buffer0[count]=EOF; //sentinel value to mark the end of buffer
