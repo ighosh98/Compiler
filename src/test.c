@@ -38,5 +38,5 @@ int main()
     openfile("lextest.txt");
     token* a;
     while(a = getNextToken())
-	printf("%s: %s: %d\n",symbol_map[a->tag],a->str,getLineNumber());
+	printf("%10s: %20s: %10d\n",symbol_map[a->tag],a->str,getLineNumber());
 }

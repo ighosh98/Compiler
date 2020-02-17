@@ -6,6 +6,7 @@
 #include<stdbool.h>
 #include<ctype.h>
 #define BUF 4096
+#define EOB -1    //sentinel to mark end of buffer
 char buffer0[BUF+1];
 char buffer1[BUF+1];
 int lexemeBegin, forward;
@@ -49,14 +50,14 @@ FILE* getStream(FILE* fptr)
 	if(forflag == 0)
 	{
 	    int count = fread(buffer1,1,BUF,fptr);
-	    buffer1[count]=EOF;
+	    buffer1[count]=EOB ;
 	    forflag = 1;
 	    forward = 0;
 	}
 	else
 	{
 	    int count = fread(buffer0,1,BUF,fptr);
-	    buffer0[count]=EOF;
+	    buffer0[count]=EOB ;
 	    forflag = 0;
 	    forward = 0;
 	}
@@ -84,7 +85,7 @@ token* id()
 		else
 			peek = buffer1[forward];
 		
-		if(peek == EOF)
+		if(peek == EOB )
 			fptr = getStream(fptr);
 		else
 		{
@@ -118,7 +119,7 @@ token* number()
 		else
 			peek = buffer1[forward];
 
-		if(peek == EOF)
+		if(peek == EOB )
 			fptr = getStream(fptr);
 		else
 		{
@@ -152,14 +153,10 @@ token* number()
 						}
 						else
 						{
-						    if(isalpha(peek))
-							return NULL;
-						    else
-						    {
 							ans[len]=0;
 							lexemeBegin = forward;
 							return insertTable(table,ans,NUM);
-						    }
+						    
 						}
 						break;
 				case 2: if(isdigit(peek))
@@ -263,7 +260,7 @@ token* operation()
 	    peek = buffer0[forward];
 	else
 	    peek = buffer1[forward];
-	if(peek == EOF)
+	if(peek == EOB )
 	    fptr = getStream(fptr);
 	else
 	{
@@ -562,7 +559,7 @@ token* getNextToken()
 		init_lextable();
 		int count = fread(buffer0, 1, BUF,fptr);
 		line = 1;
-		buffer0[count]=EOF; //sentinel value to mark the end of buffer
+		buffer0[count]=EOB ; //sentinel value to mark the end of buffer
 		lexemeBegin = 0;
 		forward = 0;
     }
@@ -579,7 +576,7 @@ token* getNextToken()
 
 	switch(peek)
 	{
-	    case EOF:
+	    case EOB :
 		    fptr = getStream(fptr);
 		    break;
 

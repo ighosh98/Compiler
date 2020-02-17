@@ -15,6 +15,7 @@ a@b
 1.23E+123
 1.23E-123
 .123
+123.0e+abs
 1. 
 123e123
 .123e132
@@ -48,3 +49,6 @@ dlkfj**
 ><
 
 TRUE
+declare, driver, program, for, start, end, module, get_value, print, use,
+with, parameters, true, false, takes, input, returns, AND, OR, switch, case, break, default, while
+><===!=20.0e+123.0..32ab23..30++++/
