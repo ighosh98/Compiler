@@ -519,8 +519,31 @@ void openfile(char* sourcefile)
 void init_lextable()
 {
 	table = getLexTable(100);
-	insertTable(table, "TRUE",TRUE1);
-	
+
+	insertTable(table,"declare",DECLARE);
+	insertTable(table, "driver",DRIVER);
+	insertTable(table, "program",PROGRAM);
+	insertTable(table, "for",FOR);
+	insertTable(table, "start",START);
+	insertTable( table,"end",END);
+	insertTable(table, "module",MODULE);
+	insertTable(table, "get_value",GET_VALUE);
+	insertTable(table, "print",PRINT);
+	insertTable(table, "use",USE);
+	insertTable(table,"with",WITH);
+	insertTable(table, "parameters",PARAMETERS);
+	insertTable(table, "true",TRUE1);
+	insertTable( table,"false",FALSE1);
+	insertTable(table,"takes",TAKES);
+	insertTable(table, "input",INPUT);
+	insertTable(table, "returns",RETURNS);
+	insertTable(table, "AND",AND);
+	insertTable(table, "OR",OR);
+	insertTable(table, "switch",SWITCH);
+	insertTable(table, "case",CASE);
+	insertTable(table, "break",BREAK);
+	insertTable(table, "default",DEFAULT);
+	insertTable(table, "while",WHILE);
 	
 }
 
