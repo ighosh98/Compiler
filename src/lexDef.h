@@ -23,6 +23,6 @@ typedef enum type{PROGRAM, MODULEDECLARATIONS,OTHERMODULES,DRIVERMODULE,
 typedef struct token{
     char* str;
     type tag;
-    struct token * next;    
+    int line_no;
 } token;
 #endif

@@ -14,7 +14,7 @@ bool lexflag=0, forflag=0;
 FILE* fptr;
 int line;
 int check = 1;
-hashtable table;                    
+hashtable lextable;                    
 
 
 char* symbol_map[] = {"PROGRAM", "MODULEDECLARATIONS","OTHERMODULES","DRIVERMODULE",
@@ -37,11 +37,16 @@ void removeComments(char* testfile, char* cleanfile)
     return;
 }
 
-int getLineNumber()
+token *makeToken(char* str,type tag, int line)
 {
-    return line;
+    char * str1 = (char *)malloc((strlen(str)+1)*sizeof(char));
+    strcpy(str1,str);
+    token * temp = (token *) malloc(sizeof(token));
+    temp->str = str1;
+    temp->tag = tag;
+    temp->line_no = line;
+    return temp;
 }
-
 
 FILE* getStream(FILE* fptr)
 {
@@ -70,14 +75,13 @@ FILE* getStream(FILE* fptr)
     }	
 }
 
-
 token* id()
 {
  //   printf("inside id\n");
     char ans[100];
     int len= 0;
     char peek;
-
+    hashnode* k;
     while(1)
     {
 		if(!forflag)
@@ -98,7 +102,9 @@ token* id()
 			{
 				ans[len]=0;
 				lexemeBegin = forward;
-				return insertTable(table,ans,ID);
+				k = searchTable(lextable,ans);
+				return k==NULL? makeToken(ans,ID,line)
+				    :makeToken(ans,k->val,line);
 			}
 		}
     }
@@ -112,6 +118,7 @@ token* number()
     char peek;
 	int len = 0;
 	int state = 0;
+    hashnode* k;
     while(1)
     {
 		if(!forflag)
@@ -155,7 +162,9 @@ token* number()
 						{
 							ans[len]=0;
 							lexemeBegin = forward;
-							return insertTable(table,ans,NUM);
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,NUM,line)
+							    :makeToken(ans,k->val,line);
 						    
 						}
 						break;
@@ -170,7 +179,9 @@ token* number()
 							forward--;
 							ans[--len]=0;
 							lexemeBegin = forward;
-							return insertTable(table,ans,NUM);
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,NUM,line)
+							    :makeToken(ans,k->val,line);							
 						}
 						else
 						{
@@ -193,7 +204,10 @@ token* number()
 						{
 							ans[len]=0;
 							lexemeBegin = forward;
-							return insertTable(table,ans, RNUM);
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,RNUM,line)
+							    :makeToken(ans,k->val,line);							
+							
 						}
 						break;
 				case 4: if(peek=='+' || peek=='-')
@@ -234,8 +248,9 @@ token* number()
 						{
 							ans[len]=0;
 							lexemeBegin = forward;
-							return insertTable(table,ans, RNUM);
-						}
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,RNUM,line)
+							    :makeToken(ans,k->val,line);}
 						break;
 				default: 
 						printf("unknown state reached");
@@ -254,6 +269,7 @@ token* operation()
     char peek;
 	int state = 0;
 	int len = 0;
+    hashnode* k;
     while(1)
     {
 	if(!forflag)
@@ -304,56 +320,74 @@ token* operation()
 					case '+':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;							
-							return insertTable(table, ans, PLUS);
+							lexemeBegin = forward;
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,PLUS,line)
+							    :makeToken(ans,k->val,line);							
 							break;
 					case '-':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;							
-							return insertTable(table, ans, MINUS);
+							lexemeBegin = forward;
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,MINUS,line)
+							    :makeToken(ans,k->val,line);		
 							break;
 					case '/':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;							
-							return insertTable(table, ans, DIV);
+							lexemeBegin = forward;			
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,DIV,line)
+							    :makeToken(ans,k->val,line);	
 							break;
 					case ';':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;							
-							return insertTable(table, ans, SEMICOL);
+							lexemeBegin = forward;		
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,SEMICOL,line)
+							    :makeToken(ans,k->val,line);	
 							break;
 					case ',': ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;							
-							return insertTable(table, ans, COMMA);
+							lexemeBegin = forward;			
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,COMMA,line)
+							    :makeToken(ans,k->val,line);	
 							break;
 					case ']': ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;							
-							return insertTable(table, ans, SQBC);
+							lexemeBegin = forward;		
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,SQBC,line)
+							    :makeToken(ans,k->val,line);	
 							break;
 					case '[': ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;							
-							return insertTable(table, ans, SQBO);
+							lexemeBegin = forward;		
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,SQBO,line)
+							    :makeToken(ans,k->val,line);	
 							break;
 					case ')':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;							
-							return insertTable(table, ans, BC);
+							lexemeBegin = forward;		
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,BC,line)
+							    :makeToken(ans,k->val,line);	
 							break;
 					case '(':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;							
-							return insertTable(table, ans, BO);
+							lexemeBegin = forward;		
+							k = searchTable(lextable,ans);
+							return k==NULL? makeToken(ans,BO,line)
+							    :makeToken(ans,k->val,line);	
 							break;
 				}
 			}
@@ -369,7 +403,9 @@ token* operation()
 				{
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table,ans,MUL);
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,MUL,line)
+					    :makeToken(ans,k->val,line);	
 				}
 				break;
 			case 2:
@@ -379,7 +415,9 @@ token* operation()
 					forward++;
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table, ans, DEF);
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,DEF,line)
+					    :makeToken(ans,k->val,line);	
 				}
 				else if(peek == '=')
 				{
@@ -387,13 +425,17 @@ token* operation()
 					forward++;
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table, ans, LE);	
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,LE,line)
+					    :makeToken(ans,k->val,line);	
 				}
 				else
 				{
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table, ans, LT);
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,LT,line)
+					    :makeToken(ans,k->val,line);
 				}
 				break;
 			case 3:
@@ -403,7 +445,9 @@ token* operation()
 					forward++;
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table, ans, ENDDEF);
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,ENDDEF,line)
+					    :makeToken(ans,k->val,line);
 				}
 				else if(peek == '=')
 				{
@@ -411,13 +455,17 @@ token* operation()
 					forward++;
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table, ans, GE);	
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,GE,line)
+					    :makeToken(ans,k->val,line);	
 				}
 				else
 				{
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table, ans, GT);
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,GT,line)
+					    :makeToken(ans,k->val,line);
 				}
 				break;
 			case 4:
@@ -427,7 +475,9 @@ token* operation()
 					forward++;
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table, ans, NE);
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,NE,line)
+					    :makeToken(ans,k->val,line);
 				}
 				else
 				{
@@ -441,7 +491,9 @@ token* operation()
 					forward++;
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table, ans, EQ);
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,EQ,line)
+					    :makeToken(ans,k->val,line);
 				}
 				else
 				{
@@ -455,13 +507,17 @@ token* operation()
 					forward++;
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table, ans, ASSIGNOP);
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,ASSIGNOP,line)
+					    :makeToken(ans,k->val,line);
 				}
 				else
 				{
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table, ans, COLON);
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,COLON,line)
+					    :makeToken(ans,k->val,line);
 				}
 				break;
 			case 7:
@@ -471,7 +527,9 @@ token* operation()
 					forward++;
 					ans[len] = 0;
 					lexemeBegin = forward;
-					return insertTable(table, ans, RANGEOP);
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,RANGEOP,line)
+					    :makeToken(ans,k->val,line);
 				}
 				else
 				{
@@ -495,7 +553,9 @@ token* operation()
 				if(peek == '*')
 				{
 					forward++;
-					return insertTable(table, ans, COMMENTMARK);
+					k = searchTable(lextable,ans);
+					return k==NULL? makeToken(ans,COMMENTMARK,line)
+					    :makeToken(ans,k->val,line);
 				}
 				else
 				{
@@ -515,32 +575,32 @@ void openfile(char* sourcefile)
 
 void init_lextable()
 {
-	table = getHashTable(100);
+	lextable = getHashTable(100);
 
-	insertTable(table,"declare",DECLARE);
-	insertTable(table, "driver",DRIVER);
-	insertTable(table, "program",PROGRAM);
-	insertTable(table, "for",FOR);
-	insertTable(table, "start",START);
-	insertTable( table,"end",END);
-	insertTable(table, "module",MODULE);
-	insertTable(table, "get_value",GET_VALUE);
-	insertTable(table, "print",PRINT);
-	insertTable(table, "use",USE);
-	insertTable(table,"with",WITH);
-	insertTable(table, "parameters",PARAMETERS);
-	insertTable(table, "true",TRUE1);
-	insertTable( table,"false",FALSE1);
-	insertTable(table,"takes",TAKES);
-	insertTable(table, "input",INPUT);
-	insertTable(table, "returns",RETURNS);
-	insertTable(table, "AND",AND);
-	insertTable(table, "OR",OR);
-	insertTable(table, "switch",SWITCH);
-	insertTable(table, "case",CASE);
-	insertTable(table, "break",BREAK);
-	insertTable(table, "default",DEFAULT);
-	insertTable(table, "while",WHILE);
+	insertTable(lextable,"declare",DECLARE);
+	insertTable(lextable, "driver",DRIVER);
+	insertTable(lextable, "program",PROGRAM);
+	insertTable(lextable, "for",FOR);
+	insertTable(lextable, "start",START);
+	insertTable( lextable,"end",END);
+	insertTable(lextable, "module",MODULE);
+	insertTable(lextable, "get_value",GET_VALUE);
+	insertTable(lextable, "print",PRINT);
+	insertTable(lextable, "use",USE);
+	insertTable(lextable,"with",WITH);
+	insertTable(lextable, "parameters",PARAMETERS);
+	insertTable(lextable, "true",TRUE1);
+	insertTable( lextable,"false",FALSE1);
+	insertTable(lextable,"takes",TAKES);
+	insertTable(lextable, "input",INPUT);
+	insertTable(lextable, "returns",RETURNS);
+	insertTable(lextable, "AND",AND);
+	insertTable(lextable, "OR",OR);
+	insertTable(lextable, "switch",SWITCH);
+	insertTable(lextable, "case",CASE);
+	insertTable(lextable, "break",BREAK);
+	insertTable(lextable, "default",DEFAULT);
+	insertTable(lextable, "while",WHILE);
 	
 }
 

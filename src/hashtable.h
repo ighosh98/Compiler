@@ -2,9 +2,16 @@
 #define HASHTABLE
 #include<stdio.h>
 #include "lexer.h"
+
+typedef struct hashnode{
+    char * str;
+    int val;
+    struct hashnode* next;
+} hashnode;
+
 typedef struct hashtable
 {
-    struct token** ar;
+    struct hashnode** ar;
     int size;
 
 } hashtable;
@@ -13,8 +20,8 @@ typedef struct hashtable
 
 hashtable getHashTable(int n);
 
-token* insertTable(hashtable table, char* str, type tag);
+hashnode* insertTable(hashtable table, char* str, int val);
 
-token* searchTable(hashtable table, char* str);
+hashnode* searchTable(hashtable table, char* str);
 
 #endif

@@ -3,19 +3,19 @@
 #include<string.h>
 #include"hash.h"
 #include "hashtable.h"
-token *makeToken(char* str,type tag)
+
+hashnode *makeHashnode(char* str,int val)
 {
     char * str1 = (char *)malloc((strlen(str)+1)*sizeof(char));
     strcpy(str1,str);
-    token * temp = (token *) malloc(sizeof(token));
+    hashnode * temp = (hashnode *) malloc(sizeof(hashnode));
     temp->str = str1;
-    temp->tag = tag;
+    temp->val = val;
     temp->next = NULL;
     return temp;
 }
 
-
-token* insertToChain(token* ar[], token* t, int index)
+hashnode* insertToChain(hashnode* ar[], hashnode* t, int index)
 {
     if(ar[index]==NULL)
 	ar[index] = t;
@@ -27,19 +27,19 @@ token* insertToChain(token* ar[], token* t, int index)
     return t;
 }
 
-token* searchChain(token* head, char* str )
+hashnode* searchChain(hashnode* head, char* str )
 {
-    token* temp = head;
+    hashnode* temp = head;
     while(temp)
     {
-	if(strcmp(temp->str, str)==0)
+	if(strcmp(temp->str,str) == 0)
 	    return temp;
 	temp = temp->next;
     }
     return temp;
 }
 
-token* searchTable(hashtable table, char* str)
+hashnode* searchTable(hashtable table, char* str)
 {
     int index = (int)(hashf(str)%table.size);
     return searchChain(table.ar[index], str);
@@ -48,22 +48,22 @@ token* searchTable(hashtable table, char* str)
 hashtable getHashTable(int n)
 {
     hashtable temp;
-    temp.ar= (token **)malloc(sizeof(token *)*n);
+    temp.ar= (hashnode **)malloc(sizeof(hashnode *)*n);
     temp.size = n;
     return temp;  
 }
 
-token* insertTable(hashtable table,char* str, type tag)
+hashnode* insertTable(hashtable table,char* str, int val)
 {
-    token * temp = searchTable(table, str);
+    hashnode * temp = searchTable(table, str);
     
     if(temp!=NULL)return temp;
     
-    temp = makeToken(str,tag);   
+    temp = makeHashnode(str,val);   
 
     int index = (int)(hashf(str)%table.size);
 
-    token* check = insertToChain(table.ar,temp,index);
+    hashnode* check = insertToChain(table.ar,temp,index);
     if(check!=NULL)
 	return temp;
     else
