@@ -2,7 +2,7 @@
 #include<stdlib.h>
 #include<string.h>
 #include"hash.h"
-#include "lextable.h"
+#include "hashtable.h"
 token *makeToken(char* str,type tag)
 {
     char * str1 = (char *)malloc((strlen(str)+1)*sizeof(char));
@@ -39,21 +39,21 @@ token* searchChain(token* head, char* str )
     return temp;
 }
 
-token* searchTable(lextable table, char* str)
+token* searchTable(hashtable table, char* str)
 {
     int index = (int)(hashf(str)%table.size);
     return searchChain(table.ar[index], str);
 }
 
-lextable getLexTable(int n)
+hashtable getHashTable(int n)
 {
-    lextable temp;
+    hashtable temp;
     temp.ar= (token **)malloc(sizeof(token *)*n);
     temp.size = n;
     return temp;  
 }
 
-token* insertTable(lextable table,char* str, type tag)
+token* insertTable(hashtable table,char* str, type tag)
 {
     token * temp = searchTable(table, str);
     
@@ -72,8 +72,3 @@ token* insertTable(lextable table,char* str, type tag)
 	return NULL;
     }
 }
-
-
-
-
-

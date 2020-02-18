@@ -1,7 +1,7 @@
 #include<stdio.h>
 #include "lexer.h"
 #include<stdlib.h>
-#include"lextable.h"
+#include"hashtable.h"
 #include<string.h>
 #include<stdbool.h>
 #include<ctype.h>
@@ -14,7 +14,7 @@ bool lexflag=0, forflag=0;
 FILE* fptr;
 int line;
 int check = 1;
-lextable table;                    
+hashtable table;                    
 
 
 char* symbol_map[] = {"PROGRAM", "MODULEDECLARATIONS","OTHERMODULES","DRIVERMODULE",
@@ -515,7 +515,7 @@ void openfile(char* sourcefile)
 
 void init_lextable()
 {
-	table = getLexTable(100);
+	table = getHashTable(100);
 
 	insertTable(table,"declare",DECLARE);
 	insertTable(table, "driver",DRIVER);
