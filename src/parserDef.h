@@ -10,7 +10,7 @@ typedef  struct prodn{
 } prodn;
 
 typedef struct productions{
-    prodn* grammar;
+    prodn* rules;
     int no_productions;
 }productions;
 

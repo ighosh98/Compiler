@@ -3,8 +3,8 @@
 #include<stdio.h>
 #include"lexer.h"
 #include"hashtable.h"
-
+#include "parserDef.h"
 void make_str_to_enum();
 
-
+productions read_grammar();
 #endif
