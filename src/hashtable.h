@@ -12,13 +12,13 @@ typedef struct hashnode{
 typedef struct hashtable
 {
     struct hashnode** ar;
-    int size;
+    unsigned int size;
 
 } hashtable;
 
 //lextable expandTable(lextable table);
 
-hashtable getHashTable(int n);
+hashtable getHashTable(unsigned int n);
 
 hashnode* insertTable(hashtable table, char* str, int val);
 

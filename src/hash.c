@@ -1,9 +1,9 @@
 #include<stdio.h>
 #include"hash.h"
 
-unsigned long hashf(char* str)
+unsigned int hashf(char* str)
 {
-    unsigned long ans = 5381;
+    unsigned int ans = 5381;
     char c = *str;
     while(c!='\0')
     {

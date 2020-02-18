@@ -10,15 +10,15 @@ typedef struct stacknode
 
 typedef struct stack
 {
-    stacknode* head;
+    stacknode** head;
 } stack;
 
-void stack_push(stack* s,int a);
+void stack_push(stack s,int a);
 
-void stack_pop(stack* s);
+void stack_pop(stack s);
 
-int stack_top(stack* s);
+int stack_top(stack s);
 
-stack* getStack();
+stack getStack();
 
 #endif

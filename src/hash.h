@@ -2,6 +2,6 @@
 #define HASHFUNC
 #include<stdio.h>
 
-unsigned long hashf(char * str);
+unsigned int hashf(char * str);
 
 #endif
