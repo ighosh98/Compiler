@@ -10,4 +10,5 @@ output: lexer.c parser.c hashtable.c hash.c color.c set.c test.c
 	gcc lexer.o parser.o hashtable.o hash.o color.o set.o test.c -o out
 
 clean:
-	rm -vf *.o
+	rm -vf *.o out *~
+
