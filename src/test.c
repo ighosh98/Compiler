@@ -4,6 +4,7 @@
 #include "stack.h"
 #include "parser.h"
 #include "set.h"
+#include "color.h"
 int main()
 {
     openfile("lextest.txt");
@@ -19,12 +20,19 @@ int main()
     prodn* p1 = p.rules;
     int n = p.no_productions;
 
+    //############ print Rules #############
+
+    /*
+    red();
     printf("\n\nRules that are Read\n");
+    reset();
     for(int i=0;i<n;i++)
     {
 	for(int j=0;j<p1[i].size;j++)
 	    printf("%s ",symbol_map[p1[i].rule[j]]);
 	printf("\n");
     }
-    makeFirstAndFollow(p);
+    */
+    makeFirstAndFollow(p, PROGRAM);
+    makeParsingTable(p);
 }

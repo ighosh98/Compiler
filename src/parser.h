@@ -12,5 +12,7 @@ void getFirstSet(productions grammar);
 
 void getFollowSet(productions grammar,type start_symbol);
 
-void makeFirstAndFollow(productions grammar);
+void makeFirstAndFollow(productions grammar, type start_symbol);
+
+void makeParsingTable(productions grammar);
 #endif

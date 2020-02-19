@@ -10,11 +10,19 @@
 #define RULES_BUFF 200
 
 hashtable strToEnum;
-
 set* nonterminal_FirstSet;
 set* First_Set;
-
 set* nonterminal_FollowSet;
+prodn parsing_table[$][ENUM_END-$+1];
+
+void printProduction(prodn p)
+{
+    
+    printf("{%s ----> ",symbol_map[p.rule[0]]);
+    for(int j=1;j<p.size;j++)
+	printf("%s ",symbol_map[p.rule[j]]);
+    printf("}\n");
+}
 
 
 bool isterminal(type t)
@@ -34,10 +42,10 @@ void make_str_to_enum()
         insertTable(strToEnum,symbol_map[i],i);
 }
 
-void makeFirstAndFollow(productions grammar)
+void makeFirstAndFollow(productions grammar, type start_symbol)
 {
     getFirstSet(grammar);
-    getFollowSet(grammar, PROGRAM);
+    getFollowSet(grammar, start_symbol);
 }
 
 void getFirstSet(productions grammar)
@@ -93,6 +101,10 @@ void getFirstSet(productions grammar)
 	    }
 	}
     }
+
+    //############### print First Sets ######################
+
+    /*
     printf("\n\nFirst Sets of Non-Terminals\n");
     for(int i=ENUM_START+1;i<$;i++)
 	printSet(nonterminal_FirstSet[i]);
@@ -100,7 +112,7 @@ void getFirstSet(productions grammar)
     printf("\n\nFirst Sets of Grammar Rules.\n");
     for(int i =0;i<grammar.no_productions;i++)
 	printSet(First_Set[i]);
-
+    */
 }
 
 
@@ -123,7 +135,7 @@ void getFollowSet(productions grammar,type start_symbol)
 		{
 		    if(isNonterminal(temp.rule[j]))
 			insertSet(nonterminal_FollowSet[temp.rule[j]],temp.rule[j+1]);
-		}
+		} //first set of a terminal is terminal itself
 		else if(isNonterminal(temp.rule[j+1]))
 		{
 		    if(isNonterminal(temp.rule[j]))
@@ -167,10 +179,12 @@ void getFollowSet(productions grammar,type start_symbol)
 	}
     }
 
+    //####################### print Follow Set ############################
+    /*
     printf("\n\nFollow Sets of Non-Terminals\n");
     for(int i=ENUM_START+1;i<$;i++)
 	printSet(nonterminal_FollowSet[i]);
-    
+    */
 }
 
 productions read_grammar()
@@ -221,4 +235,76 @@ productions read_grammar()
     grammar.no_productions = rule_count;
   
     return grammar;
+}
+
+
+void makeParsingTable(productions grammar)
+{
+    //initialize all the elements to error entries
+    for(int i=0;i<$;i++)
+	for(int j=0;j<(ENUM_END-$+1);j++)
+	{
+	    parsing_table[i][j].rule = NULL;
+	    parsing_table[i][j].size=0;
+	    parsing_table[i][j].non_terminal = -1;
+	}
+
+    for(int i=0;i<grammar.no_productions;i++)
+    {
+	bool rule_2_flag = false;
+        prodn rule = grammar.rules[i];  //one production rule at a time
+	
+	hashtable h = First_Set[i].set;  //First Set of ith grammar rule
+	
+	//for each nonterminal in first set of production
+	for(int i=0;i<h.size;i++)
+	{
+	    hashnode* terminal = h.ar[i];
+	    while(terminal)
+	    {
+		if(terminal->val==EPS)
+		    rule_2_flag = true;
+		else
+		{
+		    //assign production to parsing table entry corresponding to (Non_Terminal, terminal in first set of rule)
+		    parsing_table[rule.non_terminal][terminal->val-$].rule = rule.rule; //convert nonterminal to 0 base indexing
+		    parsing_table[rule.non_terminal][terminal->val-$].size = rule.size;
+		    parsing_table[rule.non_terminal][terminal->val-$].non_terminal = rule.non_terminal;
+		}			
+		terminal = terminal->next; 
+	    }
+	}
+	if(rule_2_flag)
+	{
+	    hashtable h = nonterminal_FollowSet[rule.non_terminal].set;
+	    //for each nonterminal in first set of production
+	    for(int i=0;i<h.size;i++)
+	    {
+		hashnode* terminal = h.ar[i];
+		while(terminal)
+		{
+		    //assign production to parsing table entry corresponding to (Non_Terminal, terminal in follow set of Non_Terminal)
+		    parsing_table[rule.non_terminal][terminal->val-$].rule = rule.rule; //convert nonterminal to 0 base indexing
+		    parsing_table[rule.non_terminal][terminal->val-$].size = rule.size;
+		    parsing_table[rule.non_terminal][terminal->val-$].non_terminal = rule.non_terminal;			
+		    terminal = terminal->next; 
+		}
+	    }
+	}
+    }
+
+    //################ print parsing table #######################
+    /*   
+    for(int i=0;i<$;i++)
+    {	
+	for(int j=0;j<(ENUM_END-$+1);j++)
+	{
+	    if(parsing_table[i][j].rule)
+	    {
+		printf("%s,%s| ",symbol_map[i],symbol_map[j+$]);
+		printProduction(parsing_table[i][j]);
+	    }
+	}
+    }
+    */
 }
