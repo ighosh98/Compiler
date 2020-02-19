@@ -8,7 +8,7 @@ int main()
     openfile("lextest.txt");
     token* a;
     while(a = getNextToken())
-	printf("%10s: %20s: %10d\n",symbol_map[a->tag],a->str,a->line_no);
+	printf("Line %d: %10s: %20s\n",a->line_no,symbol_map[a->tag],a->str);
 
     make_str_to_enum();
     productions p = read_grammar();

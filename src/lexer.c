@@ -5,6 +5,7 @@
 #include<string.h>
 #include<stdbool.h>
 #include<ctype.h>
+#include "color.h"
 #define BUFFER_LEN 4096   //4k buffer length for reading source file
 #define LEX_BUFFER 100    //100 char lexeme buffer. 
 #define EOB -1    //sentinel to mark end of buffer
@@ -31,6 +32,44 @@ char* symbol_map[] = {"ENUM_START","PROGRAM", "MODULEDECLARATIONS","OTHERMODULES
     "WHILE","PLUS","MINUS","MUL","DIV","LT","LE","GE","GT","EQ","NE","DEF","ENDDEF","DRIVERDEF","DRIVERENDDEF",
     "COLON","RANGEOP","SEMICOL","COMMA","ASSIGNOP","SQBO","SQBC","BO","BC","COMMENTMARK","ID","NUM","RNUM",
     "EPS","FALSE1","TRUE1","ENUM_END"};                                                                          //Terminals
+
+
+void print_ID_length_error(token* temp)
+{
+    blue();
+    printf("Line: %d. ",temp->line_no);
+    reset();
+    printf("Identifier ");
+    red();
+    printf("\"%s\"", temp->str);
+    reset();
+    printf(" too long. \n");
+    yellow();
+    printf("(Max allowed length is 20 characters.)\n");
+    reset();
+}
+void print_invalid_No_error(token* temp)
+{
+    blue();
+    printf("Line: %d. ",temp->line_no);
+    reset();
+    printf("Number ");
+    red();
+    printf("\"%s\"", temp->str);
+    reset();
+    printf(" is not a valid number. \n");
+}
+void print_invalid_OP_error(token* temp)
+{
+    blue();
+    printf("Line: %d. ",temp->line_no);
+    reset();
+    printf("Operation ");
+    red();
+    printf("\"%s\"", temp->str);
+    reset();
+    printf(" is not a valid operation. \n");
+}
 
 
 void removeComments(char* testfile, char* cleanfile)
@@ -143,8 +182,10 @@ token* number()
 						}
 						else
 						{
+							red();
 							printf("Wrong call. The function should not be called without a num\n");
-							return NULL;
+							reset();
+							return makeToken("",-1,line);
 						}
 						break;
 				case 1: if(isdigit(peek))
@@ -186,7 +227,8 @@ token* number()
 						}
 						else
 						{
-							return NULL;
+							ans[len]=0;
+							return makeToken(ans,-1,line);
 						}
 						break;
 				case 3: if(isdigit(peek))
@@ -225,7 +267,8 @@ token* number()
 						}
 						else
 						{
-							return NULL;
+							ans[len]=0;
+							return makeToken(ans,-1,line);
 						}
 						break;
 				case 5: if(isdigit(peek))
@@ -236,7 +279,9 @@ token* number()
 						}
 						else
 						{
-							return NULL;
+						    ans[len]=0;
+						    return makeToken(ans,-1,line);
+
 						}
 						break;
 				case 6: if(isdigit(peek))
@@ -255,7 +300,7 @@ token* number()
 						break;
 				default: 
 						printf("unknown state reached");
-						return NULL;
+						return makeToken("",-1,line);
 						break;
 			}
 		}
@@ -481,7 +526,9 @@ token* operation()
 				}
 				else
 				{
-					return NULL;
+					ans[len]=0;
+					return makeToken(ans,-1,line);
+
 				}
 				break;
 			case 5:
@@ -497,7 +544,8 @@ token* operation()
 				}
 				else
 				{
-					return NULL;
+					ans[len]=0;
+					return makeToken(ans,-1,line);
 				}
 				break;
 			case 6:
@@ -533,7 +581,8 @@ token* operation()
 				}
 				else
 				{
-					return NULL;
+					ans[len]=0;
+					return makeToken(ans,-1,line);
 				}
 				break;
 			case 8:
@@ -664,7 +713,7 @@ token* getNextToken()
 				token* temp = id();
 				if(strlen(temp->str)>20) //raise error
 				{
-				printf("Token Length error: Line %d\n",line);
+				    print_ID_length_error(temp);
 				}
 				else
 					return temp;
@@ -675,11 +724,11 @@ token* getNextToken()
 	    case '0': case '1': case '2': case '3': case '4':    // tokenize a INT or REAL.
 	    case '5': case '6': case '7': case '8': case '9':
 		    {	token* temp = number();
-			if(temp)
+			if(temp->tag != -1)
 			    return temp;
 			else
 			{
-			    printf("Invalid Number Error: Line %d\n", line);
+			    print_invalid_No_error(temp);
 			    lexemeBegin = forward;
 			}
 			break;
@@ -692,25 +741,35 @@ token* getNextToken()
 	    case ')': 
 		    {
 			token* temp = operation();
-			if(temp)
+			if(temp->tag!=-1)
 			{
 			    if(temp->tag == COMMENTMARK)
 			    {
+				yellow();
 				printf("Ignoring Comment\n");
+				reset();
 			    }
 			    else
 				return temp;
 			}
 			else
 			{
-			    printf("Invalid Operation Error: Line %d\n",line);
+			    print_invalid_OP_error(temp);
 			    lexemeBegin = forward;
 			}
 		    break;}
 
 	    default:
 		{
-		    printf("Invalid Symbol Error: Line %d\n", line);
+		    blue();
+		    printf("Line: %d. ", line);
+		    reset();
+		    printf("The symbol ");
+		    red();
+		    printf("\"%c\"",peek);
+		    reset();
+		    printf(" is not recognized in this context.\n");
+
 		    lexemeBegin++;
 		    forward++;
 		    break;
