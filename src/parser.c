@@ -7,7 +7,7 @@
 #include "lexDef.h"
 #include <stdbool.h>
 #include "set.h"
-#define RULES_BUFF 100
+#define RULES_BUFF 200
 
 hashtable strToEnum;
 
