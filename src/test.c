@@ -39,4 +39,5 @@ int main()
     setUnion(s1,s);
     printSet(s1);
     getFirstSet(p);
+    getFollowSet(p,PROGRAM);
 }

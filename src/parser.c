@@ -11,9 +11,10 @@
 
 hashtable strToEnum;
 
-set* nonterminal_FS;
+set* nonterminal_FirstSet;
 set* First_Set;
 
+set* nonterminal_FollowSet;
 bool isterminal(type t)
 {
     return ((t>=$) && (t<ENUM_END));
@@ -33,9 +34,9 @@ void make_str_to_enum()
 
 void getFirstSet(productions grammar)
 {
-    nonterminal_FS = (set *)malloc(sizeof(set)*($));
+    nonterminal_FirstSet = (set *)malloc(sizeof(set)*($));
     for(int i=0;i<$;i++)
-	nonterminal_FS[i] = getSet();
+	nonterminal_FirstSet[i] = getSet();
     
     First_Set = (set *)malloc(sizeof(set)*(grammar.no_productions));
     for(int i =0;i<grammar.no_productions;i++)
@@ -47,7 +48,7 @@ void getFirstSet(productions grammar)
 	updated = false;
 	for(int i=0;i<grammar.no_productions;i++)
 	{
-	    prodn temp = grammar.rules[i];  //1 production rule
+	    prodn temp = grammar.rules[i];  //one production rule at a time
 	    for(int j=1;j<temp.size;j++) //start j from 1.
 	    {
 		if(isterminal(temp.rule[j]))
@@ -57,9 +58,9 @@ void getFirstSet(productions grammar)
 			    insertSet(First_Set[i],temp.rule[j]);			
 			    updated = true;
 			}
-			if(!isSetMember(nonterminal_FS[temp.non_terminal],temp.rule[j]))
+			if(!isSetMember(nonterminal_FirstSet[temp.non_terminal],temp.rule[j]))
 			{
-			    insertSet(nonterminal_FS[temp.non_terminal],temp.rule[j]);
+			    insertSet(nonterminal_FirstSet[temp.non_terminal],temp.rule[j]);
 			    updated = true;
 			}
 			break;	
@@ -67,13 +68,13 @@ void getFirstSet(productions grammar)
 		else if(isNonterminal(temp.rule[j]))
 		{
 
-		    if(setUnion(First_Set[i],nonterminal_FS[temp.rule[j]]))
+		    if(setUnion(First_Set[i],nonterminal_FirstSet[temp.rule[j]]))
 			updated = true;
 		    
-		    if(setUnion(nonterminal_FS[temp.non_terminal],nonterminal_FS[temp.rule[j]]))
+		    if(setUnion(nonterminal_FirstSet[temp.non_terminal],nonterminal_FirstSet[temp.rule[j]]))
 			updated = true;
 		    
-		    if(!isSetMember(nonterminal_FS[j],EPS))
+		    if(!isSetMember(nonterminal_FirstSet[j],EPS))
 			break;
 		}
 		else
@@ -86,13 +87,82 @@ void getFirstSet(productions grammar)
     }
     printf("\n\n");
     for(int i=ENUM_START+1;i<$;i++)
-	printSet(nonterminal_FS[i]);
+	printSet(nonterminal_FirstSet[i]);
     
     printf("\n\n");
     for(int i =0;i<grammar.no_productions;i++)
 	printSet(First_Set[i]);
 
+}
 
+
+void getFollowSet(productions grammar,type start_symbol)
+{
+    nonterminal_FollowSet = (set *)malloc(sizeof(set)*($));
+    for(int i=0;i<$;i++)
+	nonterminal_FollowSet[i] = getSet();
+
+    //rule1
+    insertSet(nonterminal_FollowSet[start_symbol],$);
+    
+    //rule2
+    for(int i=0;i<grammar.no_productions;i++)
+    {
+	    prodn temp = grammar.rules[i];  
+	    for(int j=temp.size-2;j>=1;j--) //start from 2nd last symbol 
+	    {
+		if(isterminal(temp.rule[j+1]))
+		{
+		    if(isNonterminal(temp.rule[j]))
+			insertSet(nonterminal_FollowSet[temp.rule[j]],temp.rule[j+1]);
+		}
+		else if(isNonterminal(temp.rule[j+1]))
+		{
+		    if(isNonterminal(temp.rule[j]))
+			setUnionEPS(nonterminal_FollowSet[temp.rule[j]],nonterminal_FirstSet[temp.rule[j+1]]);
+		}
+		else
+		{
+		    printf("INCORRECT SYMBOL\n");
+		    return;
+		}
+	    }
+    }
+
+    bool updated = true;
+    while(updated)
+    {
+	updated = false;
+	for(int i=0;i<grammar.no_productions;i++)
+	{
+	    prodn temp = grammar.rules[i];  //one production rule at a time
+	    for(int j=temp.size-1;j>=1;j--) 
+	    {
+		if(isterminal(temp.rule[j]))
+		{
+		    break;
+		}
+		else if(isNonterminal(temp.rule[j]))
+		{
+
+		    if(setUnionEPS(nonterminal_FollowSet[temp.rule[j]],nonterminal_FollowSet[temp.rule[0]]))
+			updated = true;
+		    if(!isSetMember(nonterminal_FirstSet[j],EPS))
+			break;
+		}
+		else
+		{
+		    printf("INCORRECT SYMBOL\n");
+		    return;
+		}
+	    }
+	}
+    }
+
+    printf("\n\n");
+    for(int i=ENUM_START+1;i<$;i++)
+	printSet(nonterminal_FollowSet[i]);
+    
 }
 
 productions read_grammar()

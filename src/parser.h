@@ -8,5 +8,7 @@ void make_str_to_enum();
 
 productions read_grammar();
 
-void getFirstSet(productions p);
+void getFirstSet(productions grammar);
+
+void getFollowSet(productions grammar,type start_symbol);
 #endif

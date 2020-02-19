@@ -15,6 +15,8 @@ bool isSetMember(set s, type t);
 
 bool setUnion(set dest_set, set source_set);
 
+bool setUnionEPS(set dest_set, set source_set);
+
 set getSet();
 
 void printSet(set s);
