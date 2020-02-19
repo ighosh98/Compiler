@@ -4,8 +4,18 @@
 #include "parserDef.h"
 #include <string.h>
 #include<stdlib.h>
+#include "lexDef.h"
 #define RULES_BUFF 100
+
 hashtable strToEnum;
+
+set* nonterminal_FS;
+set* First_Set;
+
+void getFirstSet(productions grammar)
+{
+    nonterminal_FS = (
+}
 
 void make_str_to_enum()
 {

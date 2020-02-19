@@ -3,6 +3,7 @@
 #include "lexer.h"
 #include "stack.h"
 #include "parser.h"
+#include "set.h"
 int main()
 {
     openfile("lextest.txt");
@@ -23,5 +24,19 @@ int main()
 	    printf("%s ",symbol_map[p1[i].rule[j]]);
 	printf("\n");
     }
+    printf("\n");
+    set s = getSet();
+    set s1 = getSet();
+    insertSet(s,0);
+    insertSet(s,1);
+    insertSet(s1,2);
+    insertSet(s1,3);
+
+    printSet(s);
+    printSet(s1);
+    setUnion(s,s1);
+    printSet(s);
+    setUnion(s1,s);
+    printSet(s1);
 
 }
