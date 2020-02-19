@@ -674,7 +674,7 @@ token* getNextToken()
     while(1)
     {
 	if(!fptr)
-	    return NULL;
+	    return makeToken("",$,line);
 	//start state for the dfa
 	char peek;
 	if(!forflag)

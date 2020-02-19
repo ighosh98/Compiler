@@ -28,7 +28,8 @@ bool setUnionEPS(set dest_set, set source_set)
 	    if(!isSetMember(dest_set,temp->val))
 	    {
 		if(temp->val!=EPS)
-		{   insertSet(dest_set, temp->val);
+		{   
+		    insertSet(dest_set, temp->val);
 		    flag = true;
 		}
 	    }

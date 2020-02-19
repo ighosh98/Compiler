@@ -19,7 +19,7 @@ typedef enum {ENUM_START,PROGRAM, MODULEDECLARATIONS,OTHERMODULES,DRIVERMODULE,
     USE,WITH,PARAMETERS,TAKES,INPUT,RETURNS,AND,OR,FOR,IN,SWITCH,CASE,BREAK,
     WHILE,PLUS,MINUS,MUL,DIV,LT,LE,GE,GT,EQ,NE,DEF,ENDDEF,DRIVERDEF,DRIVERENDDEF,
     COLON,RANGEOP,SEMICOL,COMMA,ASSIGNOP,SQBO,SQBC,BO,BC,COMMENTMARK,ID,NUM,RNUM,DEFAULT,
-    EPS,FALSE1,TRUE1, ENUM_END} type;                                                                          //Terminals
+    FALSE1,TRUE1,EPS, ENUM_END} type;                                                                          //Terminals
 
 
 typedef struct token{

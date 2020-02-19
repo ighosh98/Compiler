@@ -93,11 +93,11 @@ void getFirstSet(productions grammar)
 	    }
 	}
     }
-    printf("\n\n");
+    printf("\n\nFirst Sets of Non-Terminals\n");
     for(int i=ENUM_START+1;i<$;i++)
 	printSet(nonterminal_FirstSet[i]);
     
-    printf("\n\n");
+    printf("\n\nFirst Sets of Grammar Rules.\n");
     for(int i =0;i<grammar.no_productions;i++)
 	printSet(First_Set[i]);
 
@@ -112,11 +112,11 @@ void getFollowSet(productions grammar,type start_symbol)
 
     //rule1
     insertSet(nonterminal_FollowSet[start_symbol],$);
-    
+
     //rule2
     for(int i=0;i<grammar.no_productions;i++)
     {
-	    prodn temp = grammar.rules[i];  
+	    prodn temp = grammar.rules[i];
 	    for(int j=temp.size-2;j>=1;j--) //start from 2nd last symbol 
 	    {
 		if(isterminal(temp.rule[j+1]))
@@ -135,8 +135,8 @@ void getFollowSet(productions grammar,type start_symbol)
 		    return;
 		}
 	    }
-    }
-
+   }
+ 
     bool updated = true;
     while(updated)
     {
@@ -167,7 +167,7 @@ void getFollowSet(productions grammar,type start_symbol)
 	}
     }
 
-    printf("\n\n");
+    printf("\n\nFollow Sets of Non-Terminals\n");
     for(int i=ENUM_START+1;i<$;i++)
 	printSet(nonterminal_FollowSet[i]);
     
@@ -186,7 +186,6 @@ productions read_grammar()
     //read line by line rules
     while(fgets(buff, 1000, fptr))
     {
-	printf("%s\n",buff);
 	int count = 0;
 	type* rule =(type*)malloc(RULES_BUFF*sizeof(type));
 	char* tok;  
