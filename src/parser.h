@@ -7,4 +7,6 @@
 void make_str_to_enum();
 
 productions read_grammar();
+
+void getFirstSet(productions p);
 #endif

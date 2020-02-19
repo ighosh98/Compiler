@@ -11,23 +11,29 @@ void insertSet(set s, type a)
 
 bool isSetMember(set s, type a)
 {
-    if(searchTable(s.set,symbol_map[a]))
+    if(searchTable(s.set,symbol_map[a])!=NULL)
 	return true;
     else
 	return false;
 }
-void setUnion(set dest_set, set source_set)
+bool setUnion(set dest_set, set source_set)
 {
     hashtable h = source_set.set;
+    bool flag = false;
     for(int i=0;i<h.size;i++)
     {
 	hashnode* temp = h.ar[i];
 	while(temp)
 	{
-	    insertSet(dest_set, temp->val);
+	    if(!isSetMember(dest_set,temp->val))
+	    {
+		insertSet(dest_set, temp->val);
+		flag = true;
+	    }
 	    temp=temp->next; 
 	}
     }
+    return flag;
 }
 
 set getSet()

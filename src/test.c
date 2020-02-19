@@ -38,5 +38,5 @@ int main()
     printSet(s);
     setUnion(s1,s);
     printSet(s1);
-
+    getFirstSet(p);
 }

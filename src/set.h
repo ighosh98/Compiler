@@ -13,7 +13,7 @@ void insertSet(set s, type t);
 
 bool isSetMember(set s, type t);
 
-void setUnion(set dest_set, set source_set);
+bool setUnion(set dest_set, set source_set);
 
 set getSet();
 

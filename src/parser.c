@@ -5,6 +5,8 @@
 #include <string.h>
 #include<stdlib.h>
 #include "lexDef.h"
+#include <stdbool.h>
+#include "set.h"
 #define RULES_BUFF 100
 
 hashtable strToEnum;
@@ -12,9 +14,14 @@ hashtable strToEnum;
 set* nonterminal_FS;
 set* First_Set;
 
-void getFirstSet(productions grammar)
+bool isterminal(type t)
 {
-    nonterminal_FS = (
+    return ((t>=$) && (t<ENUM_END));
+}
+
+bool isNonterminal(type t)
+{
+    return ((t>ENUM_START)&&(t<$));
 }
 
 void make_str_to_enum()
@@ -22,6 +29,70 @@ void make_str_to_enum()
     strToEnum = getHashTable(100);
     for(int i=ENUM_START+1;i<ENUM_END;i++)
         insertTable(strToEnum,symbol_map[i],i);
+}
+
+void getFirstSet(productions grammar)
+{
+    nonterminal_FS = (set *)malloc(sizeof(set)*($));
+    for(int i=0;i<$;i++)
+	nonterminal_FS[i] = getSet();
+    
+    First_Set = (set *)malloc(sizeof(set)*(grammar.no_productions));
+    for(int i =0;i<grammar.no_productions;i++)
+	First_Set[i] = getSet();
+
+    bool updated = true;
+    while(updated)
+    {
+	updated = false;
+	for(int i=0;i<grammar.no_productions;i++)
+	{
+	    prodn temp = grammar.rules[i];  //1 production rule
+	    for(int j=1;j<temp.size;j++) //start j from 1.
+	    {
+		if(isterminal(temp.rule[j]))
+		{
+			if(!isSetMember(First_Set[i],temp.rule[j]))
+			{
+			    insertSet(First_Set[i],temp.rule[j]);			
+			    updated = true;
+			}
+			if(!isSetMember(nonterminal_FS[temp.non_terminal],temp.rule[j]))
+			{
+			    insertSet(nonterminal_FS[temp.non_terminal],temp.rule[j]);
+			    updated = true;
+			}
+			break;	
+		}
+		else if(isNonterminal(temp.rule[j]))
+		{
+
+		    if(setUnion(First_Set[i],nonterminal_FS[temp.rule[j]]))
+			updated = true;
+		    
+		    if(setUnion(nonterminal_FS[temp.non_terminal],nonterminal_FS[temp.rule[j]]))
+			updated = true;
+		    
+		    if(!isSetMember(nonterminal_FS[j],EPS))
+			break;
+		}
+		else
+		{
+		    printf("INCORRECT SYMBOL\n");
+		    return;
+		}
+	    }
+	}
+    }
+    printf("\n\n");
+    for(int i=ENUM_START+1;i<$;i++)
+	printSet(nonterminal_FS[i]);
+    
+    printf("\n\n");
+    for(int i =0;i<grammar.no_productions;i++)
+	printSet(First_Set[i]);
+
+
 }
 
 productions read_grammar()
