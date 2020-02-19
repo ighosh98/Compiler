@@ -4,7 +4,7 @@
 #include "parserDef.h"
 #include <string.h>
 #include<stdlib.h>
-#define NO_OF_RULES 100
+#define RULES_BUFF 100
 hashtable strToEnum;
 
 void make_str_to_enum()
@@ -22,13 +22,13 @@ productions read_grammar()
 
     //allocate space to store grammar rules
     productions grammar;
-    grammar.rules = (prodn *)malloc(sizeof(prodn)*NO_OF_RULES);
+    grammar.rules = (prodn *)malloc(sizeof(prodn)*RULES_BUFF);
     
     //read line by line rules
     while(fgets(buff, 1000, fptr))
     {
 	int count = 0;
-	type* rule =(type*)malloc(100*sizeof(type));
+	type* rule =(type*)malloc(RULES_BUFF*sizeof(type));
 	char* tok;  
 	tok = strtok(buff,"\n");
 	tok = strtok(buff, " "); 

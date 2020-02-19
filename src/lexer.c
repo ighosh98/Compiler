@@ -5,10 +5,11 @@
 #include<string.h>
 #include<stdbool.h>
 #include<ctype.h>
-#define BUF 4096
+#define BUFFER_LEN 4096   //4k buffer length for reading source file
+#define LEX_BUFFER 100    //100 char lexeme buffer. 
 #define EOB -1    //sentinel to mark end of buffer
-char buffer0[BUF+1];
-char buffer1[BUF+1];
+char buffer0[BUFFER_LEN+1];
+char buffer1[BUFFER_LEN+1];
 int lexemeBegin, forward;
 bool lexflag=0, forflag=0;
 FILE* fptr;
@@ -50,18 +51,18 @@ token *makeToken(char* str,type tag, int line)
 
 FILE* getStream(FILE* fptr)
 {
-    if(forward==BUF) //end of buffer
+    if(forward==BUFFER_LEN) //end of buffer
     {
 	if(forflag == 0)
 	{
-	    int count = fread(buffer1,1,BUF,fptr);
+	    int count = fread(buffer1,1,BUFFER_LEN,fptr);
 	    buffer1[count]=EOB ;
 	    forflag = 1;
 	    forward = 0;
 	}
 	else
 	{
-	    int count = fread(buffer0,1,BUF,fptr);
+	    int count = fread(buffer0,1,BUFFER_LEN,fptr);
 	    buffer0[count]=EOB ;
 	    forflag = 0;
 	    forward = 0;
@@ -78,7 +79,7 @@ FILE* getStream(FILE* fptr)
 token* id()
 {
  //   printf("inside id\n");
-    char ans[100];
+    char ans[LEX_BUFFER+1];
     int len= 0;
     char peek;
     hashnode* k;
@@ -114,7 +115,7 @@ token* id()
 token* number()
 {
     //printf("inside number\n");
-    char ans[100];
+    char ans[LEX_BUFFER+1];
     char peek;
 	int len = 0;
 	int state = 0;
@@ -264,8 +265,7 @@ token* number()
 
 token* operation()
 {
-    //printf("inside operation\n");
-    char ans[3];
+    char ans[LEX_BUFFER+1];
     char peek;
 	int state = 0;
 	int len = 0;
@@ -617,7 +617,7 @@ token* getNextToken()
     {
 		check = 0;
 		init_lextable();
-		int count = fread(buffer0, 1, BUF,fptr);
+		int count = fread(buffer0, 1, BUFFER_LEN,fptr);
 		line = 1;
 		buffer0[count]=EOB ; //sentinel value to mark the end of buffer
 		lexemeBegin = 0;
