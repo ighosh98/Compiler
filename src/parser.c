@@ -186,6 +186,7 @@ productions read_grammar()
     //read line by line rules
     while(fgets(buff, 1000, fptr))
     {
+	printf("%s\n",buff);
 	int count = 0;
 	type* rule =(type*)malloc(RULES_BUFF*sizeof(type));
 	char* tok;  

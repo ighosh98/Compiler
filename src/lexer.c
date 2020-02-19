@@ -17,21 +17,20 @@ FILE* fptr;
 int line;
 int check = 1;
 hashtable lextable;                    
-
-
 char* symbol_map[] = {"ENUM_START","PROGRAM", "MODULEDECLARATIONS","OTHERMODULES","DRIVERMODULE",
     "MODULEDECLARATION","MODULEDEF","MODULE","INPUT_PLIST","N1","RET","OUTPUT_PLIST",
-    "N2","DATATYPE","TYPE","RANGE","STATEMENTS","STATEMENT","IOSTMT","SIMPLESTMT","DECLARSTMT",
+    "N2","DATATYPE","TYPE","RANGE","STATEMENTS","STATEMENT","IOSTMT","SIMPLESTMT","DECLARESTMT",
     "CONDITIONALSTMT","ITERATIVESTMT","VAR","WHICHID","ASSIGNMENTSTMT","MODULEREUSESTMT",
     "WHICHSTMT","LVALUEIDSTMT","LVALUEARRSTMT","EXPRESSION","INDEX","OPTIONAL","IDLIST","N3",
     "ARITHMETICEXPR","OP1","TERM","OP2","FACTOR","N4","ARITHMETICORBOOLEANEXPR","ANYTERM",
-    "LOGICALOP","RELATIONALOP","CASESTMTS","DEFAULT","N7","N8","N9","VALUE",                            //Non-Terminals
+    "LOGICALOP","RELATIONALOP","CASESTMTS","DEFAULT1","N7","N8","N9","VALUE",  
+    "RANGE_ARRAYS","N5","BOOLCONSTT","VAR_ID_NUM","U","NEW_NT","UNARY_OP",                          //Non-Terminals
     "$",       //sentinel
     "INTEGER","REAL","BOOLEAN","OF","ARRAY","START","END","DECLARE","DRIVER","GET_VALUE","PRINT",
     "USE","WITH","PARAMETERS","TAKES","INPUT","RETURNS","AND","OR","FOR","IN","SWITCH","CASE","BREAK",
     "WHILE","PLUS","MINUS","MUL","DIV","LT","LE","GE","GT","EQ","NE","DEF","ENDDEF","DRIVERDEF","DRIVERENDDEF",
-    "COLON","RANGEOP","SEMICOL","COMMA","ASSIGNOP","SQBO","SQBC","BO","BC","COMMENTMARK","ID","NUM","RNUM",
-    "EPS","FALSE1","TRUE1","ENUM_END"};                                                                          //Terminals
+    "COLON","RANGEOP","SEMICOL","COMMA","ASSIGNOP","SQBO","SQBC","BO","BC","COMMENTMARK","ID","NUM","RNUM","DEFAULT",
+    "FALSE1","TRUE1","EPS","ENUM_END"};                                                                          //Terminals
 
 
 void print_ID_length_error(token* temp)
