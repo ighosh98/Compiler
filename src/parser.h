@@ -11,4 +11,6 @@ productions read_grammar();
 void getFirstSet(productions grammar);
 
 void getFollowSet(productions grammar,type start_symbol);
+
+void makeFirstAndFollow(productions grammar);
 #endif

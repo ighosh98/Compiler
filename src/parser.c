@@ -15,6 +15,8 @@ set* nonterminal_FirstSet;
 set* First_Set;
 
 set* nonterminal_FollowSet;
+
+
 bool isterminal(type t)
 {
     return ((t>=$) && (t<ENUM_END));
@@ -30,6 +32,12 @@ void make_str_to_enum()
     strToEnum = getHashTable(100);
     for(int i=ENUM_START+1;i<ENUM_END;i++)
         insertTable(strToEnum,symbol_map[i],i);
+}
+
+void makeFirstAndFollow(productions grammar)
+{
+    getFirstSet(grammar);
+    getFollowSet(grammar, PROGRAM);
 }
 
 void getFirstSet(productions grammar)
