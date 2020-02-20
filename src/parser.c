@@ -64,6 +64,8 @@ void getFirstSet(productions grammar)
     while(updated)
     {
 	updated = false;
+
+	//for every production in the grammar
 	for(int i=0;i<grammar.no_productions;i++)
 	{
 	    prodn temp = grammar.rules[i];  //one production rule at a time
@@ -86,26 +88,30 @@ void getFirstSet(productions grammar)
 		else if(isNonterminal(temp.rule[j]))
 		{
 
-		    if(setUnion(First_Set[i],nonterminal_FirstSet[temp.rule[j]]))
+		    if(setUnionEPS(First_Set[i],nonterminal_FirstSet[temp.rule[j]]))
 			updated = true;
 		    
-		    if(setUnion(nonterminal_FirstSet[temp.non_terminal],nonterminal_FirstSet[temp.rule[j]]))
+		    if(setUnionEPS(nonterminal_FirstSet[temp.non_terminal],nonterminal_FirstSet[temp.rule[j]]))
 			updated = true;
 		    
-		    if(!isSetMember(nonterminal_FirstSet[j],EPS))
-			break;
+		    if(!isSetMember(nonterminal_FirstSet[temp.rule[j]],EPS))
+		    {
+			    break;
+		    }
 		}
 		else
 		{
 		    printf("INCORRECT SYMBOL\n");
 		    return;
 		}
+
 	    }
+
 	}
     }
 
     //############### print First Sets ######################
-/*
+
     red();
     printf("\n\n##################### First Sets of Non-Terminals ########################\n");
     reset();
@@ -116,7 +122,7 @@ void getFirstSet(productions grammar)
     reset();
     for(int i =0;i<grammar.no_productions;i++)
 	printSet(First_Set[i]);
-*/  
+  
 }
 
 
@@ -273,6 +279,16 @@ void makeParsingTable(productions grammar)
 	    {
 		if(terminal->val!=EPS)
 		{
+		    
+		    if(parsing_table[rule.non_terminal][terminal->val-$].rule != NULL)
+		    {
+			yellow();
+			printf("1) overwriting rule in parsing table\n"); 
+			reset();
+			printf("%s, %s\n",symbol_map[rule.non_terminal],symbol_map[terminal->val]);
+			printProduction(parsing_table[rule.non_terminal][terminal->val-$] );
+			printProduction(rule);
+		    }
 		    //assign production to parsing table entry corresponding to (Non_Terminal, terminal in first set of rule)
 		    parsing_table[rule.non_terminal][terminal->val-$].rule = rule.rule; //convert nonterminal to 0 base indexing
 		    parsing_table[rule.non_terminal][terminal->val-$].size = rule.size;
@@ -292,11 +308,23 @@ void makeParsingTable(productions grammar)
 		hashnode* terminal = h.ar[j];
 		while(terminal)
 		{
-		    if(!(i==44 && terminal->val==ID)){
+		    if(parsing_table[rule.non_terminal][terminal->val-$].rule != NULL)
+		    {
+			yellow();
+			printf("2) overwriting rule in parsing table\n");
+			reset();
+			printf("%s, %s\n",symbol_map[rule.non_terminal],symbol_map[terminal->val]);
+			printProduction(parsing_table[rule.non_terminal][terminal->val-$]);
+			printProduction(rule);	
+		    }
+
+		    //if(!(i==44 && terminal->val==ID))
+		    { 
 		    //assign production to parsing table entry corresponding to (Non_Terminal, terminal in follow set of Non_Terminal)
 		    parsing_table[rule.non_terminal][terminal->val-$].rule = rule.rule; //convert nonterminal to 0 base indexing
 		    parsing_table[rule.non_terminal][terminal->val-$].size = rule.size;
-		    parsing_table[rule.non_terminal][terminal->val-$].non_terminal = rule.non_terminal;	}		
+		    parsing_table[rule.non_terminal][terminal->val-$].non_terminal = rule.non_terminal;
+		    }		    
 		    terminal = terminal->next; 
 		}
 	    }

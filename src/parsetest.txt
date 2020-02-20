@@ -11,4 +11,3 @@ start
     end
     sum:=s;
 end
-
