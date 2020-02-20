@@ -625,7 +625,7 @@ void init_lextable()
 {
 	lextable = getHashTable(100);
 
-	insertTable(lextable,"integeer",INTEGER);
+	insertTable(lextable,"integer",INTEGER);
 	insertTable(lextable,"real",REAL);
 	insertTable(lextable,"boolean",BOOLEAN);
 	insertTable(lextable,"of",OF);
