@@ -116,7 +116,7 @@ void getFirstSet(productions grammar)
     reset();
     for(int i =0;i<grammar.no_productions;i++)
 	printSet(First_Set[i]);
-*/	
+*/  
 }
 
 
@@ -292,10 +292,11 @@ void makeParsingTable(productions grammar)
 		hashnode* terminal = h.ar[j];
 		while(terminal)
 		{
+		    if(!(i==44 && terminal->val==ID)){
 		    //assign production to parsing table entry corresponding to (Non_Terminal, terminal in follow set of Non_Terminal)
 		    parsing_table[rule.non_terminal][terminal->val-$].rule = rule.rule; //convert nonterminal to 0 base indexing
 		    parsing_table[rule.non_terminal][terminal->val-$].size = rule.size;
-		    parsing_table[rule.non_terminal][terminal->val-$].non_terminal = rule.non_terminal;			
+		    parsing_table[rule.non_terminal][terminal->val-$].non_terminal = rule.non_terminal;	}		
 		    terminal = terminal->next; 
 		}
 	    }
@@ -303,7 +304,7 @@ void makeParsingTable(productions grammar)
     }
 
     //################ print parsing table #######################
- 
+/* 
     red();
     printf("\n\n################### Print Parsing Table #####################\n");
     reset();
@@ -318,7 +319,7 @@ void makeParsingTable(productions grammar)
 	    }
 	}
     }
-
+*/
 }
 
 
@@ -326,13 +327,7 @@ void makeParsingTable(productions grammar)
 
 Nary_tree parse_input(type start_symbol, char* sourcefile)
 {
-    printSet(nonterminal_FollowSet[MODULEREUSESTMT]);
-    printSet(First_Set[43]);
 
-    printf("###############\n");
-    printProduction(parsing_table[SIMPLESTMT][ID-$]);
-    printProduction(parsing_table[SIMPLESTMT][SQBO-$]);
-    printProduction(parsing_table[SIMPLESTMT][USE-$]);
     stack s = getStack();
     stack_push(s,make_treenode($));
     //push the start symbol and save the root node for future
