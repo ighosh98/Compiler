@@ -26,7 +26,7 @@ char* symbol_map[] = {"ENUM_START","PROGRAM", "MODULEDECLARATIONS","OTHERMODULES
     "LOGICALOP","RELATIONALOP","CASESTMTS","DEFAULT1","N7","N8","N9","VALUE",  
     "RANGE_ARRAYS","N5","BOOLCONSTT","VAR_ID_NUM","U","NEW_NT","UNARY_OP",                          //Non-Terminals
     "$",       //sentinel
-    "INTEGER","REAL","BOOLEAN","OF","ARRAY","START","END","DECLARE","DRIVER","GET_VALUE","PRINT",
+    "INTEGER","REAL","BOOLEAN","OF","ARRAY","START","END","DECLARE","DRIVER","UNION","TAGGED","RECORD","GET_VALUE","PRINT",
     "USE","WITH","PARAMETERS","TAKES","INPUT","RETURNS","AND","OR","FOR","IN","SWITCH","CASE","BREAK",
     "WHILE","PLUS","MINUS","MUL","DIV","LT","LE","GE","GT","EQ","NE","DEF","ENDDEF","DRIVERDEF","DRIVERENDDEF",
     "COLON","RANGEOP","SEMICOL","COMMA","ASSIGNOP","SQBO","SQBC","BO","BC","COMMENTMARK","ID","NUM","RNUM","DEFAULT",
@@ -625,13 +625,20 @@ void init_lextable()
 {
 	lextable = getHashTable(100);
 
-	insertTable(lextable,"declare",DECLARE);
-	insertTable(lextable, "driver",DRIVER);
-	insertTable(lextable, "program",PROGRAM);
-	insertTable(lextable, "for",FOR);
+	insertTable(lextable,"integeer",INTEGER);
+	insertTable(lextable,"real",REAL);
+	insertTable(lextable,"boolean",BOOLEAN);
+	insertTable(lextable,"of",OF);
+	insertTable(lextable,"array",ARRAY);
 	insertTable(lextable, "start",START);
 	insertTable( lextable,"end",END);
-	insertTable(lextable, "module",MODULE);
+	insertTable( lextable,"declare",DECLARE);
+	insertTable( lextable,"module",MODULE);
+	insertTable(lextable, "driver",DRIVER);
+	insertTable(lextable, "program",PROGRAM);
+	insertTable( lextable,"record",RECORD);
+	insertTable( lextable,"tagged",TAGGED);
+	insertTable( lextable,"union",UNION);
 	insertTable(lextable, "get_value",GET_VALUE);
 	insertTable(lextable, "print",PRINT);
 	insertTable(lextable, "use",USE);
@@ -644,6 +651,8 @@ void init_lextable()
 	insertTable(lextable, "returns",RETURNS);
 	insertTable(lextable, "AND",AND);
 	insertTable(lextable, "OR",OR);
+	insertTable(lextable, "for",FOR);
+	insertTable(lextable, "in",IN);
 	insertTable(lextable, "switch",SWITCH);
 	insertTable(lextable, "case",CASE);
 	insertTable(lextable, "break",BREAK);
@@ -657,7 +666,13 @@ token* getNextToken()
     //initialization code
     if(!fptr)
     {
-	printf("Error: Source File Not Open\nCheck if File Exists\nCheck if openfile function is called.\n");
+	red();
+	printf("Error:");
+	reset();
+	printf(" Source File Not Open\n");
+	yellow();
+	printf("Check if File Exists\nCheck if openfile function is called.\n");
+	reset();
 	exit(1);
     	return NULL;
     }	
@@ -688,7 +703,7 @@ token* getNextToken()
 		    fptr = getStream(fptr);
 		    break;
 
-	    case ' ': case '\t':  //ignore spaces
+	    case ' ': case '\t': case'\v':  //ignore spaces
 		    forward++;
 		    break;
 
@@ -744,9 +759,9 @@ token* getNextToken()
 			{
 			    if(temp->tag == COMMENTMARK)
 			    {
-				yellow();
-				printf("Ignoring Comment\n");
-				reset();
+				//yellow();
+				//printf("Ignoring Comment\n");
+				//reset();
 			    }
 			    else
 				return temp;

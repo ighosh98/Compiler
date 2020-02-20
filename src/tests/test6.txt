@@ -17,6 +17,6 @@ declare num, k:integer;
 declare A:array [4..10] of integer;
 for( k in 6..10)
 start
-A[k]:=(num – k)*(num-k);
+A[k]:=(num - k)*(num-k);
 print(A[k]);
 end

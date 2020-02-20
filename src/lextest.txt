@@ -1,3 +1,36 @@
+integer
+real
+boolean
+of
+array
+start
+end
+declare
+module
+driver
+program
+record
+taggged
+union
+get_value
+print
+use
+with
+parameters
+true
+false
+takes
+input
+returns
+AND
+OR
+for
+in
+switch
+case
+break
+default
+while
 @
 123.abc
 abcd
@@ -51,6 +84,4 @@ dlkfj**
 ><
 
 TRUE
-declare, driver, program, for, start, end, module, get_value, print, use,
-with, parameters, true, false, takes, input, returns, AND, OR, switch, case, break, default, while
 ><===!=20.0e+123.0..32ab23..30++++/
