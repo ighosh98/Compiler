@@ -19,7 +19,7 @@ int check = 1;
 hashtable lextable;                    
 char* symbol_map[] = {
 "ENUM_START",
-"PROGRAM1", 
+"PROGRAM", 
 "MODULEDECLARATIONS",
 "OTHERMODULES",
 "DRIVERMODULE",
@@ -77,7 +77,7 @@ char* symbol_map[] = {
 "NEW_NT",
 "UNARY_OP",                          //Non-Terminals
 "$",       //sentinel
-"PROGRAM",
+"PROGRAMT",
 "INTEGER",
 "REAL",
 "BOOLEAN",

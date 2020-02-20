@@ -6,7 +6,7 @@
 extern char* symbol_map[];
 
 typedef enum {ENUM_START,
-PROGRAM1, 
+PROGRAM, 
 MODULEDECLARATIONS,
 OTHERMODULES,
 DRIVERMODULE,
@@ -65,7 +65,7 @@ NEW_NT,
 UNARY_OP,                          //Non-Terminals
 
 $,            //Sentinel
-PROGRAM,
+PROGRAMT,
 INTEGER,
 REAL,
 BOOLEAN,
