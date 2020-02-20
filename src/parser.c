@@ -7,6 +7,8 @@
 #include "lexDef.h"
 #include <stdbool.h>
 #include "set.h"
+#include "color.h"
+#include "stack.h"
 #define RULES_BUFF 200
 
 hashtable strToEnum;
@@ -103,16 +105,18 @@ void getFirstSet(productions grammar)
     }
 
     //############### print First Sets ######################
-
-    /*
-    printf("\n\nFirst Sets of Non-Terminals\n");
+/*
+    red();
+    printf("\n\n##################### First Sets of Non-Terminals ########################\n");
+    reset();
     for(int i=ENUM_START+1;i<$;i++)
 	printSet(nonterminal_FirstSet[i]);
-    
-    printf("\n\nFirst Sets of Grammar Rules.\n");
+    red();
+    printf("\n\n##################### First Sets of Grammar Rules. #######################\n");
+    reset();
     for(int i =0;i<grammar.no_productions;i++)
 	printSet(First_Set[i]);
-    */
+*/	
 }
 
 
@@ -180,11 +184,13 @@ void getFollowSet(productions grammar,type start_symbol)
     }
 
     //####################### print Follow Set ############################
-    /*
-    printf("\n\nFollow Sets of Non-Terminals\n");
+/*
+    red();
+    printf("\n\n####################### Follow Sets of Non-Terminals ########################\n");
+    reset();
     for(int i=ENUM_START+1;i<$;i++)
 	printSet(nonterminal_FollowSet[i]);
-    */
+*/    
 }
 
 productions read_grammar()
@@ -294,7 +300,10 @@ void makeParsingTable(productions grammar)
     }
 
     //################ print parsing table #######################
-    /*   
+/*  
+    red();
+    printf("\n\n################### Print Parsing Table #####################\n");
+    reset();
     for(int i=0;i<$;i++)
     {	
 	for(int j=0;j<(ENUM_END-$+1);j++)
@@ -306,5 +315,80 @@ void makeParsingTable(productions grammar)
 	    }
 	}
     }
-    */
+*/
+}
+
+
+
+
+Nary_tree parse_input(type start_symbol, char* sourcefile)
+{
+    stack s = getStack();
+    stack_push(s,make_treenode($));
+    //push the start symbol and save the root node for future
+    treenode* root = make_treenode(start_symbol);
+    stack_push(s,root);
+
+    //open the source file for lexer
+    openfile(sourcefile);
+
+    token* a = getNextToken();
+    treenode* X = stack_top(s);
+    while(X->tok != -1) //stack is not empty
+    {
+	if(X->tok == a->tag)
+	{
+	    if(a->tag == $ && X->tok== $)
+		break;
+	    stack_pop(s);
+	    a = getNextToken();
+	}
+	else if(isterminal(X->tok))
+	{
+	    if(X->tok == EPS)
+		stack_pop(s);
+	    else
+	    {
+		printf("Error Processing: X = %s, a = %s\n",symbol_map[X->tok],symbol_map[a->tag]);
+		red();
+		printf("Non Matching Terminals\n");
+		reset();
+		Nary_tree temp;
+		temp.root = NULL;
+		return temp;
+	    }
+	}
+	else if(parsing_table[X->tok][a->tag-$].rule == NULL)
+	{
+	    printf("Error Processing: X = %s, a = %s\n",symbol_map[X->tok],symbol_map[a->tag]);
+	    red();
+	    printf("No rule in paring table\n");
+	    reset();
+	    Nary_tree temp;
+	    temp.root = NULL;
+	    return temp;
+	    //no rule found in parsing table. raise error
+	}
+	else
+	{
+	    prodn p = parsing_table[X->tok][a->tag-$];
+	    printf("Rule applied: ");
+	    printProduction(p);
+	    //make children from the right side of the rule
+	    insert_children(X,(p.rule)+1,p.size-1);
+	    stack_pop(s);
+	   //push the rule in the stack in reverse order
+	   
+	    for(int i=X->n-1;i>=0;i--)
+	   {
+	        stack_push(s,X->children[i]);
+	   } 
+	}
+	X = stack_top(s);
+    }
+
+    //make Tree from the root node and return
+    Nary_tree syntax_tree;
+    syntax_tree.root = root;
+    return syntax_tree;
 }

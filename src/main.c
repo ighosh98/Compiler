@@ -12,6 +12,7 @@ int main(int argc,char **argv)
 	printf("No file given\n");
 	return(1);
     }
+  /*
     openfile(argv[1]);
     token* a;
     while(a = getNextToken())
@@ -19,6 +20,7 @@ int main(int argc,char **argv)
 	//printf("Line %d: %10s: %20s\n",a->line_no,symbol_map[a->tag],a->str);
 	if(a->tag == $)break;
     }
+*/    
     make_str_to_enum();
     productions p = read_grammar();
 
@@ -26,10 +28,9 @@ int main(int argc,char **argv)
     int n = p.no_productions;
 
     //############ print Rules #############
-
-    /*
+/*
     red();
-    printf("\n\nRules that are Read\n");
+    printf("################# Productions Rules Encoded ####################\n");
     reset();
     for(int i=0;i<n;i++)
     {
@@ -37,8 +38,12 @@ int main(int argc,char **argv)
 	    printf("%s ",symbol_map[p1[i].rule[j]]);
 	printf("\n");
     }
-    */
+    
+*/
     makeFirstAndFollow(p, PROGRAM);
     makeParsingTable(p);
-    printf("complete\n");
+    Nary_tree t = parse_input(PROGRAM, argv[1]);
+    dfs(t);
+    
+    return 0;
 }

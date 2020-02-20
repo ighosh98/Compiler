@@ -4,19 +4,20 @@
 #include"lexDef.h"
 void dfs_helper(treenode* root)
 {
+    if(root==NULL)return;
     if(root->children==NULL)
-	printf("%d\n",root->tok);
+	printf("%s\n",symbol_map[root->tok]);
     else
     {
 	for(int i=0;i<root->n;i++)
 	    dfs_helper(root->children[i]);
-	printf("%d\n",root->tok);
+	printf("%s\n",symbol_map[root->tok]);
     }
 }
 
-void dfs(Nary_tree* root)
+void dfs(Nary_tree root)
 {
-    dfs_helper(root->root);
+    dfs_helper(root.root);
 }
 
 Nary_tree* get_nary_tree(int start)
@@ -36,7 +37,7 @@ treenode* make_treenode(int a)
     return temp;
 }
 
-void insert_children(treenode* node, int children[], int n)
+void insert_children(treenode* node, type* children, int n)
 {
     treenode** temp = (treenode**)malloc(sizeof(treenode*)*n);    
     for(int i=0;i<n;i++)

@@ -4,6 +4,9 @@
 #include"lexer.h"
 #include"hashtable.h"
 #include "parserDef.h"
+#include "nary_tree.h"
+Nary_tree parse_input(type start_symbol, char* sourcefile);
+
 void make_str_to_enum();
 
 productions read_grammar();

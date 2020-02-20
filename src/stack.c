@@ -1,7 +1,6 @@
 #include<stdio.h>
 #include"stack.h"
 #include<stdlib.h>
-
 stack getStack()
 {
     stack s;
@@ -10,7 +9,7 @@ stack getStack()
     return s;
 }
 
-void stack_push(stack s,int a)
+void stack_push(stack s , treenode* a)
 {
     stacknode* temp = (stacknode*)malloc(sizeof(stacknode));
     stacknode* head = *(s.head);
@@ -42,11 +41,11 @@ void stack_pop(stack s)
     *(s.head)= head;
 }
 
-int stack_top(stack s)
+treenode* stack_top(stack s)
 {
     stacknode* head = *(s.head);
     if(head==NULL)
-	return UNDERFLOW;    //stack error condition
+	return make_treenode(UNDERFLOW);    //stack error condition
     else
 	return head->val;
 }

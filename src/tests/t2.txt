@@ -1,5 +1,5 @@
 ** This is a small code for verifying syntactic correctness of an empty driver and an empty module **
-<<<driver program>>>
+<<driver program>>
 start
 	
 end
