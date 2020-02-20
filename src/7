@@ -48,6 +48,10 @@ void makeFirstAndFollow(productions grammar, type start_symbol)
 {
     getFirstSet(grammar);
     getFollowSet(grammar, start_symbol);
+    printSet(First_Set[43]);
+    printProduction(grammar.rules[43]);
+    printSet(First_Set[44]);
+    printProduction(grammar.rules[44]);
 }
 
 void getFirstSet(productions grammar)
@@ -248,11 +252,11 @@ void makeParsingTable(productions grammar)
 {
     //initialize all the elements to error entries
     for(int i=0;i<$;i++)
-	for(type j=$;j<= ENUM_END;j++)
+	for(int j=0;j<(ENUM_END-$+1);j++)
 	{
-	    parsing_table[i][j-$].rule = NULL;
-	    parsing_table[i][j-$].size=0;
-	    parsing_table[i][j-$].non_terminal = -1;
+	    parsing_table[i][j].rule = NULL;
+	    parsing_table[i][j].size=0;
+	    parsing_table[i][j].non_terminal = -1;
 	}
 
     for(int i=0;i<grammar.no_productions;i++)
@@ -261,17 +265,16 @@ void makeParsingTable(productions grammar)
         prodn rule = grammar.rules[i];  //one production rule at a time
 	
 	hashtable h = First_Set[i].set;  //First Set of ith grammar rule
-
-	if(isSetMember(First_Set[i],EPS))
-	    rule_2_flag = true;;
-
+	
 	//for each nonterminal in first set of production
-	for(int j=0;j<h.size;j++)
+	for(int i=0;i<h.size;i++)
 	{
-	    hashnode* terminal = h.ar[j];
+	    hashnode* terminal = h.ar[i];
 	    while(terminal)
 	    {
-		if(terminal->val!=EPS)
+		if(terminal->val==EPS)
+		    rule_2_flag = true;
+		else
 		{
 		    //assign production to parsing table entry corresponding to (Non_Terminal, terminal in first set of rule)
 		    parsing_table[rule.non_terminal][terminal->val-$].rule = rule.rule; //convert nonterminal to 0 base indexing
@@ -281,15 +284,13 @@ void makeParsingTable(productions grammar)
 		terminal = terminal->next; 
 	    }
 	}
-
-	//add to follow sets
 	if(rule_2_flag)
 	{
 	    hashtable h = nonterminal_FollowSet[rule.non_terminal].set;
-	    //for each nonterminal in follow set of production
-	    for(int j=0;j<h.size;j++)
+	    //for each nonterminal in first set of production
+	    for(int i=0;i<h.size;i++)
 	    {
-		hashnode* terminal = h.ar[j];
+		hashnode* terminal = h.ar[i];
 		while(terminal)
 		{
 		    //assign production to parsing table entry corresponding to (Non_Terminal, terminal in follow set of Non_Terminal)
@@ -303,7 +304,7 @@ void makeParsingTable(productions grammar)
     }
 
     //################ print parsing table #######################
- 
+/*  
     red();
     printf("\n\n################### Print Parsing Table #####################\n");
     reset();
@@ -318,7 +319,7 @@ void makeParsingTable(productions grammar)
 	    }
 	}
     }
-
+*/
 }
 
 
@@ -326,13 +327,9 @@ void makeParsingTable(productions grammar)
 
 Nary_tree parse_input(type start_symbol, char* sourcefile)
 {
-    printSet(nonterminal_FollowSet[MODULEREUSESTMT]);
-    printSet(First_Set[43]);
 
     printf("###############\n");
-    printProduction(parsing_table[SIMPLESTMT][ID-$]);
-    printProduction(parsing_table[SIMPLESTMT][SQBO-$]);
-    printProduction(parsing_table[SIMPLESTMT][USE-$]);
+    printProduction(parsing_table[SIMPLESTMT][ID]);
     stack s = getStack();
     stack_push(s,make_treenode($));
     //push the start symbol and save the root node for future
