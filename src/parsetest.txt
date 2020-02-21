@@ -11,3 +11,24 @@ start
     end
     sum:=s;
 end
+
+<<< driver program >>>
+start
+    print(r);
+    switch(c)
+    start
+	case true: b:=100;
+		    break;
+	case false: b:=-100;
+		    break;
+	case 12: use module mod1 with parameters a,b;
+		    break;
+    end
+    for(k in 2..8)
+    start
+	a:=(num - k)*(1+2);
+    end
+
+    declare A:array[1..10] of real;
+    print(A[i]);
+end

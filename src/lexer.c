@@ -563,13 +563,9 @@ token* operation()
 			case 2:
 				if(peek=='<')
 				{
-					ans[len++]= peek;
+					ans[len++]=peek;
 					forward++;
-					ans[len] = 0;
-					lexemeBegin = forward;
-					k = searchTable(lextable,ans);
-					return k==NULL? makeToken(ans,DEF,line)
-					    :makeToken(ans,k->val,line);	
+					state = 10;
 				}
 				else if(peek == '=')
 				{
@@ -593,13 +589,9 @@ token* operation()
 			case 3:
 				if(peek=='>')
 				{
-					ans[len++]= peek;
-					forward++;
-					ans[len] = 0;
-					lexemeBegin = forward;
-					k = searchTable(lextable,ans);
-					return k==NULL? makeToken(ans,ENDDEF,line)
-					    :makeToken(ans,k->val,line);
+				    ans[len++]=peek;
+				    forward++;
+				    state = 11;
 				}
 				else if(peek == '=')
 				{
@@ -719,6 +711,47 @@ token* operation()
 					state = 8;
 				}
 				break;
+			case 10:
+				if(peek== '<')
+				{
+				    ans[len++]= peek;
+				    forward++;
+				    ans[len] = 0;
+				    lexemeBegin = forward;
+				    k = searchTable(lextable,ans);
+				    return k==NULL? makeToken(ans,DRIVERDEF,line)
+					    :makeToken(ans,k->val,line);	
+				}
+				else
+				{
+				    ans[len] = 0;
+				    lexemeBegin = forward;
+				    k = searchTable(lextable,ans);
+				    return k==NULL? makeToken(ans,DEF,line)
+					    :makeToken(ans,k->val,line);	
+				}
+				break;
+			case 11:
+				if(peek== '>')
+				{
+				    ans[len++]= peek;
+				    forward++;
+				    ans[len] = 0;
+				    lexemeBegin = forward;
+				    k = searchTable(lextable,ans);
+				    return k==NULL? makeToken(ans,DRIVERENDDEF,line)
+					    :makeToken(ans,k->val,line);	
+				}
+				else
+				{
+				    ans[len] = 0;
+				    lexemeBegin = forward;
+				    k = searchTable(lextable,ans);
+				    return k==NULL? makeToken(ans,ENDDEF,line)
+					    :makeToken(ans,k->val,line);	
+				}
+				break;
+
 		}
 	}
     }

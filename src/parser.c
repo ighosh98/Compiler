@@ -172,6 +172,10 @@ void getFollowSet(productions grammar,type start_symbol)
     insertSet(nonterminal_FollowSet[start_symbol],$);
 
     //rule2
+    bool updated = true;
+    while(updated)
+    {
+	updated = false;
     for(int i=0;i<grammar.no_productions;i++)
     {
 	    prodn temp = grammar.rules[i];
@@ -179,13 +183,29 @@ void getFollowSet(productions grammar,type start_symbol)
 	    {
 		if(isterminal(temp.rule[j+1]))
 		{
+		    //if terminal then just at that and you are done.
 		    if(isNonterminal(temp.rule[j]))
-			insertSet(nonterminal_FollowSet[temp.rule[j]],temp.rule[j+1]);
-		} //first set of a terminal is terminal itself
+		    {
+			if(!isSetMember(nonterminal_FollowSet[temp.rule[j]],temp.rule[j+1]))
+			{
+			    insertSet(nonterminal_FollowSet[temp.rule[j]],temp.rule[j+1]);
+			    updated = true;
+			}
+		    }
+		} 
 		else if(isNonterminal(temp.rule[j+1]))
 		{
 		    if(isNonterminal(temp.rule[j]))
-			setUnionEPS(nonterminal_FollowSet[temp.rule[j]],nonterminal_FirstSet[temp.rule[j+1]]);
+		    {
+			//if non terminal then add the first set of j+1 into the follow set of j.
+			if(setUnionEPS(nonterminal_FollowSet[temp.rule[j]],nonterminal_FirstSet[temp.rule[j+1]]))
+			    updated = true;
+			if(isSetMember(nonterminal_FirstSet[temp.rule[j+1]],EPS))
+			{
+			    if(setUnionEPS(nonterminal_FollowSet[temp.rule[j]],nonterminal_FollowSet[temp.rule[j+1]]))
+				updated = true;
+			}
+		    }
 		}
 		else
 		{
@@ -194,8 +214,8 @@ void getFollowSet(productions grammar,type start_symbol)
 		}
 	    }
    }
- 
-    bool updated = true;
+    }
+    updated = true;
     while(updated)
     {
 	updated = false;
