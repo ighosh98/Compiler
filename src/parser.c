@@ -456,7 +456,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 		stack_pop(s);
 	    else
 	    {
-		printf("Error Processing: X = %s, a = %s\n",symbol_map[X->tok],symbol_map[a->tag]);
+		printf("Line no: %d Error Processing: X = %s, a = %s\n",a->line_no,symbol_map[X->tok],symbol_map[a->tag]);
 		red();
 		printf("Non Matching Terminals\n");
 		reset();
@@ -467,7 +467,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 	}
 	else if(parsing_table[X->tok][a->tag-$].rule == NULL)
 	{
-	    printf("Error Processing: X = %s, a = %s\n",symbol_map[X->tok],symbol_map[a->tag]);
+	    printf("Line no: %d Error Processing: X = %s, a = %s\n",a->line_no,symbol_map[X->tok],symbol_map[a->tag]);
 	    red();
 	    printf("No rule in paring table\n");
 	    reset();
