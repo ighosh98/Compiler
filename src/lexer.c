@@ -618,6 +618,7 @@ token* operation()
 
 void openfile(char* sourcefile)
 {
+	check = 1;
 	fptr = fopen(sourcefile, "rb");
 }
 

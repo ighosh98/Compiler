@@ -9,6 +9,7 @@
 #include "set.h"
 #include "color.h"
 #include "stack.h"
+#define DEBUG 1
 #define RULES_BUFF 200
 
 hashtable strToEnum;
@@ -49,7 +50,25 @@ void makeFirstAndFollow(productions grammar, type start_symbol)
     getFirstSet(grammar);
     getFollowSet(grammar, start_symbol);
 }
+bool isEmptyProduction(prodn p)
+{
+	if(p.size == 2 && p.rule[1]==EPS)
+	    return true;
 
+	for(int i =1;i<p.size;i++)
+	{
+	    if(isterminal(p.rule[i]) && p.rule[i]!=EPS)
+	    {
+		return false;
+	    }
+	    else if(!isSetMember(nonterminal_FirstSet[p.rule[i]],EPS))
+	    {
+	        return false;
+	
+	    }
+	}	    
+	return true;
+}
 void getFirstSet(productions grammar)
 {
     nonterminal_FirstSet = (set *)malloc(sizeof(set)*($));
@@ -105,24 +124,41 @@ void getFirstSet(productions grammar)
 		    return;
 		}
 
-	    }
+	    }	
+	    
 
+	    if(isEmptyProduction(temp))
+	    {
+		insertSet(First_Set[i],EPS);
+		insertSet(nonterminal_FirstSet[temp.non_terminal],EPS);
+	    }
 	}
+
     }
 
     //############### print First Sets ######################
-
-    red();
-    printf("\n\n##################### First Sets of Non-Terminals ########################\n");
-    reset();
-    for(int i=ENUM_START+1;i<$;i++)
-	printSet(nonterminal_FirstSet[i]);
-    red();
-    printf("\n\n##################### First Sets of Grammar Rules. #######################\n");
-    reset();
-    for(int i =0;i<grammar.no_productions;i++)
-	printSet(First_Set[i]);
-  
+    if(DEBUG){
+	red();
+	printf("\n\n##################### First Sets of Non-Terminals ########################\n");
+	reset();
+	for(int i=ENUM_START+1;i<$;i++)
+	{
+	    blue();
+	    printf("%s ---> ",symbol_map[i]);
+	    reset();
+	    printSet(nonterminal_FirstSet[i]);
+	}
+	red();
+	printf("\n\n##################### First Sets of Grammar Rules. #######################\n");
+	reset();
+	for(int i =0;i<grammar.no_productions;i++)
+	{
+	    blue();
+	    printProduction(grammar.rules[i]);
+	    reset();
+	    printSet(First_Set[i]);
+	}
+    }
 }
 
 
@@ -190,13 +226,18 @@ void getFollowSet(productions grammar,type start_symbol)
     }
 
     //####################### print Follow Set ############################
-/*
-    red();
-    printf("\n\n####################### Follow Sets of Non-Terminals ########################\n");
-    reset();
-    for(int i=ENUM_START+1;i<$;i++)
-	printSet(nonterminal_FollowSet[i]);
-*/    
+    if(DEBUG){
+	red();
+	printf("\n\n####################### Follow Sets of Non-Terminals ########################\n");
+	reset();
+	for(int i=ENUM_START+1;i<$;i++)
+	{
+	    blue();
+	    printf("%s --> ",symbol_map[i]);
+	    reset();
+	    printSet(nonterminal_FollowSet[i]);
+	}
+    }
 }
 
 productions read_grammar()
@@ -283,7 +324,7 @@ void makeParsingTable(productions grammar)
 		    if(parsing_table[rule.non_terminal][terminal->val-$].rule != NULL)
 		    {
 			yellow();
-			printf("1) overwriting rule in parsing table\n"); 
+			printf("1) overwriting rule in parsing table(First Set)\n"); 
 			reset();
 			printf("%s, %s\n",symbol_map[rule.non_terminal],symbol_map[terminal->val]);
 			printProduction(parsing_table[rule.non_terminal][terminal->val-$] );
@@ -311,43 +352,43 @@ void makeParsingTable(productions grammar)
 		    if(parsing_table[rule.non_terminal][terminal->val-$].rule != NULL)
 		    {
 			yellow();
-			printf("2) overwriting rule in parsing table\n");
+			printf("2) overwriting rule in parsing tablei(Follow Set)\n");
 			reset();
 			printf("%s, %s\n",symbol_map[rule.non_terminal],symbol_map[terminal->val]);
 			printProduction(parsing_table[rule.non_terminal][terminal->val-$]);
 			printProduction(rule);	
 		    }
-
-		    //if(!(i==44 && terminal->val==ID))
-		    { 
+ 
 		    //assign production to parsing table entry corresponding to (Non_Terminal, terminal in follow set of Non_Terminal)
 		    parsing_table[rule.non_terminal][terminal->val-$].rule = rule.rule; //convert nonterminal to 0 base indexing
 		    parsing_table[rule.non_terminal][terminal->val-$].size = rule.size;
 		    parsing_table[rule.non_terminal][terminal->val-$].non_terminal = rule.non_terminal;
-		    }		    
+		    		    
 		    terminal = terminal->next; 
+	    
 		}
 	    }
 	}
     }
-
     //################ print parsing table #######################
-/* 
-    red();
-    printf("\n\n################### Print Parsing Table #####################\n");
-    reset();
-    for(int i=0;i<$;i++)
-    {	
-	for(int j=0;j<(ENUM_END-$+1);j++)
-	{
-	    if(parsing_table[i][j].rule)
+    if(DEBUG){ 
+	red();
+	printf("\n\n################### Print Parsing Table #####################\n");
+	reset();
+	for(int i=0;i<$;i++)
+	{	
+	    for(int j=0;j<(ENUM_END-$+1);j++)
 	    {
-		printf("%s,%s| ",symbol_map[i],symbol_map[j+$]);
-		printProduction(parsing_table[i][j]);
+		if(parsing_table[i][j].rule)
+		{
+		    blue();
+		    printf("[%s][%s] ---> ",symbol_map[i],symbol_map[j+$]);
+		    reset();
+		    printProduction(parsing_table[i][j]);
+		}
 	    }
 	}
     }
-*/
 }
 
 
@@ -355,6 +396,12 @@ void makeParsingTable(productions grammar)
 
 Nary_tree parse_input(type start_symbol, char* sourcefile)
 {
+    if(DEBUG)
+    {
+	red();
+	printf("\n\n\n##################### Parsing ######################\n");
+	reset();
+    }
 
     stack s = getStack();
     stack_push(s,make_treenode($));
@@ -369,7 +416,13 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
     treenode* X = stack_top(s);
     while(X->tok != -1) //stack is not empty
     {
-	printf("processing: %s,%s\n",symbol_map[X->tok],symbol_map[a->tag]);
+	if(DEBUG)
+	{
+	    blue();
+	    printf("processing: %s,%s\n",symbol_map[X->tok],symbol_map[a->tag]);
+	    reset();
+	}
+	
 	if(X->tok == a->tag)
 	{
 	    if(a->tag == $ && X->tok== $)
@@ -406,8 +459,12 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 	else
 	{
 	    prodn p = parsing_table[X->tok][a->tag-$];
-	    printf("Rule applied: ");
-	    printProduction(p);
+	    
+	    if(DEBUG){
+		printf("Rule applied: ");
+		printProduction(p);
+	    }
+
 	    //make children from the right side of the rule
 	    insert_children(X,(p.rule)+1,p.size-1);
 	    stack_pop(s);
