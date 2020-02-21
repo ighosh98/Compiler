@@ -744,7 +744,7 @@ void init_lextable()
 	insertTable( lextable,"declare",DECLARE);
 	insertTable( lextable,"module",MODULE);
 	insertTable(lextable, "driver",DRIVER);
-	insertTable(lextable, "program",PROGRAM);
+	insertTable(lextable, "program",PROGRAMT);
 	insertTable( lextable,"record",RECORD);
 	insertTable( lextable,"tagged",TAGGED);
 	insertTable( lextable,"union",UNION);
