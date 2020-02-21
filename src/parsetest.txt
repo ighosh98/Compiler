@@ -1,3 +1,5 @@
+**add declaration**
+
 <<module arraysum>>
 takes input[list:array[4..20] of real];
 returns [sum:real];
@@ -11,6 +13,8 @@ start
     end
     sum:=s;
 end
+
+**add another module**
 
 <<< driver program >>>
 start
@@ -32,3 +36,8 @@ start
     declare A:array[1..10] of real;
     print(A[i]);
 end
+
+
+**add 2 modules
+here**
+
