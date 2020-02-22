@@ -9,7 +9,7 @@
 #include "set.h"
 #include "color.h"
 #include "stack.h"
-#define DEBUG 1
+#define DEBUG 0
 #define RULES_BUFF 200
 
 hashtable strToEnum;
@@ -17,6 +17,50 @@ set* nonterminal_FirstSet;
 set* First_Set;
 set* nonterminal_FollowSet;
 prodn parsing_table[$][ENUM_END-$+1];
+
+void printTerminalError(treenode * X, token* a)
+{
+    blue();
+    printf("Line %d: ",a->line_no);
+    reset();
+    printf("Error Processing Terminal ");
+    red();
+    printf("%s ",symbol_map[X->tok]);
+    reset();
+    printf("and Terminal ");
+    red();
+    printf("%s. ",symbol_map[a->tag]);
+    reset();
+    printf("Check ");
+    red();
+    printf("\"%s\"\n",a->str);
+    yellow();
+    printf("Non-Matching Terminals\n");
+    reset();
+
+}
+void printNonTerminalError(treenode * X, token* a)
+{
+    blue();
+    printf("Line %d: ",a->line_no);
+    reset();
+    printf("Error Processing Non-Terminal ");
+    red();
+    printf("%s ",symbol_map[X->tok]);
+    reset();
+    printf("and Terminal ");
+    red();
+    printf("%s. ",symbol_map[a->tag]);
+    reset();
+    printf("Check ");
+    red();
+    printf("\"%s\"\n",a->str);
+    yellow();
+    printf("No Rule In Parsing Table\n");
+    reset();
+
+}
+
 
 void printProduction(prodn p)
 {
@@ -115,7 +159,7 @@ void getFirstSet(productions grammar)
 		    
 		    if(!isSetMember(nonterminal_FirstSet[temp.rule[j]],EPS))
 		    {
-			    break;
+		    break;
 		    }
 		}
 		else
@@ -352,7 +396,7 @@ void makeParsingTable(productions grammar)
 		    }
 		    //assign production to parsing table entry corresponding to (Non_Terminal, terminal in first set of rule)
 		    parsing_table[rule.non_terminal][terminal->val-$].rule = rule.rule; //convert nonterminal to 0 base indexing
-		    parsing_table[rule.non_terminal][terminal->val-$].size = rule.size;
+	    parsing_table[rule.non_terminal][terminal->val-$].size = rule.size;
 		    parsing_table[rule.non_terminal][terminal->val-$].non_terminal = rule.non_terminal;
 		}			
 		terminal = terminal->next; 
@@ -416,6 +460,8 @@ void makeParsingTable(productions grammar)
 
 Nary_tree parse_input(type start_symbol, char* sourcefile)
 {
+    bool error_flag = false;
+    bool recovery_flag = false;
     if(DEBUG)
     {
 	red();
@@ -436,6 +482,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
     treenode* X = stack_top(s);
     while(X->tok != -1) //stack is not empty
     {
+	recovery_flag = false;
 	if(DEBUG)
 	{
 	    blue();
@@ -452,29 +499,56 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 	}
 	else if(isterminal(X->tok))
 	{
-	    if(X->tok == EPS)
+	if(X->tok == EPS)
 		stack_pop(s);
 	    else
 	    {
-		printf("Line no: %d Error Processing: X = %s, a = %s\n",a->line_no,symbol_map[X->tok],symbol_map[a->tag]);
-		red();
-		printf("Non Matching Terminals\n");
-		reset();
-		Nary_tree temp;
-		temp.root = NULL;
-		return temp;
+		error_flag = true;
+		printTerminalError(X,a);
+		
+		
+		if(a->tag!=$)    
+		    a=getNextToken();
+		else if(X->tok != $)
+		    stack_pop(s);	
 	    }
 	}
 	else if(parsing_table[X->tok][a->tag-$].rule == NULL)
 	{
-	    printf("Line no: %d Error Processing: X = %s, a = %s\n",a->line_no,symbol_map[X->tok],symbol_map[a->tag]);
-	    red();
-	    printf("No rule in paring table\n");
-	    reset();
-	    Nary_tree temp;
-	    temp.root = NULL;
-	    return temp;
-	    //no rule found in parsing table. raise error
+	    error_flag = true;
+	    printNonTerminalError(X,a);
+	    
+	    while(1)
+	    {
+		if(a->tag!=$)
+		{
+		    a = getNextToken();
+		}
+		else
+		{
+		    while(X->tok!=$)
+		    {
+			stack_pop(s);
+			X = stack_top(s);
+		    }
+		    recovery_flag = true;
+		    break;
+		}
+		if(isSetMember(nonterminal_FirstSet[X->tok],a->tag))
+		{
+		    recovery_flag = true;
+		    break;
+		}
+		else if(isSetMember(nonterminal_FollowSet[X->tok],a->tag))
+		{
+		    recovery_flag = true;
+		    stack_pop(s);
+		    X = stack_top(s);
+		    break;
+		}
+		
+	    }
+
 	}
 	else
 	{
@@ -495,11 +569,18 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 	        stack_push(s,X->children[i]);
 	   } 
 	}
-	X = stack_top(s);
+	if(!recovery_flag)
+	    X = stack_top(s);
     }
 
     //make Tree from the root node and return
     Nary_tree syntax_tree;
-    syntax_tree.root = root;
-    return syntax_tree;
+    syntax_tree.root  = NULL;
+    if(error_flag)
+	return syntax_tree;
+    else
+    {
+	syntax_tree.root = root;
+	return syntax_tree;
+    }
 }

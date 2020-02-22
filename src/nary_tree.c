@@ -4,7 +4,11 @@
 #include"lexDef.h"
 void dfs_helper(treenode* root)
 {
-    if(root==NULL)return;
+    if(root==NULL)
+    {
+	printf("Empty Tree\n");
+	return;
+    }
     if(root->children==NULL)
 	printf("%s\n",symbol_map[root->tok]);
     else

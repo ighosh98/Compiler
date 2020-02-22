@@ -5,7 +5,7 @@
 #include "parser.h"
 #include "set.h"
 #include "color.h"
-#define DEBUG_MAIN 1
+#define DEBUG_MAIN 0
 int main(int argc,char **argv)
 {
     if(argc<2)

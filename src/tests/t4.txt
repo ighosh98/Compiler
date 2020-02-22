@@ -1,6 +1,7 @@
 ** This testcase demonstrates the syntactic correctness of the constructs such as modules, simple and declaration statements, and expressions**
 
 declare module compute;
+<<<driver program>>>
 start
 	declare var_1_, var_2_, var_3_:integer;
 	declare R1_abc: boolean;
