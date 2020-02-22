@@ -49,7 +49,7 @@ int main(int argc,char **argv)
     makeFirstAndFollow(p, PROGRAM);
     makeParsingTable(p);
     Nary_tree t = parse_input(PROGRAM, argv[1]);
-    dfs(t);
+    inorder(t);
     
     return 0;
 }

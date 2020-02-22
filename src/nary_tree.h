@@ -19,6 +19,6 @@ treenode* make_treenode(int a);
 
 void insert_children(treenode* node, type* children,int n);
 
-void dfs(Nary_tree root);
+void inorder(Nary_tree root,FILE* fptr);
 
 #endif

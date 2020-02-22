@@ -179,7 +179,7 @@ void print_invalid_OP_error(token* temp)
 }
 
 
-void removeComments(char* testfile, char* cleanfile)
+void removeComments(char* testfile)
 {
     return;
 }

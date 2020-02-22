@@ -9,7 +9,7 @@ void openfile(char * sourcefile);
 
 FILE* getStream(FILE*);
 
-void removeComments(char* testfile, char* cleanfile);
+void removeComments(char* testfile);
 
 int getLineNumber();
 #endif

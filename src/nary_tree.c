@@ -2,26 +2,28 @@
 #include "nary_tree.h"
 #include<stdlib.h>
 #include"lexDef.h"
-void dfs_helper(treenode* root)
+void inorder_helper(treenode* root, FILE* fptr)
 {
     if(root==NULL)
     {
-	printf("Empty Tree\n");
 	return;
     }
-    if(root->children==NULL)
-	printf("%s\n",symbol_map[root->tok]);
-    else
-    {
-	for(int i=0;i<root->n;i++)
-	    dfs_helper(root->children[i]);
-	printf("%s\n",symbol_map[root->tok]);
-    }
+
+//print first child    
+    if(root->children!=NULL)
+	inorder_helper(root->children[0],fptr);
+// print current node
+    fprintf(fptr,"%s\n",symbol_map[root->tok]);
+
+//print rest of the children
+    for(int i=1;i<root->n;i++)
+	inorder_helper(root->children[i],fptr);
+
 }
 
-void dfs(Nary_tree root)
+void inorder(Nary_tree root, FILE* fptr)
 {
-    dfs_helper(root.root);
+    inorder_helper(root.root,fptr);
 }
 
 Nary_tree* get_nary_tree(int start)
