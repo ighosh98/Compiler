@@ -7,7 +7,7 @@ G Adityan	 2016B1A70929P
 #include <stdio.h>
 #include "nary_tree.h"
 #include<stdlib.h>
-#include"lexDef.h"
+#include"lexerDef.h"
 #include "color.h"
 void inorder_helper(treenode* root, FILE* fptr, char* parentSymbol)
 {

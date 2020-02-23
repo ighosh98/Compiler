@@ -8,7 +8,7 @@ G Adityan	 2016B1A70929P
 #define SET_FILE
 #include<stdio.h>
 #include"hashtable.h"
-#include "lexDef.h"
+#include "lexerDef.h"
 #include <stdbool.h>
 typedef struct set
 {

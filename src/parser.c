@@ -10,7 +10,7 @@ G Adityan	 2016B1A70929P
 #include "parserDef.h"
 #include <string.h>
 #include<stdlib.h>
-#include "lexDef.h"
+#include "lexerDef.h"
 #include <stdbool.h>
 #include "set.h"
 #include "color.h"

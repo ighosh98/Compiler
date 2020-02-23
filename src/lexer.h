@@ -8,7 +8,7 @@ G Adityan	 2016B1A70929P
 #define LEXER_FILE
 #include<stdio.h>
 #include <stdbool.h>
-#include "lexDef.h"
+#include "lexerDef.h"
 token *getNextToken();
 
 void openfile(char * sourcefile);

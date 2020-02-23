@@ -7,7 +7,7 @@ G Adityan	 2016B1A70929P
 #include<stdio.h>
 #include "hashtable.h"
 #include "set.h"
-#include "lexDef.h"
+#include "lexerDef.h"
 #include<stdbool.h>
 #include "lexer.h"
 void insertSet(set s, type a)

@@ -7,7 +7,7 @@ G Adityan	 2016B1A70929P
 #ifndef PARSER_DEF
 #define PARSER_DEF
 #include <stdio.h>
-#include "lexDef.h"
+#include "lexerDef.h"
 
 typedef  struct prodn{
     type* rule;

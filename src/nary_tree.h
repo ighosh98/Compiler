@@ -7,7 +7,7 @@ G Adityan	 2016B1A70929P
 #ifndef NARY_TREE
 #define NARY_TREE
 #include <stdio.h>
-#include "lexDef.h"
+#include "lexerDef.h"
 typedef struct treenode{
     token* lexeme;
     int tok;
