@@ -1,3 +1,9 @@
+/*
+Group 20
+Ayush Vachaspati 2016B3A70398P
+Indraneel Ghosh  2016B1A70938P
+G Adityan	 2016B1A70929P
+*/
 #ifndef NARY_TREE
 #define NARY_TREE
 #include <stdio.h>
@@ -6,11 +12,11 @@ typedef struct treenode{
     token* lexeme;
     int tok;
     struct treenode** children;
-    int n; 
+    int n;
 } treenode;
 
 typedef struct Nary_tree{
-    treenode* root;  
+    treenode* root;
 } Nary_tree;
 
 

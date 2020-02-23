@@ -1,3 +1,9 @@
+/*
+Group 20
+Ayush Vachaspati 2016B3A70398P
+Indraneel Ghosh  2016B1A70938P
+G Adityan	 2016B1A70929P
+*/
 #include<stdio.h>
 #include<stdlib.h>
 #include<string.h>
@@ -53,20 +59,20 @@ hashtable getHashTable(unsigned int n)
     for(int i=0;i<n;i++)
 	temp.ar[i]=NULL;
     temp.size = n;
-    return temp;  
+    return temp;
 }
 
 hashnode* insertTable(hashtable table,char* str, int val)
 {
-    
+
     hashnode * temp = searchTable(table, str);
-    
+
     if(temp!=NULL)return temp;
-    
-    temp = makeHashnode(str,val);   
+
+    temp = makeHashnode(str,val);
 
      unsigned int index = hashf(str)%table.size;
-    
+
     hashnode* check = insertToChain(table.ar,temp,index);
     if(check!=NULL)
 	return temp;

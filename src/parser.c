@@ -1,3 +1,9 @@
+/*
+Group 20
+Ayush Vachaspati 2016B3A70398P
+Indraneel Ghosh  2016B1A70938P
+G Adityan	 2016B1A70929P
+*/
 #include "parser.h"
 #include<stdio.h>
 #include"hashtable.h"
@@ -64,7 +70,7 @@ void printNonTerminalError(treenode * X, token* a)
 
 void printProduction(prodn p)
 {
-    
+
     printf("{%s ----> ",symbol_map[p.rule[0]]);
     for(int j=1;j<p.size;j++)
 	printf("%s ",symbol_map[p.rule[j]]);
@@ -108,9 +114,9 @@ bool isEmptyProduction(prodn p)
 	    else if(!isSetMember(nonterminal_FirstSet[p.rule[i]],EPS))
 	    {
 	        return false;
-	
+
 	    }
-	}	    
+	}
 	return true;
 }
 void getFirstSet(productions grammar)
@@ -118,7 +124,7 @@ void getFirstSet(productions grammar)
     nonterminal_FirstSet = (set *)malloc(sizeof(set)*($));
     for(int i=0;i<$;i++)
 	nonterminal_FirstSet[i] = getSet();
-    
+
     First_Set = (set *)malloc(sizeof(set)*(grammar.no_productions));
     for(int i =0;i<grammar.no_productions;i++)
 	First_Set[i] = getSet();
@@ -138,7 +144,7 @@ void getFirstSet(productions grammar)
 		{
 			if(!isSetMember(First_Set[i],temp.rule[j]))
 			{
-			    insertSet(First_Set[i],temp.rule[j]);			
+			    insertSet(First_Set[i],temp.rule[j]);
 			    updated = true;
 			}
 			if(!isSetMember(nonterminal_FirstSet[temp.non_terminal],temp.rule[j]))
@@ -146,17 +152,17 @@ void getFirstSet(productions grammar)
 			    insertSet(nonterminal_FirstSet[temp.non_terminal],temp.rule[j]);
 			    updated = true;
 			}
-			break;	
+			break;
 		}
 		else if(isNonterminal(temp.rule[j]))
 		{
 
 		    if(setUnionEPS(First_Set[i],nonterminal_FirstSet[temp.rule[j]]))
 			updated = true;
-		    
+
 		    if(setUnionEPS(nonterminal_FirstSet[temp.non_terminal],nonterminal_FirstSet[temp.rule[j]]))
 			updated = true;
-		    
+
 		    if(!isSetMember(nonterminal_FirstSet[temp.rule[j]],EPS))
 		    {
 		    break;
@@ -168,8 +174,8 @@ void getFirstSet(productions grammar)
 		    return;
 		}
 
-	    }	
-	    
+	    }
+
 
 	    if(isEmptyProduction(temp))
 	    {
@@ -223,7 +229,7 @@ void getFollowSet(productions grammar,type start_symbol)
     for(int i=0;i<grammar.no_productions;i++)
     {
 	    prodn temp = grammar.rules[i];
-	    for(int j=temp.size-2;j>=1;j--) //start from 2nd last symbol 
+	    for(int j=temp.size-2;j>=1;j--) //start from 2nd last symbol
 	    {
 		if(isterminal(temp.rule[j+1]))
 		{
@@ -236,7 +242,7 @@ void getFollowSet(productions grammar,type start_symbol)
 			    updated = true;
 			}
 		    }
-		} 
+		}
 		else if(isNonterminal(temp.rule[j+1]))
 		{
 		    if(isNonterminal(temp.rule[j]))
@@ -266,7 +272,7 @@ void getFollowSet(productions grammar,type start_symbol)
 	for(int i=0;i<grammar.no_productions;i++)
 	{
 	    prodn temp = grammar.rules[i];  //one production rule at a time
-	    for(int j=temp.size-1;j>=1;j--) 
+	    for(int j=temp.size-1;j>=1;j--)
 	    {
 		if(isterminal(temp.rule[j]))
 		{
@@ -313,26 +319,26 @@ productions read_grammar()
     //allocate space to store grammar rules
     productions grammar;
     grammar.rules = (prodn *)malloc(sizeof(prodn)*RULES_BUFF);
-    
+
     //read line by line rules
     while(fgets(buff, 1000, fptr))
     {
 	int count = 0;
 	type* rule =(type*)malloc(RULES_BUFF*sizeof(type));
-	char* tok;  
+	char* tok;
 	tok = strtok(buff,"\n");
-	tok = strtok(buff, " "); 
+	tok = strtok(buff, " ");
 	//tokenize rules into Nonterminals and Terminals
 	//then conver to enum and store in prodn struct.
 	while (tok != 0) {
 	    rule[count] = searchTable(strToEnum,tok)->val;
-	    tok = strtok(0, " "); 
+	    tok = strtok(0, " ");
 	    count++;
-	    
+
 	}
 	//remove extra wasted space using realloc
 	rule =(type *) realloc(rule, sizeof(type)*count);
-	
+
 	//make production from given rule
 	prodn temp;
 	temp.rule = rule;
@@ -350,7 +356,7 @@ productions read_grammar()
     grammar.rules = (prodn*)realloc(grammar.rules,sizeof(prodn)*rule_count);
     //no of rules in grammar
     grammar.no_productions = rule_count;
-  
+
     return grammar;
 }
 
@@ -370,7 +376,7 @@ void makeParsingTable(productions grammar)
     {
 	bool rule_2_flag = false;
         prodn rule = grammar.rules[i];  //one production rule at a time
-	
+
 	hashtable h = First_Set[i].set;  //First Set of ith grammar rule
 
 	if(isSetMember(First_Set[i],EPS))
@@ -384,11 +390,11 @@ void makeParsingTable(productions grammar)
 	    {
 		if(terminal->val!=EPS)
 		{
-		    
+
 		    if(parsing_table[rule.non_terminal][terminal->val-$].rule != NULL)
 		    {
 			yellow();
-			printf("1) overwriting rule in parsing table(First Set)\n"); 
+			printf("1) overwriting rule in parsing table(First Set)\n");
 			reset();
 			printf("%s, %s\n",symbol_map[rule.non_terminal],symbol_map[terminal->val]);
 			printProduction(parsing_table[rule.non_terminal][terminal->val-$] );
@@ -398,8 +404,8 @@ void makeParsingTable(productions grammar)
 		    parsing_table[rule.non_terminal][terminal->val-$].rule = rule.rule; //convert nonterminal to 0 base indexing
 	    parsing_table[rule.non_terminal][terminal->val-$].size = rule.size;
 		    parsing_table[rule.non_terminal][terminal->val-$].non_terminal = rule.non_terminal;
-		}			
-		terminal = terminal->next; 
+		}
+		terminal = terminal->next;
 	    }
 	}
 
@@ -420,27 +426,27 @@ void makeParsingTable(productions grammar)
 			reset();
 			printf("%s, %s\n",symbol_map[rule.non_terminal],symbol_map[terminal->val]);
 			printProduction(parsing_table[rule.non_terminal][terminal->val-$]);
-			printProduction(rule);	
+			printProduction(rule);
 		    }
- 
+
 		    //assign production to parsing table entry corresponding to (Non_Terminal, terminal in follow set of Non_Terminal)
 		    parsing_table[rule.non_terminal][terminal->val-$].rule = rule.rule; //convert nonterminal to 0 base indexing
 		    parsing_table[rule.non_terminal][terminal->val-$].size = rule.size;
 		    parsing_table[rule.non_terminal][terminal->val-$].non_terminal = rule.non_terminal;
-		    		    
-		    terminal = terminal->next; 
-	    
+
+		    terminal = terminal->next;
+
 		}
 	    }
 	}
     }
     //################ print parsing table #######################
-    if(DEBUG){ 
+    if(DEBUG){
 	red();
 	printf("\n\n################### Print Parsing Table #####################\n");
 	reset();
 	for(int i=0;i<$;i++)
-	{	
+	{
 	    for(int j=0;j<(ENUM_END-$+1);j++)
 	    {
 		if(parsing_table[i][j].rule)
@@ -491,7 +497,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 	    printf("processing: %s,%s\n",symbol_map[X->tok],symbol_map[a->tag]);
 	    reset();
 	}
-	
+
 	if(X->tok == a->tag)
 	{
 	    X->lexeme = a;
@@ -512,10 +518,10 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 		    error_line = a->line_no;
 		    printTerminalError(X,a);
 		}
-		
+
 		while(1)
 		{
-		    if(a->tag!=$ && a->tag!= SEMICOL)    
+		    if(a->tag!=$ && a->tag!= SEMICOL)
 		    {
 			a=getNextToken();
 			if(a->tag == X->tok)
@@ -549,7 +555,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 			    while(a->tag!=$)
 				a = getNextToken();
 
-			
+
 			recovery_flag = 1;
 			break;
 		    }
@@ -565,7 +571,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 		    printNonTerminalError(X,a);
 		}
 
-	    
+
 	    while(1)
 	    {
 		if(a->tag!=$)
@@ -594,14 +600,14 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 		    X = stack_top(s);
 		    break;
 		}
-		
+
 	    }
 
 	}
 	else
 	{
 	    prodn p = parsing_table[X->tok][a->tag-$];
-	    
+
 	    if(DEBUG){
 		printf("Rule applied: ");
 		printProduction(p);
@@ -611,11 +617,11 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 	    insert_children(X,(p.rule)+1,p.size-1,NULL);  ////////////current token from lexer used
 	    stack_pop(s);
 	   //push the rule in the stack in reverse order
-	   
+
 	    for(int i=X->n-1;i>=0;i--)
 	   {
 	        stack_push(s,X->children[i]);
-	   } 
+	   }
 	}
 	if(!recovery_flag)
 	    X = stack_top(s);

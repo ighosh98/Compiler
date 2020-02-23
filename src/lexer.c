@@ -1,3 +1,9 @@
+/*
+Group 20
+Ayush Vachaspati 2016B3A70398P
+Indraneel Ghosh  2016B1A70938P
+G Adityan	 2016B1A70929P
+*/
 #include<stdio.h>
 #include "lexer.h"
 #include<stdlib.h>
@@ -7,7 +13,7 @@
 #include<ctype.h>
 #include "color.h"
 #define BUFFER_LEN 4096   //4k buffer length for reading source file
-#define LEX_BUFFER 100    //100 char lexeme buffer. 
+#define LEX_BUFFER 100    //100 char lexeme buffer.
 #define EOB -1    //sentinel to mark end of buffer
 char buffer0[BUFFER_LEN+1];
 char buffer1[BUFFER_LEN+1];
@@ -16,10 +22,10 @@ bool lexflag=0, forflag=0;
 FILE* fptr;
 int line;
 int check = 1;
-hashtable lextable;                    
+hashtable lextable;
 char* symbol_map[] = {
 "ENUM_START",
-"PROGRAM", 
+"PROGRAM",
 "MODULEDECLARATIONS",
 "OTHERMODULES",
 "DRIVERMODULE",
@@ -68,7 +74,7 @@ char* symbol_map[] = {
 "N7",
 "N8",
 "N9",
-"VALUE",  
+"VALUE",
 "RANGE_ARRAYS",
 "N5",
 "BOOLCONSTT",
@@ -199,7 +205,7 @@ FILE* getStream(FILE* fptr)
     {
 	fclose(fptr);
 	return NULL; //terminate lexical analysis
-    }	
+    }
 }
 
 void removeComments(char * sourcefile)
@@ -251,7 +257,7 @@ void removeComments(char * sourcefile)
 					 {
 						pointer++;
 						state=2;
-						
+
 					 }
 					 else
 					 {
@@ -263,7 +269,7 @@ void removeComments(char * sourcefile)
 					 break;
 				 case 2:
 					 if(peek=='*')
-					 { 
+					 {
 						pointer++;
 						state=3;
 					 }
@@ -274,7 +280,7 @@ void removeComments(char * sourcefile)
 						    printf("\n");
 					 	}
 					 	pointer++;
-					 	
+
 					 }
 					 break;
 				 case 3:
@@ -288,9 +294,9 @@ void removeComments(char * sourcefile)
 					 	pointer++;
 					 	state=2;
 				 	}
-				 	break;		
+				 	break;
 		    }
-		
+
 
     }
     fclose(fptr);
@@ -322,14 +328,14 @@ token* id()
 			peek = buffer0[forward];
 		else
 			peek = buffer1[forward];
-		
+
 		if(peek == EOB )
 			fptr = getStream(fptr);
 		else
 		{
 			if(isalpha(peek) || isdigit(peek) || peek == '_')
 			{
-			    ans[len++] = peek; 
+			    ans[len++] = peek;
 			    forward++;
 			}
 			else
@@ -364,13 +370,13 @@ token* number()
 			fptr = getStream(fptr);
 		else
 		{
-		
+
 			//make dfa for number literals
 			switch(state)
 			{
 				case 0: if(isdigit(peek))
 						{
-							ans[len++] = peek; 
+							ans[len++] = peek;
 							forward++;
 							state = 1;
 						}
@@ -384,7 +390,7 @@ token* number()
 						break;
 				case 1: if(isdigit(peek))
 						{
-							ans[len++] = peek; 
+							ans[len++] = peek;
 							forward++;
 							state = 1;
 						}
@@ -401,12 +407,12 @@ token* number()
 							k = searchTable(lextable,ans);
 							return k==NULL? makeToken(ans,NUM,line)
 							    :makeToken(ans,k->val,line);
-						    
+
 						}
 						break;
 				case 2: if(isdigit(peek))
 						{
-							ans[len++] = peek; 
+							ans[len++] = peek;
 							forward++;
 							state = 3;
 						}
@@ -417,7 +423,7 @@ token* number()
 							lexemeBegin = forward;
 							k = searchTable(lextable,ans);
 							return k==NULL? makeToken(ans,NUM,line)
-							    :makeToken(ans,k->val,line);							
+							    :makeToken(ans,k->val,line);
 						}
 						else
 						{
@@ -427,7 +433,7 @@ token* number()
 						break;
 				case 3: if(isdigit(peek))
 						{
-							ans[len++] = peek; 
+							ans[len++] = peek;
 							forward++;
 							state = 3;
 						}
@@ -443,13 +449,13 @@ token* number()
 							lexemeBegin = forward;
 							k = searchTable(lextable,ans);
 							return k==NULL? makeToken(ans,RNUM,line)
-							    :makeToken(ans,k->val,line);							
-							
+							    :makeToken(ans,k->val,line);
+
 						}
 						break;
 				case 4: if(peek=='+' || peek=='-')
 						{
-							ans[len++] = peek; 
+							ans[len++] = peek;
 							forward++;
 							state = 5;
 						}
@@ -467,7 +473,7 @@ token* number()
 						break;
 				case 5: if(isdigit(peek))
 						{
-							ans[len++] = peek; 
+							ans[len++] = peek;
 							forward++;
 							state = 6;
 						}
@@ -480,7 +486,7 @@ token* number()
 						break;
 				case 6: if(isdigit(peek))
 						{
-							ans[len++] = peek; 
+							ans[len++] = peek;
 							forward++;
 							state = 6;
 						}
@@ -492,7 +498,7 @@ token* number()
 							return k==NULL? makeToken(ans,RNUM,line)
 							    :makeToken(ans,k->val,line);}
 						break;
-				default: 
+				default:
 						printf("unknown state reached");
 						return makeToken("",-1,line);
 						break;
@@ -521,7 +527,7 @@ token* operation()
 	{
 	    switch(state)
 		{
-			case 0: 
+			case 0:
 			{
 				switch(peek)
 				{
@@ -553,16 +559,16 @@ token* operation()
 							  forward++;
 							  state = 7;
 							  break;
-					
-					
-					
+
+
+
 					case '+':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
 							lexemeBegin = forward;
 							k = searchTable(lextable,ans);
 							return k==NULL? makeToken(ans,PLUS,line)
-							    :makeToken(ans,k->val,line);							
+							    :makeToken(ans,k->val,line);
 							break;
 					case '-':ans[len++]=peek;
 							ans[len]=0;
@@ -570,63 +576,63 @@ token* operation()
 							lexemeBegin = forward;
 							k = searchTable(lextable,ans);
 							return k==NULL? makeToken(ans,MINUS,line)
-							    :makeToken(ans,k->val,line);		
+							    :makeToken(ans,k->val,line);
 							break;
 					case '/':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;			
+							lexemeBegin = forward;
 							k = searchTable(lextable,ans);
 							return k==NULL? makeToken(ans,DIV,line)
-							    :makeToken(ans,k->val,line);	
+							    :makeToken(ans,k->val,line);
 							break;
 					case ';':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;		
+							lexemeBegin = forward;
 							k = searchTable(lextable,ans);
 							return k==NULL? makeToken(ans,SEMICOL,line)
-							    :makeToken(ans,k->val,line);	
+							    :makeToken(ans,k->val,line);
 							break;
 					case ',': ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;			
+							lexemeBegin = forward;
 							k = searchTable(lextable,ans);
 							return k==NULL? makeToken(ans,COMMA,line)
-							    :makeToken(ans,k->val,line);	
+							    :makeToken(ans,k->val,line);
 							break;
 					case ']': ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;		
+							lexemeBegin = forward;
 							k = searchTable(lextable,ans);
 							return k==NULL? makeToken(ans,SQBC,line)
-							    :makeToken(ans,k->val,line);	
+							    :makeToken(ans,k->val,line);
 							break;
 					case '[': ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;		
+							lexemeBegin = forward;
 							k = searchTable(lextable,ans);
 							return k==NULL? makeToken(ans,SQBO,line)
-							    :makeToken(ans,k->val,line);	
+							    :makeToken(ans,k->val,line);
 							break;
 					case ')':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;		
+							lexemeBegin = forward;
 							k = searchTable(lextable,ans);
 							return k==NULL? makeToken(ans,BC,line)
-							    :makeToken(ans,k->val,line);	
+							    :makeToken(ans,k->val,line);
 							break;
 					case '(':ans[len++]=peek;
 							ans[len]=0;
 							forward++;
-							lexemeBegin = forward;		
+							lexemeBegin = forward;
 							k = searchTable(lextable,ans);
 							return k==NULL? makeToken(ans,BO,line)
-							    :makeToken(ans,k->val,line);	
+							    :makeToken(ans,k->val,line);
 							break;
 				}
 			}
@@ -636,7 +642,7 @@ token* operation()
 				{
 					ans[len++]=peek;
 					forward++;
-					state=8;					
+					state=8;
 				}
 				else
 				{
@@ -644,7 +650,7 @@ token* operation()
 					lexemeBegin = forward;
 					k = searchTable(lextable,ans);
 					return k==NULL? makeToken(ans,MUL,line)
-					    :makeToken(ans,k->val,line);	
+					    :makeToken(ans,k->val,line);
 				}
 				break;
 			case 2:
@@ -662,7 +668,7 @@ token* operation()
 					lexemeBegin = forward;
 					k = searchTable(lextable,ans);
 					return k==NULL? makeToken(ans,LE,line)
-					    :makeToken(ans,k->val,line);	
+					    :makeToken(ans,k->val,line);
 				}
 				else
 				{
@@ -688,7 +694,7 @@ token* operation()
 					lexemeBegin = forward;
 					k = searchTable(lextable,ans);
 					return k==NULL? makeToken(ans,GE,line)
-					    :makeToken(ans,k->val,line);	
+					    :makeToken(ans,k->val,line);
 				}
 				else
 				{
@@ -784,7 +790,7 @@ token* operation()
 					forward++;
 				}
 				break;
-			case 9: 
+			case 9:
 				if(peek == '*')
 				{
 					forward++;
@@ -807,7 +813,7 @@ token* operation()
 				    lexemeBegin = forward;
 				    k = searchTable(lextable,ans);
 				    return k==NULL? makeToken(ans,DRIVERDEF,line)
-					    :makeToken(ans,k->val,line);	
+					    :makeToken(ans,k->val,line);
 				}
 				else
 				{
@@ -815,7 +821,7 @@ token* operation()
 				    lexemeBegin = forward;
 				    k = searchTable(lextable,ans);
 				    return k==NULL? makeToken(ans,DEF,line)
-					    :makeToken(ans,k->val,line);	
+					    :makeToken(ans,k->val,line);
 				}
 				break;
 			case 11:
@@ -827,7 +833,7 @@ token* operation()
 				    lexemeBegin = forward;
 				    k = searchTable(lextable,ans);
 				    return k==NULL? makeToken(ans,DRIVERENDDEF,line)
-					    :makeToken(ans,k->val,line);	
+					    :makeToken(ans,k->val,line);
 				}
 				else
 				{
@@ -835,7 +841,7 @@ token* operation()
 				    lexemeBegin = forward;
 				    k = searchTable(lextable,ans);
 				    return k==NULL? makeToken(ans,ENDDEF,line)
-					    :makeToken(ans,k->val,line);	
+					    :makeToken(ans,k->val,line);
 				}
 				break;
 
@@ -884,7 +890,7 @@ void init_lextable()
 	insertTable(lextable, "break",BREAK);
 	insertTable(lextable, "default",DEFAULT);
 	insertTable(lextable, "while",WHILE);
-	
+
 }
 
 token* getNextToken()
@@ -901,7 +907,7 @@ token* getNextToken()
 	reset();
 	exit(1);
     	return NULL;
-    }	
+    }
     if(check)
     {
 		check = 0;
@@ -937,14 +943,14 @@ token* getNextToken()
 		    forward++;  //ignore spaces and count line number
 		    line++;
 		    break;
-	    
+
 	    case 'A': case 'B': case 'C': case 'D': case 'E':
 	    case 'F': case 'G': case 'H': case 'I': case 'J':
 	    case 'K': case 'L': case 'M': case 'N': case 'O':
 	    case 'P': case 'Q': case 'R': case 'S': case 'T':
 	    case 'U': case 'V': case 'W': case 'X': case 'Y':
 	    case 'Z': case 'a': case 'b': case 'c': case 'd':
-	    case 'e': case 'f': case 'g': case 'h': case 'i': 
+	    case 'e': case 'f': case 'g': case 'h': case 'i':
 	    case 'j': case 'k': case 'l': case 'm': case 'n':
 	    case 'o': case 'p': case 'q': case 'r': case 's':
 	    case 't': case 'u': case 'v': case 'w': case 'x':
@@ -959,7 +965,7 @@ token* getNextToken()
 					return temp;
 				break;
 			}
-	    
+
 
 	    case '0': case '1': case '2': case '3': case '4':    // tokenize a INT or REAL.
 	    case '5': case '6': case '7': case '8': case '9':
@@ -973,12 +979,12 @@ token* getNextToken()
 			}
 			break;
 		    }
-	    
-	    
+
+
 	    case '+': case '-': case '*': case '/': case '<':   //Tokenize Other symbols.
 	    case '>': case '=': case '!': case ';': case '.':
 	    case ':': case ',': case '[': case ']': case '(':
-	    case ')': 
+	    case ')':
 		    {
 			token* temp = operation();
 			if(temp->tag!=-1)

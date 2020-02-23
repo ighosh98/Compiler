@@ -1,3 +1,9 @@
+/*
+Group 20
+Ayush Vachaspati 2016B3A70398P
+Indraneel Ghosh  2016B1A70938P
+G Adityan	 2016B1A70929P
+*/
 #include <stdio.h>
 #include<stdbool.h>
 #include "lexer.h"
@@ -50,6 +56,6 @@ int main(int argc,char **argv)
     makeParsingTable(p);
     Nary_tree t = parse_input(PROGRAM, argv[1]);
     inorder(t);
-    
+
     return 0;
 }

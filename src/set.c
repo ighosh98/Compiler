@@ -1,3 +1,9 @@
+/*
+Group 20
+Ayush Vachaspati 2016B3A70398P
+Indraneel Ghosh  2016B1A70938P
+G Adityan	 2016B1A70929P
+*/
 #include<stdio.h>
 #include "hashtable.h"
 #include "set.h"
@@ -7,7 +13,7 @@
 void insertSet(set s, type a)
 {
     insertTable(s.set,symbol_map[a],a); //insert (Token, enum of token) into the set.
-}   
+}
 
 bool isSetMember(set s, type a)
 {
@@ -28,12 +34,12 @@ bool setUnionEPS(set dest_set, set source_set)
 	    if(!isSetMember(dest_set,temp->val))
 	    {
 		if(temp->val!=EPS)
-		{   
+		{
 		    insertSet(dest_set, temp->val);
 		    flag = true;
 		}
 	    }
-	    temp=temp->next; 
+	    temp=temp->next;
 	}
     }
     return flag;
@@ -54,7 +60,7 @@ bool setUnion(set dest_set, set source_set)
 		insertSet(dest_set, temp->val);
 		flag = true;
 	    }
-	    temp=temp->next; 
+	    temp=temp->next;
 	}
     }
     return flag;
@@ -77,7 +83,7 @@ void printSet(set s)
 	while(temp)
 	{
 	    printf("%s,",temp->str);
-	    temp=temp->next; 
+	    temp=temp->next;
 	}
     }
     printf("}\n");
