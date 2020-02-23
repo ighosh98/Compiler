@@ -8,10 +8,11 @@
 #include <time.h>
 int main(int argc,char **argv)
 {
+    printf("Implementation Status\n");
     //verify both input and output files***********************    
     if(argc<2)
     {
-	printf("No file given\n");
+	printf("No files given\n");
 	return(1);
     }
     
@@ -64,7 +65,6 @@ int main(int argc,char **argv)
 	    Nary_tree t = parse_input(PROGRAM, argv[1]);
 	    inorder(t,fptr);
 	    fclose(fptr);
-	    printf("DONE\n");
 	}
 	else if(choice ==4)
 	{
@@ -87,7 +87,6 @@ int main(int argc,char **argv)
 	    Nary_tree t = parse_input(PROGRAM, argv[1]);
 	    inorder(t,fptr);
 	    fclose(fptr);
-	    printf("DONE\n");
 
 	    end_time = clock();
 	    total_cpu_time = (double)(end_time - start_time);
