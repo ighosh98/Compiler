@@ -92,17 +92,19 @@ int main(int argc,char **argv)
 	    red();
 	    printf("\n##############  Parsing Input File  ##############\n");
 	    reset();
+	    
 	    makeFirstAndFollow(p, PROGRAM);
 	    makeParsingTable(p);
 	    Nary_tree t = parse_input(PROGRAM, argv[1]);
 	    inorder(t,fptr);
 	    fclose(fptr);
-
+	    
 	    end_time = clock();
 	    total_cpu_time = (double)(end_time - start_time);
 	    total_cpu_time_secs = total_cpu_time/CLOCKS_PER_SEC;
 	    printf("Total CPU time: %lf\nTotal CPU time in secs: %lf\n",
 		    total_cpu_time, total_cpu_time_secs);
+	    
 	}
 	else
 	{

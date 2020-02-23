@@ -512,6 +512,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 		stack_pop(s);
 	    else
 	    {
+		
 		error_flag = true;
 		if(a->line_no != error_line)
 		{
@@ -519,48 +520,31 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 		    printTerminalError(X,a);
 		}
 
-		while(1)
+		//error recovery
+    		if(a->tag == X->tok)
 		{
-		    if(a->tag!=$ && a->tag!= SEMICOL)
-		    {
-			a=getNextToken();
-			if(a->tag == X->tok)
-			{
-			    recovery_flag = 1;
-			    break;
-			}
-		    }
-		    else
-		    {
-
-			if(a->tag == X->tok)
-			{
-			    recovery_flag = 1;
-			    break;
-			}
-
-			if(a->tag==$)
-			    while(X->tok != $)
-			    {
-				stack_pop(s);
-				X = stack_top(s);
-			    }
-		    	if(a->tag==SEMICOL)
-			    while(X->tok !=SEMICOL && X->tok!=$ && isterminal(X->tok))
-			    {
-				stack_pop(s);
-				X = stack_top(s);
-			    }
-			if(X->tok == $)
-			    while(a->tag!=$)
-				a = getNextToken();
-
-
-			recovery_flag = 1;
-			break;
-		    }
+		    recovery_flag = 1;
+		    
 		}
+		else if(a->tag==$)
+		    while(X->tok != $)
+		    {
+			stack_pop(s);
+			X = stack_top(s);
+		    }
+		else if(X->tok == $)
+		    while(a->tag!=$)
+			a = getNextToken();
+		else
+		    while(X->tok!=$ && isterminal(X->tok))
+		    {
+			stack_pop(s);
+			X = stack_top(s);
+		    }
+		recovery_flag = 1;
+		
 	    }
+	        
 	}
 	else if(parsing_table[X->tok][a->tag-$].rule == NULL)
 	{
@@ -571,7 +555,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 		    printNonTerminalError(X,a);
 		}
 
-
+	    //error recovery
 	    while(1)
 	    {
 		if(a->tag!=$)
