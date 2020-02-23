@@ -16,24 +16,24 @@ void inorder_helper(treenode* root, FILE* fptr, char* parentSymbol)
 // print current node
     
     // lexeme
-    blue();
-    if(root->lexeme)
+    
+    if(root->lexeme && !root->children)
 	fprintf(fptr,"%-20s\t",root->lexeme->str);
     else
 	fprintf(fptr,"%-20s\t","----");
-    reset();
+    
     //line no
     if(root->lexeme)
 	fprintf(fptr,"%-5d\t",root->lexeme->line_no);
     else
 	fprintf(fptr,"%-5d\t",1);
 
-blue();
+
     //token name
     fprintf(fptr,"%-20s\t",symbol_map[root->tok]);
-reset();
+
     //value if number
-    if(root->lexeme)
+    if(root->lexeme && !root->children)
 	if(root->lexeme->tag == NUM)
 	    fprintf(fptr,"%-10d\t",atoi(root->lexeme->str));
 	else if(root->lexeme->tag == RNUM) 
@@ -42,15 +42,15 @@ reset();
 	    fprintf(fptr,"NaN       \t");
     else
 	    fprintf(fptr,"NaN       \t");
-blue();
+    
     // parent node symbol
     fprintf(fptr,"%-20s\t",parentSymbol);
-reset();
+    
     if(root->children)
 	fprintf(fptr,"%-3s\t","No");
     else
 	fprintf(fptr,"%-3s\t","Yes");
-blue();
+
     //non terminal symbol of non leaf node
     if(root->children)
 	fprintf(fptr,"%-20s\t",symbol_map[root->tok]);

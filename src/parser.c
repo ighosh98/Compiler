@@ -609,6 +609,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 
 	    //make children from the right side of the rule
 	    insert_children(X,(p.rule)+1,p.size-1,NULL);  ////////////current token from lexer used
+	    X->lexeme = a;
 	    stack_pop(s);
 	   //push the rule in the stack in reverse order
 	   
