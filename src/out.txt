@@ -1,42 +1,42 @@
-EPS
-MODULEDECLARATIONS
-PROGRAM
-EPS
-OTHERMODULES
-DRIVERDEF
-DRIVERMODULE
-DRIVER
-PROGRAMT
-DRIVERENDDEF
-START
-MODULEDEF
-EPS
-STATEMENTS
-END
-DEF
-MODULE1
-MODULE
-ID
-ENDDEF
-TAKES
-INPUT
-SQBO
-ID
-INPUT_PLIST
-COLON
-BOOLEAN
-DATATYPE
-EPS
-N1
-SQBC
-SEMICOL
-EPS
-RET
-START
-MODULEDEF
-EPS
-STATEMENTS
-END
-OTHERMODULES
-EPS
-OTHERMODULES
+----                	1    	EPS                 	NaN       	MODULEDECLARATIONS  	Yes	                    	
+----                	1    	MODULEDECLARATIONS  	NaN       	PROGRAM             	No 	MODULEDECLARATIONS  	
+----                	1    	PROGRAM             	NaN       	ROOT                	No 	PROGRAM             	
+----                	1    	EPS                 	NaN       	OTHERMODULES        	Yes	                    	
+----                	1    	OTHERMODULES        	NaN       	PROGRAM             	No 	OTHERMODULES        	
+<<<                 	2    	DRIVERDEF           	NaN       	DRIVERMODULE        	Yes	                    	
+----                	1    	DRIVERMODULE        	NaN       	PROGRAM             	No 	DRIVERMODULE        	
+driver              	2    	DRIVER              	NaN       	DRIVERMODULE        	Yes	                    	
+program             	2    	PROGRAMT            	NaN       	DRIVERMODULE        	Yes	                    	
+>>>                 	2    	DRIVERENDDEF        	NaN       	DRIVERMODULE        	Yes	                    	
+start               	3    	START               	NaN       	MODULEDEF           	Yes	                    	
+----                	1    	MODULEDEF           	NaN       	DRIVERMODULE        	No 	MODULEDEF           	
+----                	1    	EPS                 	NaN       	STATEMENTS          	Yes	                    	
+----                	1    	STATEMENTS          	NaN       	MODULEDEF           	No 	STATEMENTS          	
+end                 	5    	END                 	NaN       	MODULEDEF           	Yes	                    	
+<<                  	6    	DEF                 	NaN       	MODULE1             	Yes	                    	
+----                	1    	MODULE1             	NaN       	OTHERMODULES        	No 	MODULE1             	
+module              	6    	MODULE              	NaN       	MODULE1             	Yes	                    	
+empty               	6    	ID                  	NaN       	MODULE1             	Yes	                    	
+>>                  	6    	ENDDEF              	NaN       	MODULE1             	Yes	                    	
+takes               	7    	TAKES               	NaN       	MODULE1             	Yes	                    	
+input               	7    	INPUT               	NaN       	MODULE1             	Yes	                    	
+[                   	7    	SQBO                	NaN       	MODULE1             	Yes	                    	
+a                   	7    	ID                  	NaN       	INPUT_PLIST         	Yes	                    	
+----                	1    	INPUT_PLIST         	NaN       	MODULE1             	No 	INPUT_PLIST         	
+:                   	7    	COLON               	NaN       	INPUT_PLIST         	Yes	                    	
+boolean             	7    	BOOLEAN             	NaN       	DATATYPE            	Yes	                    	
+----                	1    	DATATYPE            	NaN       	INPUT_PLIST         	No 	DATATYPE            	
+----                	1    	EPS                 	NaN       	N1                  	Yes	                    	
+----                	1    	N1                  	NaN       	INPUT_PLIST         	No 	N1                  	
+]                   	7    	SQBC                	NaN       	MODULE1             	Yes	                    	
+;                   	7    	SEMICOL             	NaN       	MODULE1             	Yes	                    	
+----                	1    	EPS                 	NaN       	RET                 	Yes	                    	
+----                	1    	RET                 	NaN       	MODULE1             	No 	RET                 	
+start               	8    	START               	NaN       	MODULEDEF           	Yes	                    	
+----                	1    	MODULEDEF           	NaN       	MODULE1             	No 	MODULEDEF           	
+----                	1    	EPS                 	NaN       	STATEMENTS          	Yes	                    	
+----                	1    	STATEMENTS          	NaN       	MODULEDEF           	No 	STATEMENTS          	
+end                 	10   	END                 	NaN       	MODULEDEF           	Yes	                    	
+----                	1    	OTHERMODULES        	NaN       	PROGRAM             	No 	OTHERMODULES        	
+----                	1    	EPS                 	NaN       	OTHERMODULES        	Yes	                    	
+----                	1    	OTHERMODULES        	NaN       	OTHERMODULES        	No 	OTHERMODULES        	

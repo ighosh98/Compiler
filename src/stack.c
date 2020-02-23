@@ -45,7 +45,7 @@ treenode* stack_top(stack s)
 {
     stacknode* head = *(s.head);
     if(head==NULL)
-	return make_treenode(UNDERFLOW);    //stack error condition
+	return make_treenode(UNDERFLOW,NULL);    //stack error condition
     else
 	return head->val;
 }

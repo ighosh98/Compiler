@@ -1,11 +1,9 @@
 #include <stdio.h>
 #include "stack.h"
 #include "nary_tree.h"
+#include <stdlib.h>
 
 int  main()
 {
-   stack s = getStack();
-    stack_push(s,make_treenode(0));
-    treenode* a =   stack_top(s);
-    printf("%d\n",a->tok);
+    printf("%lf",atof("22.34E-2"));
 }

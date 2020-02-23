@@ -9,7 +9,7 @@
 #include "set.h"
 #include "color.h"
 #include "stack.h"
-#define DEBUG 1
+#define DEBUG 0
 #define RULES_BUFF 200
 
 hashtable strToEnum;
@@ -471,9 +471,9 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
     }
 
     stack s = getStack();
-    stack_push(s,make_treenode($));
+    stack_push(s,make_treenode($,NULL));
     //push the start symbol and save the root node for future
-    treenode* root = make_treenode(start_symbol);
+    treenode* root = make_treenode(start_symbol,NULL); ///////////// which token to use
     stack_push(s,root);
 
     //open the source file for lexer
@@ -494,6 +494,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 	
 	if(X->tok == a->tag)
 	{
+	    X->lexeme = a;
 	    if(a->tag == $ && X->tok== $)
 		break;
 	    stack_pop(s);
@@ -607,7 +608,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 	    }
 
 	    //make children from the right side of the rule
-	    insert_children(X,(p.rule)+1,p.size-1);
+	    insert_children(X,(p.rule)+1,p.size-1,NULL);  ////////////current token from lexer used
 	    stack_pop(s);
 	   //push the rule in the stack in reverse order
 	   
