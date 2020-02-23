@@ -31,11 +31,7 @@ int main(int argc,char **argv)
 	    break;
 	else if(choice==1)
 	{
-	//printf("%s",argv[1]);
-		    openfile(argv[1]);
-	
-	    removeComments();
-		    //continue;	    
+	    removeComments(argv[1]);
 	}
 	else if(choice==2)
 	{

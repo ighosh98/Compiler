@@ -202,81 +202,90 @@ FILE* getStream(FILE* fptr)
     }	
 }
 
-void removeComments()
+void removeComments(char * sourcefile)
 {
+    FILE* fptr = fopen(sourcefile,"rb");
+    if(!fptr)
+    {
+	printf("Could not open file\n");
+	return;
+    }
 
     int state =0;
     char peek;
-    line = 1;
-    forward = 0;
-
-    while((peek=fgetc(fptr))!=EOF)
+    int pointer=0;
+    char buffer[BUFFER_LEN+1];
+    int count = fread(buffer,1,BUFFER_LEN,fptr);
+    buffer[count]=EOB;
+    while(1)
     {
-	
+	peek = buffer[pointer];
+	if(peek==EOB)
+	{
+	    if(pointer == BUFFER_LEN)
+	    {
+		count = fread(buffer,1,BUFFER_LEN,fptr);
+		buffer[count]=EOB;
+		pointer = 0;
+	    }
+	    else
+		return;
+	}
+
 			switch(state)
 			{
 				 case 0:
 					 if(peek=='*')
 					 {
-						 forward++;
+						 pointer++;
 						 state=1;
 					 }
 					 else
 					 {
 					 printf("%c",peek);
-					 forward++;
+					 pointer++;
 					 }
 					 break;
 				 case 1:
 					 if(peek=='*')
 					 {
-						forward++;
+						pointer++;
 						state=2;
-						printf(" ");
+						
 					 }
 					 else
 					 {
-					 	forward--;
 					 	printf("*");
-					 	forward++;
 					 	printf("%c",peek);
-					 	forward++;
+					 	pointer++;
 					 	state=0;
 					 }
 					 break;
 				 case 2:
 					 if(peek=='*')
-					 {
-						printf(" ");
-						forward++;
+					 { 
+						pointer++;
 						state=3;
 					 }
 					 else
 					 {
 					 	if(peek=='\n')
 					 	{
-					 		printf("\n");
-					 		line++;
+						    printf("\n");
 					 	}
-					 	else
-					 	{
-					 		printf(" ");
-					 	}
-					 	forward++;
+					 	pointer++;
 					 	
 					 }
 					 break;
 				 case 3:
 				 	if(peek=='*')
 				 	{
-				 		printf(" ");
-				 		forward++;
+				 		pointer++;
 				 		state =0;
 				 	}
 				 	else
 				 	{
-				 		printf(" ");
-					 	forward++;
+					 	pointer++;
 					 	state=2;
 				 	}
 				 	break;		
