@@ -9,7 +9,7 @@
 #include "set.h"
 #include "color.h"
 #include "stack.h"
-#define DEBUG 0
+#define DEBUG 1
 #define RULES_BUFF 200
 
 hashtable strToEnum;

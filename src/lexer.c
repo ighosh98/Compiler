@@ -88,9 +88,6 @@ char* symbol_map[] = {
 "END",
 "DECLARE",
 "DRIVER",
-"UNION",
-"TAGGED",
-"RECORD",
 "GET_VALUE",
 "PRINT",
 "USE",
@@ -178,23 +175,6 @@ void print_invalid_OP_error(token* temp)
     printf(" is not a valid operation. \n");
 }
 
-
-void removeComments(char* testfile)
-{
-    return;
-}
-
-token *makeToken(char* str,type tag, int line)
-{
-    char * str1 = (char *)malloc((strlen(str)+1)*sizeof(char));
-    strcpy(str1,str);
-    token * temp = (token *) malloc(sizeof(token));
-    temp->str = str1;
-    temp->tag = tag;
-    temp->line_no = line;
-    return temp;
-}
-
 FILE* getStream(FILE* fptr)
 {
     if(forward==BUFFER_LEN) //end of buffer
@@ -221,6 +201,104 @@ FILE* getStream(FILE* fptr)
 	return NULL; //terminate lexical analysis
     }	
 }
+
+void removeComments()
+{
+
+    int state =0;
+    char peek;
+    line = 1;
+    forward = 0;
+
+    while((peek=fgetc(fptr))!=EOF)
+    {
+	
+			switch(state)
+			{
+				 case 0:
+					 if(peek=='*')
+					 {
+						 forward++;
+						 state=1;
+					 }
+					 else
+					 {
+					 printf("%c",peek);
+					 forward++;
+					 }
+					 break;
+				 case 1:
+					 if(peek=='*')
+					 {
+						forward++;
+						state=2;
+						printf(" ");
+					 }
+					 else
+					 {
+					 	forward--;
+					 	printf("*");
+					 	forward++;
+					 	printf("%c",peek);
+					 	forward++;
+					 	state=0;
+					 }
+					 break;
+				 case 2:
+					 if(peek=='*')
+					 {
+						printf(" ");
+						forward++;
+						state=3;
+					 }
+					 else
+					 {
+					 	if(peek=='\n')
+					 	{
+					 		printf("\n");
+					 		line++;
+					 	}
+					 	else
+					 	{
+					 		printf(" ");
+					 	}
+					 	forward++;
+					 	
+					 }
+					 break;
+				 case 3:
+				 	if(peek=='*')
+				 	{
+				 		printf(" ");
+				 		forward++;
+				 		state =0;
+				 	}
+				 	else
+				 	{
+				 		printf(" ");
+					 	forward++;
+					 	state=2;
+				 	}
+				 	break;		
+		    }
+		
+
+    }
+    fclose(fptr);
+    return;
+}
+
+token *makeToken(char* str,type tag, int line)
+{
+    char * str1 = (char *)malloc((strlen(str)+1)*sizeof(char));
+    strcpy(str1,str);
+    token * temp = (token *) malloc(sizeof(token));
+    temp->str = str1;
+    temp->tag = tag;
+    temp->line_no = line;
+    return temp;
+}
+
 
 token* id()
 {
@@ -778,9 +856,6 @@ void init_lextable()
 	insertTable( lextable,"module",MODULE);
 	insertTable(lextable, "driver",DRIVER);
 	insertTable(lextable, "program",PROGRAMT);
-	insertTable( lextable,"record",RECORD);
-	insertTable( lextable,"tagged",TAGGED);
-	insertTable( lextable,"union",UNION);
 	insertTable(lextable, "get_value",GET_VALUE);
 	insertTable(lextable, "print",PRINT);
 	insertTable(lextable, "use",USE);
