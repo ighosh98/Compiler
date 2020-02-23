@@ -8,7 +8,12 @@
 #include <time.h>
 int main(int argc,char **argv)
 {
-    printf("Implementation Status\n");
+    printf("############ Implementation Status ##############\n");
+    printf("a) First Set and Follow Set Automated.\n");
+    printf("b) Lexer and Syntax Analyser implemented completely.\n");
+    printf("c) Code runs successfully for all given test cases.\n");
+    printf("d) Parse Tree generated Successfully for all cases.\n");
+
     //verify both input and output files***********************    
     if(argc<2)
     {
@@ -38,7 +43,7 @@ int main(int argc,char **argv)
 	    openfile(argv[1]);
 	    token* a;
 	    red();
-	    printf("\nToken List From Lexer\n");
+	    printf("\n##############  Token List From Lexer  ###############\n");
 	    reset();
 	    while(a = getNextToken())
 	    {
@@ -57,7 +62,7 @@ int main(int argc,char **argv)
 		break;
 	    }
 	    red();
-	    printf("\nParsing Input File\n");
+	    printf("\n##############  Parsing Input File  ##############\n");
 	    reset();
 	    makeFirstAndFollow(p, PROGRAM);
 	    makeParsingTable(p);
@@ -79,7 +84,7 @@ int main(int argc,char **argv)
 	    }
 
 	    red();
-	    printf("\nParsing Input File\n");
+	    printf("\n##############  Parsing Input File  ##############\n");
 	    reset();
 	    makeFirstAndFollow(p, PROGRAM);
 	    makeParsingTable(p);

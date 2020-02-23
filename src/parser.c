@@ -623,12 +623,6 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 
     //make Tree from the root node and return
     Nary_tree syntax_tree;
-    syntax_tree.root  = NULL;
-    if(error_flag)
-	return syntax_tree;
-    else
-    {
-	syntax_tree.root = root;
-	return syntax_tree;
-    }
+    syntax_tree.root = root;
+    return syntax_tree;
 }
