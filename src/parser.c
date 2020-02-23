@@ -540,6 +540,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 		    {
 			stack_pop(s);
 			X = stack_top(s);
+			if(X->tok==a->tag)break;
 		    }
 		recovery_flag = 1;
 		
