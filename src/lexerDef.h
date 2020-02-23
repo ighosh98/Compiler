@@ -1,3 +1,9 @@
+/*
+Group 20
+Ayush Vachaspati 2016B3A70398P
+Indraneel Ghosh  2016B1A70938P
+G Adityan	 2016B1A70929P
+*/
 #ifndef LEXERDEF_FILE
 #define LEXERDEF_FILE
 #include<stdio.h>
@@ -6,7 +12,7 @@
 extern char* symbol_map[];
 
 typedef enum {ENUM_START,
-PROGRAM, 
+PROGRAM,
 MODULEDECLARATIONS,
 OTHERMODULES,
 DRIVERMODULE,
@@ -55,7 +61,7 @@ DEFAULT1,
 N7,
 N8,
 N9,
-VALUE,  
+VALUE,
 RANGE_ARRAYS,
 N5,
 BOOLCONSTT,

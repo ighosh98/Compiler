@@ -1,8 +1,14 @@
+/*
+Group 20
+Ayush Vachaspati 2016B3A70398P
+Indraneel Ghosh  2016B1A70938P
+G Adityan	 2016B1A70929P
+*/
 #ifndef SET_FILE
 #define SET_FILE
 #include<stdio.h>
 #include"hashtable.h"
-#include "lexDef.h"
+#include "lexerDef.h"
 #include <stdbool.h>
 typedef struct set
 {

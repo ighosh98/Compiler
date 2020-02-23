@@ -1,3 +1,9 @@
+/*
+Group 20
+Ayush Vachaspati 2016B3A70398P
+Indraneel Ghosh  2016B1A70938P
+G Adityan	 2016B1A70929P
+*/
 #include <stdio.h>
 #include<stdbool.h>
 #include "lexer.h"
@@ -14,24 +20,24 @@ int main(int argc,char **argv)
     printf("c) Code runs successfully for all given test cases.\n");
     printf("d) Parse Tree generated Successfully for all cases.\n");
 
-    //verify both input and output files***********************    
+    //verify both input and output files***********************
     if(argc<2)
     {
 	printf("No files given\n");
 	return(1);
     }
-    
+
     make_str_to_enum();
     productions p = read_grammar();
-    int n = p.no_productions;        
-    
+    int n = p.no_productions;
+
     int choice;
 
     while(1)
     {
 	printf("Enter Choice: ");
 	scanf("%d",&choice);
-	
+
 	if(choice==0)
 	    break;
 	else if(choice==1)
@@ -51,7 +57,7 @@ int main(int argc,char **argv)
 		if(a->tag == $)
 		    break;
 	    }
-   
+
 	}
 	else if(choice==3)
 	{

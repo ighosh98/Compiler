@@ -1,7 +1,13 @@
+/*
+Group 20
+Ayush Vachaspati 2016B3A70398P
+Indraneel Ghosh  2016B1A70938P
+G Adityan	 2016B1A70929P
+*/
 #include <stdio.h>
 #include "nary_tree.h"
 #include<stdlib.h>
-#include"lexDef.h"
+#include"lexerDef.h"
 #include "color.h"
 void inorder_helper(treenode* root, FILE* fptr, char* parentSymbol)
 {
@@ -10,11 +16,11 @@ void inorder_helper(treenode* root, FILE* fptr, char* parentSymbol)
 	return;
     }
 
-//print first child    
+//print first child
     if(root->children!=NULL)
 	inorder_helper(root->children[0],fptr,symbol_map[root->tok]);
 // print current node
-    
+
     // lexeme
     
     if(root->lexeme && !root->children)
@@ -36,7 +42,7 @@ void inorder_helper(treenode* root, FILE* fptr, char* parentSymbol)
     if(root->lexeme && !root->children)
 	if(root->lexeme->tag == NUM)
 	    fprintf(fptr,"%-10d\t",atoi(root->lexeme->str));
-	else if(root->lexeme->tag == RNUM) 
+	else if(root->lexeme->tag == RNUM)
 	    fprintf(fptr,"%-lf\t",atof(root->lexeme->str));
 	else
 	    fprintf(fptr,"NaN       \t");
@@ -90,7 +96,7 @@ treenode* make_treenode(int a, token* lex)
 
 void insert_children(treenode* node, type* children, int n, token* lex)
 {
-    treenode** temp = (treenode**)malloc(sizeof(treenode*)*n);    
+    treenode** temp = (treenode**)malloc(sizeof(treenode*)*n);
     for(int i=0;i<n;i++)
     {
 	treenode* x = make_treenode(children[i],lex);
