@@ -1,0 +1,25 @@
+declare             	8    	DECLARE             	NaN       	MODULEDECLARATION   	Yes	                    	
+----                	8    	MODULEDECLARATION   	NaN       	MODULEDECLARATIONS  	No 	MODULEDECLARATION   	
+module              	9    	MODULE              	NaN       	MODULEDECLARATION   	Yes	                    	
+----                	1    	ID                  	NaN       	MODULEDECLARATION   	Yes	                    	
+----                	1    	SEMICOL             	NaN       	MODULEDECLARATION   	Yes	                    	
+----                	8    	MODULEDECLARATIONS  	NaN       	PROGRAM             	No 	MODULEDECLARATIONS  	
+----                	1    	MODULEDECLARATIONS  	NaN       	MODULEDECLARATIONS  	Yes	                    	
+----                	8    	PROGRAM             	NaN       	ROOT                	No 	PROGRAM             	
+<<                  	63   	DEF                 	NaN       	MODULE1             	Yes	                    	
+----                	63   	MODULE1             	NaN       	OTHERMODULES        	No 	MODULE1             	
+----                	1    	MODULE              	NaN       	MODULE1             	Yes	                    	
+----                	1    	ID                  	NaN       	MODULE1             	Yes	                    	
+----                	1    	ENDDEF              	NaN       	MODULE1             	Yes	                    	
+----                	1    	TAKES               	NaN       	MODULE1             	Yes	                    	
+----                	1    	INPUT               	NaN       	MODULE1             	Yes	                    	
+----                	1    	SQBO                	NaN       	MODULE1             	Yes	                    	
+----                	1    	INPUT_PLIST         	NaN       	MODULE1             	Yes	                    	
+]                   	70   	SQBC                	NaN       	MODULE1             	Yes	                    	
+----                	1    	SEMICOL             	NaN       	MODULE1             	Yes	                    	
+----                	1    	RET                 	NaN       	MODULE1             	Yes	                    	
+----                	1    	MODULEDEF           	NaN       	MODULE1             	Yes	                    	
+----                	63   	OTHERMODULES        	NaN       	PROGRAM             	No 	OTHERMODULES        	
+----                	1    	OTHERMODULES        	NaN       	OTHERMODULES        	Yes	                    	
+----                	1    	DRIVERMODULE        	NaN       	PROGRAM             	Yes	                    	
+----                	1    	OTHERMODULES        	NaN       	PROGRAM             	Yes	                    	
