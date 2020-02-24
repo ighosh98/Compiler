@@ -12,6 +12,7 @@ G Adityan	 2016B1A70929P
 #include "set.h"
 #include "color.h"
 #include <time.h>
+#include <string.h>
 int main(int argc,char **argv)
 {
     printf("############ Implementation Status ##############\n");
@@ -38,13 +39,13 @@ int main(int argc,char **argv)
 	printf("Enter Choice: ");
 	scanf("%d",&choice);
 
-	if(choice==0)
+	if(choice == 0)
 	    break;
-	else if(choice==1)
+	else if(choice == 1)
 	{
 	    removeComments(argv[1]);
 	}
-	else if(choice==2)
+	else if(choice == 2)
 	{
 	    openfile(argv[1]);
 	    token* a;
@@ -59,7 +60,7 @@ int main(int argc,char **argv)
 	    }
 
 	}
-	else if(choice==3)
+	else if(choice == 3)
 	{
 	    FILE * fptr = fopen(argv[2],"w");
 	    if(!fptr)
@@ -76,7 +77,7 @@ int main(int argc,char **argv)
 	    inorder(t,fptr);
 	    fclose(fptr);
 	}
-	else if(choice ==4)
+	else if(choice == 4)
 	{
 	    clock_t start_time, end_time;
 	    double total_cpu_time, total_cpu_time_secs;

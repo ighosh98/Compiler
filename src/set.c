@@ -86,5 +86,5 @@ void printSet(set s)
 	    temp=temp->next;
 	}
     }
-    printf("}\n");
+    printf("}");
 }

@@ -29,11 +29,11 @@ void printTerminalError(treenode * X, token* a)
     blue();
     printf("Line %d: ",a->line_no);
     reset();
-    printf("Error Parsing: Expected ");
+    printf("Error Processing Terminal ");
     red();
     printf("%s ",symbol_map[X->tok]);
     reset();
-    printf("but got ");
+    printf("and Terminal ");
     red();
     printf("%s. ",symbol_map[a->tag]);
     reset();
@@ -50,11 +50,11 @@ void printNonTerminalError(treenode * X, token* a)
     blue();
     printf("Line %d: ",a->line_no);
     reset();
-    printf("Error Parsing: Expected one of ");
+    printf("Error Processing Non-Terminal ");
     red();
-    printSet(nonterminal_FirstSet[X->tok]);
+    printf("%s ",symbol_map[X->tok]);
     reset();
-    printf(" but got ");
+    printf("and Terminal ");
     red();
     printf("%s. ",symbol_map[a->tag]);
     reset();
