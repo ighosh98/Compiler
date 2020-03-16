@@ -464,11 +464,14 @@ void makeParsingTable(productions grammar)
 
 
 
-Nary_tree parse_input(type start_symbol, char* sourcefile)
+Nary_tree parse_input(type start_symbol, char* sourcefile, productions grammar)
 {
     bool error_flag = false;
     bool recovery_flag = false;
     int error_line;
+    makeFirstAndFollow(grammar, PROGRAM);
+    makeParsingTable(grammar);
+
     if(DEBUG)
     {
 	red();
@@ -563,9 +566,7 @@ Nary_tree parse_input(type start_symbol, char* sourcefile)
 		}
 		else
 		{
-		    while(X->tok!=$ && 
-			    !isSetMember(nonterminal_FirstSet[X->tok], a->tag) && 
-			    !isSetMember(nonterminal_FollowSet[X->tok],a->tag))
+		    while(X->tok!=$)  
 		    {
 			stack_pop(s);
 			X = stack_top(s);

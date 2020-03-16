@@ -71,9 +71,9 @@ int main(int argc,char **argv)
 	    red();
 	    printf("\n##############  Parsing Input File  ##############\n");
 	    reset();
-	    makeFirstAndFollow(p, PROGRAM);
-	    makeParsingTable(p);
-	    Nary_tree t = parse_input(PROGRAM, argv[1]);
+	    //makeFirstAndFollow(p, PROGRAM);
+	    //makeParsingTable(p);
+	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
 	    inorder(t,fptr);
 	    fclose(fptr);
 	}
@@ -94,9 +94,9 @@ int main(int argc,char **argv)
 	    printf("\n##############  Parsing Input File  ##############\n");
 	    reset();
 	    
-	    makeFirstAndFollow(p, PROGRAM);
-	    makeParsingTable(p);
-	    Nary_tree t = parse_input(PROGRAM, argv[1]);
+	    //makeFirstAndFollow(p, PROGRAM);
+	    //makeParsingTable(p);
+	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
 	    inorder(t,fptr);
 	    fclose(fptr);
 	    

@@ -11,7 +11,7 @@ G Adityan	 2016B1A70929P
 #include"hashtable.h"
 #include "parserDef.h"
 #include "nary_tree.h"
-Nary_tree parse_input(type start_symbol, char* sourcefile);
+Nary_tree parse_input(type start_symbol, char* sourcefile,productions grammar);
 
 void make_str_to_enum();
 
