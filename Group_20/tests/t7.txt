@@ -1,0 +1,139 @@
+**add declaration**
+** Testing for random multi line * comment 
+A*star compiler**
+
+<<module arraysum>>
+takes input[list:array[4..20] of real];
+returns [sum:real];
+start
+    declare s: real;
+    s:=0.0;
+    declare index: integer;
+    for(index in 4..20)
+    start
+	s:= s+ list[index];
+    end
+    sum:=s;
+end
+
+**add another module**
+
+<<< driver program >>>
+start
+    print(r);
+    switch(c)
+    start
+	case true: b:=100;
+		    break;
+	case false: b:=-100;
+		    break;
+	case 12: use module mod1 with parameters a,b;
+		    break;
+    end
+    for(k in 2..8)
+    start
+	a:=(num - k)*(1+2);
+    end
+    declare B:array[r..c] of integer;
+    declare C:array[r..100] of boolean;
+    k := x <= 200 AND x>20;
+    **k := x <= (-200000) OR x>998720;**
+    **Not valid but worth checking once again**
+
+    declare A:array[1..10] of real;
+    print(A[i]);
+    declare s:integer;
+    declare t:real;
+    declare u:boolean;
+    declare v:array[4..10] of integer;
+    declare w:array[0..4] of boolean;
+    declare a1,a2:integer;
+    declare b1,b2:real;
+    declare c1,c2:boolean;
+    declare d1,d2:array[5..15] of real;
+    for(k in 4..10)
+	start
+		v[k] := k;
+		v[k] := (v[k]+k)*(v[k]-k);
+		
+		switch(k)
+		start
+			case 4: v[k] := v[k]-10;
+					print(v[k]);
+					break;
+			case 5: v[k] :=0;
+				print(0);
+					break;
+			default:print(V[k]); 
+				print(true);
+				break;
+		end
+	end
+     a1:=V[6];
+	
+    
+end
+<<module readArray>>
+takes input [arr1:array[1..15] of real,k:integer];
+returns [sum:real];
+start
+	declare tempvar:real;
+	declare i:integer;
+	i:=1;
+	while(i<=k)
+	start
+		get_value(tempvar);
+		arr1[i]:=tempvar;
+		i:=i+1;
+		** the semantics of while needs an increment and will be taken care of at the second phase**
+	end
+	[R1_abc, r2_ABC, R3_abc] := use module compute with parameters var_1_, var_2_, var_34;
+end
+
+**add 2 modules
+here**
+
+<<module A>>
+takes input[x:boolean, y:integer];
+returns [value:integer];
+start
+	switch(x)
+	start
+		case false:	value:=0;
+					break;
+		case true:	value:=y;
+					break;
+	end
+end
+
+<<module B>>
+takes input[m1:integer, m2:array[5..10] of integer, m2:boolean];
+returns [val1:integer, val2:boolean,val3:real];
+start
+	val1 := (m1*3)+(m1*(m1/5));
+	m2:=(val1>=500 AND val1<999) OR (val1>1000 AND val1<=1500);
+	m2:=true;
+	
+	for(k in 5..10)
+	start
+		switch(m2)
+		start
+			case true:val2[k]:=true;
+							break;
+			case false:	val2[k]:=false;
+							break;
+			default:print(false);
+					val2[k]:=false;
+					break;
+		end
+	end
+end
+
+
+
+
+
+
+
+
+
