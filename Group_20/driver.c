@@ -13,6 +13,8 @@ G Adityan	 2016B1A70929P
 #include "color.h"
 #include <time.h>
 #include <string.h>
+#include "ast.h"
+#include "astdef.h"
 int main(int argc,char **argv)
 {
     printf("############ Implementation Status ##############\n");
@@ -75,6 +77,7 @@ int main(int argc,char **argv)
 	    //makeParsingTable(p);
 	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
 	    inorder(t,fptr);
+	    printTree(t.root);
 	    fclose(fptr);
 	}
 	else if(choice == 4)
@@ -106,6 +109,25 @@ int main(int argc,char **argv)
 	    printf("Total CPU time: %lf\nTotal CPU time in secs: %lf\n",
 		    total_cpu_time, total_cpu_time_secs);
 	    
+	}
+	else if(choice == 5)
+	{
+	    FILE * fptr = fopen(argv[2],"w");
+	    if(!fptr)
+	    {
+		printf("could not open file %s\n",argv[2]);
+		break;
+	    }
+	    red();
+	    printf("\n##############  Parsing Input File  ##############\n");
+	    reset();
+	    //makeFirstAndFollow(p, PROGRAM);
+	    //makeParsingTable(p);
+	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
+	    AST a = makeAST(t.root);
+	    printAST(a.root);
+	    fclose(fptr);
+
 	}
 	else
 	{

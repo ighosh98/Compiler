@@ -21,6 +21,7 @@ typedef struct Nary_tree{
     treenode* root;
 } Nary_tree;
 
+void printTree(treenode * root);
 
 Nary_tree* get_nary_tree();
 

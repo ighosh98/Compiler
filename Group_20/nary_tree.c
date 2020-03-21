@@ -9,6 +9,25 @@ G Adityan	 2016B1A70929P
 #include<stdlib.h>
 #include"lexerDef.h"
 #include "color.h"
+void printTree(treenode* root)
+{
+    if(root==NULL)return;
+    
+    if(root->children){
+	printf("%s --> ",symbol_map[root->tok]);
+	for(int i=0;i<root->n;i++)
+	    if(root->children[i])
+		printf("%s  ", symbol_map[root->children[i]->tok]);
+	printf("\n\n");
+	for(int i=0;i<root->n;i++)
+	    printTree(root->children[i]);
+    }
+    else
+    {
+	printf("%s\n\n",symbol_map[root->tok]);
+	
+    }
+}
 void inorder_helper(treenode* root, FILE* fptr, char* parentSymbol)
 {
     if(root==NULL)
