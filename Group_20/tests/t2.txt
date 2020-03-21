@@ -1,7 +1,9 @@
 ** This is a small code for verifying syntactic correctness of an empty driver and an empty module **
 <<<driver program>>>
 start
-	
+    dfs:=sdf;
+    start
+    end	
 end
 <<module empty>>
 takes input[a:boolean];

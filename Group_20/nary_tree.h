@@ -8,11 +8,14 @@ G Adityan	 2016B1A70929P
 #define NARY_TREE
 #include <stdio.h>
 #include "lexerDef.h"
+#include "astdef.h"
 typedef struct treenode{
     token* lexeme;
     int tok;
     struct treenode** children;
     int n;
+
+    ast_node * node;
 } treenode;
 
 typedef struct Nary_tree{

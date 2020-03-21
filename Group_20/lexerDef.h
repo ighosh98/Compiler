@@ -10,7 +10,6 @@ G Adityan	 2016B1A70929P
 #include <stdbool.h>
 
 extern char* symbol_map[];
-
 typedef enum {ENUM_START,
 PROGRAM,
 MODULEDECLARATIONS,

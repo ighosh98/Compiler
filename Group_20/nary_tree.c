@@ -51,12 +51,10 @@ void inorder_helper(treenode* root, FILE* fptr, char* parentSymbol)
     
     // parent node symbol
     fprintf(fptr,"%-20s\t",parentSymbol);
-    
     if(root->children)
 	fprintf(fptr,"%-3s\t","No");
     else
 	fprintf(fptr,"%-3s\t","Yes");
-
     //non terminal symbol of non leaf node
     if(root->children)
 	fprintf(fptr,"%-20s\t",symbol_map[root->tok]);
@@ -90,6 +88,7 @@ treenode* make_treenode(int a, token* lex)
     temp->lexeme = lex;
     temp->tok = a;
     temp->children = NULL;
+    temp->node = NULL;
     temp->n = 0;
     return temp;
 }
