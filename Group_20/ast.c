@@ -26,6 +26,20 @@ astnode* make_astnode(treenode* parsenode)
     return temp;
 }
 
+void printAST(astnode* root)
+{
+    if(root==NULL)return;
+
+    printf("%s --> ",symbol_map[root->tok]);
+    for(int i=0;i<root->n;i++)
+	printf("%s  ", symbol_map[root->children[i]->tok]);
+    printf("\n\n");
+    for(int i=0;i<root->n;i++)
+	printAST(root->children[i]);
+
+
+    
+}
 
 astnode* makeAST_helper(treenode* root)
 {
