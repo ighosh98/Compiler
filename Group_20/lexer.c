@@ -303,7 +303,7 @@ void removeComments(char * sourcefile)
     return;
 }
 
-token *makeToken(char* str,type tag, int line)
+token *makeToken(char* str,tokentype tag, int line)
 {
     char * str1 = (char *)malloc((strlen(str)+1)*sizeof(char));
     strcpy(str1,str);

@@ -3,18 +3,20 @@
 
 #include <stdio.h>
 
-typedef enum {integer, real, boolean, NONE} datatype;
-
-typedef struct ast_node{
+typedef enum {integer, real, boolean, function, NONE} datatype;
+typedef enum {for_loop, while_loop, switch_stmt, add, subtract, multiply, divide, NO_ACTION} action;
+typedef struct astnode{
     token* lexeme;
+    action attr;
+    datatype type;
     int tok;
-    struct ast_node** children;
+    struct astnode** children;
     int n;
-    struct ast_node * node;
-} ast_node;
+    struct astnode * node;
+} astnode;
 
 typedef struct AST{
-    ast_node* root;
+    astnode* root;
 } AST;
 
 

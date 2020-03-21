@@ -14,8 +14,7 @@ typedef struct treenode{
     int tok;
     struct treenode** children;
     int n;
-
-    ast_node * node;
+    astnode * node;
 } treenode;
 
 typedef struct Nary_tree{
@@ -27,7 +26,7 @@ Nary_tree* get_nary_tree();
 
 treenode* make_treenode(int a, token* lex);
 
-void insert_children(treenode* node, type* children,int n,token* lex);
+void insert_children(treenode* node, tokentype* children,int n,token* lex);
 
 void inorder(Nary_tree root,FILE* fptr);
 

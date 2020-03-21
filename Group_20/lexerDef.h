@@ -128,12 +128,12 @@ DEFAULT,
 FALSE1,
 TRUE1,
 EPS,
-ENUM_END} type;                                                                          //Terminals
+ENUM_END} tokentype;                                                                          //Terminals
 
 
 typedef struct token{
     char* str;
-    type tag;
+    tokentype tag;
     int line_no;
 } token;
 #endif

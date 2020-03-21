@@ -15,9 +15,9 @@ typedef struct set
     hashtable set;
 } set;
 
-void insertSet(set s, type t);
+void insertSet(set s, tokentype t);
 
-bool isSetMember(set s, type t);
+bool isSetMember(set s, tokentype t);
 
 bool setUnion(set dest_set, set source_set);
 

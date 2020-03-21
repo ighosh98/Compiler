@@ -10,8 +10,8 @@ G Adityan	 2016B1A70929P
 #include "lexerDef.h"
 
 typedef  struct prodn{
-    type* rule;
-    type non_terminal;
+    tokentype* rule;
+    tokentype non_terminal;
     int size;
 } prodn;
 

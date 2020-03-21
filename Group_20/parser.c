@@ -78,12 +78,12 @@ void printProduction(prodn p)
 }
 
 
-bool isterminal(type t)
+bool isterminal(tokentype t)
 {
     return ((t>=$) && (t<ENUM_END));
 }
 
-bool isNonterminal(type t)
+bool isNonterminal(tokentype t)
 {
     return ((t>ENUM_START)&&(t<$));
 }
@@ -95,7 +95,7 @@ void make_str_to_enum()
         insertTable(strToEnum,symbol_map[i],i);
 }
 
-void makeFirstAndFollow(productions grammar, type start_symbol)
+void makeFirstAndFollow(productions grammar, tokentype start_symbol)
 {
     getFirstSet(grammar);
     getFollowSet(grammar, start_symbol);
@@ -212,7 +212,7 @@ void getFirstSet(productions grammar)
 }
 
 
-void getFollowSet(productions grammar,type start_symbol)
+void getFollowSet(productions grammar,tokentype start_symbol)
 {
     nonterminal_FollowSet = (set *)malloc(sizeof(set)*($));
     for(int i=0;i<$;i++)
@@ -324,7 +324,7 @@ productions read_grammar()
     while(fgets(buff, 1000, fptr))
     {
 	int count = 0;
-	type* rule =(type*)malloc(RULES_BUFF*sizeof(type));
+	tokentype* rule =(tokentype*)malloc(RULES_BUFF*sizeof(tokentype));
 	char* tok;
 	tok = strtok(buff,"\n");
 	tok = strtok(buff, " ");
@@ -337,7 +337,7 @@ productions read_grammar()
 
 	}
 	//remove extra wasted space using realloc
-	rule =(type *) realloc(rule, sizeof(type)*count);
+	rule =(tokentype *) realloc(rule, sizeof(tokentype)*count);
 
 	//make production from given rule
 	prodn temp;
@@ -365,7 +365,7 @@ void makeParsingTable(productions grammar)
 {
     //initialize all the elements to error entries
     for(int i=0;i<$;i++)
-	for(type j=$;j<= ENUM_END;j++)
+	for(tokentype j=$;j<= ENUM_END;j++)
 	{
 	    parsing_table[i][j-$].rule = NULL;
 	    parsing_table[i][j-$].size=0;
@@ -464,7 +464,7 @@ void makeParsingTable(productions grammar)
 
 
 
-Nary_tree parse_input(type start_symbol, char* sourcefile, productions grammar)
+Nary_tree parse_input(tokentype start_symbol, char* sourcefile, productions grammar)
 {
     bool error_flag = false;
     bool recovery_flag = false;

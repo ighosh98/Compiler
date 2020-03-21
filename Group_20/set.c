@@ -10,12 +10,12 @@ G Adityan	 2016B1A70929P
 #include "lexerDef.h"
 #include<stdbool.h>
 #include "lexer.h"
-void insertSet(set s, type a)
+void insertSet(set s, tokentype a)
 {
     insertTable(s.set,symbol_map[a],a); //insert (Token, enum of token) into the set.
 }
 
-bool isSetMember(set s, type a)
+bool isSetMember(set s, tokentype a)
 {
     if(searchTable(s.set,symbol_map[a])!=NULL)
 	return true;

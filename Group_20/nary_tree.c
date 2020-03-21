@@ -93,7 +93,7 @@ treenode* make_treenode(int a, token* lex)
     return temp;
 }
 
-void insert_children(treenode* node, type* children, int n, token* lex)
+void insert_children(treenode* node, tokentype* children, int n, token* lex)
 {
     treenode** temp = (treenode**)malloc(sizeof(treenode*)*n);
     for(int i=0;i<n;i++)
