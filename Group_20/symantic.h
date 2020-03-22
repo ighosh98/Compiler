@@ -6,6 +6,6 @@
 #include "ast.h"
 #include "lexerDef.h"
 
-void type_symantics(AST);
+void type_symantics(astnode* root, astnode* parent);
 
 #endif

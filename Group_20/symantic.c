@@ -114,9 +114,9 @@ void type_symantics(astnode* root, astnode* parent)
 		}break;
 	    case RANGE_ARRAYS:
 		{//ayush
-		    root->isarr = true;
-		    root->range_low = root->children[0].lexeme;   //convert to int
-		    root->range_high = root->children[1].lexeme; //convert to int
+		    //root->isarr = true;
+		    //root->range_low = root->children[0]->lexeme;   //convert to int
+		    //root->range_high = root->children[1]->lexeme; //convert to int
 
 		    //how to handle var in array range??
 //###############################################################################################
@@ -169,7 +169,7 @@ void type_symantics(astnode* root, astnode* parent)
 		}break;
 	    case VAR_ID_NUM:
 		{//ayush
-		    root->type = root->children[0].type;
+		    root->type = root->children[0]->type;
 
 		    //if var_id_num -> id whichstmt. then type of ID can only be seen from symbol table.
 
@@ -180,7 +180,8 @@ void type_symantics(astnode* root, astnode* parent)
 		{//ayush
 		    root->type = root->children[0]->type;
 		    if(root->type!=NONE && root->type!=integer)
-			ERROR;
+		    {}
+			//ERROR;
 		   //adityan
 		   //indraneel 
 		}break;
@@ -193,7 +194,8 @@ void type_symantics(astnode* root, astnode* parent)
 	    case ASSIGNMENTSTMT:
 		{//ayush
 		    if(root->children[0]->type!=root->children[1]->type)
-			ERROR;
+		    {}
+			///ERROR;
 		   //adityan
 		   //indraneel 
 		}break;
@@ -211,7 +213,7 @@ void type_symantics(astnode* root, astnode* parent)
 		}break;
 	    case LVALUEARRSTMT:
 		{//ayush
-		    if(root->children[0].type!=integer)ERROR;
+		    if(root->children[0]->type!=integer){}//ERROR;
 		    root->type = root->children[1]->type;
 		   //adityan
 		   //indraneel 
@@ -231,7 +233,7 @@ void type_symantics(astnode* root, astnode* parent)
 		}break;
 	    case OPTIONAL:
 		{//ayush
-		    root->children[0].type = NONE;  //idlist has no type
+		    root->children[0]->type = NONE;  //idlist has no type
 		   //adityan
 		   //indraneel 
 		}break;
@@ -290,7 +292,7 @@ void type_symantics(astnode* root, astnode* parent)
 	    case ARITHMETICORBOOLEANEXPR:
 		{//ayush
 		    if(root->children[1]->type!=NONE && root->children[0]->type!=root->children[1]->type)
-			ERROR;
+		    {}//	ERROR;
 		    else
 			root->type = root->children[0]->type;
 		   //adityan
@@ -303,7 +305,7 @@ void type_symantics(astnode* root, astnode* parent)
 		    else
 		    {
 			if(root->children[2]->type!=NONE && root->children[1]->type!=root->children[2]->type)
-			    ERROR;
+			{}//    ERROR;
 			else
 			    root->type = root->children[1]->type;
 		    }
@@ -312,99 +314,184 @@ void type_symantics(astnode* root, astnode* parent)
 		}break;
 	    case ANYTERM:
 		{//ayush
-		    
+		   if(root->children[0]->tok == BOOLCONSTT)
+		      root->type = root->children[0]->type;
+		   else
+		   {
+		       if(root->children[1]->type!=NONE && root->children[0]->type!=root->children[1]->type)
+		       {} // ERROR;
+		       else
+			   root->type = root->children[0]->type;
+		   } 
 		   //adityan
 		   //indraneel 
 		}break;
 	    case N8:
 		{//ayush
+		    if(root->children[0]->tok == EPS)
+			root->type = root->children[0]->type;
+		    else
+		    {
+			if(root->children[2]->type!=NONE && root->children[1]->type!=root->children[2]->type)
+			{} // ERROR;
+			else
+			    root->type = root->children[1]->type;
+		    }
 		   //adityan
 		   //indraneel 
 		}break;
 	    case ARITHMETICEXPR:
 		{//ayush
+		    if(root->children[1]->type!=NONE && root->children[0]->type!=root->children[1]->type)
+		    {} //error
+		    else
+		    {
+			root->type = root->children[0]->type;
+		    }
 		   //adityan
 		   //indraneel 
 		}break;
 	    case N4:
 		{//ayush
+		    if(root->children[0]->tok == EPS)
+			root->type = root->children[0]->type;
+		    else
+		    {
+			if(root->children[2]->type!=NONE && root->children[1]->type!=root->children[2]->type)
+			{} // ERROR;
+			else
+			    root->type = root->children[1]->type;
+		    }
+
 		   //adityan
 		   //indraneel 
 		}break;
 	    case TERM:
 		{//ayush
+		    if(root->children[1]->type!=NONE && root->children[0]->type!=root->children[1]->type)
+		    {} //error
+		    else
+		    {
+			root->type = root->children[0]->type;
+		    }
+
 		   //adityan
 		   //indraneel 
 		}break;
 	    case N5:
 		{//ayush
+		    if(root->children[0]->tok == EPS)
+			root->type = root->children[0]->type;
+		    else
+		    {
+			if(root->children[2]->type!=NONE && root->children[1]->type!=root->children[2]->type)
+			{} // ERROR;
+			else
+			    root->type = root->children[1]->type;
+		    }
+
 		   //adityan
 		   //indraneel 
 		}break;
 	    case FACTOR:
 		{//ayush
+		    root->type = root->children[0]->type;
 		   //adityan
 		   //indraneel 
 		}break;
 	    case OP1:
 		{//ayush
+		    return;
 		   //adityan
 		   //indraneel 
 		}break;
 	    case OP2:
 		{//ayush
+		    return;
 		   //adityan
 		   //indraneel 
 
 		}break;
 	    case LOGICALOP:
 		{//ayush
+		    return;
 		   //adityan
 		   //indraneel 
 
 		}break;
 	    case RELATIONALOP:
 		{//ayush
+		    return;
 		   //adityan
 		   //indraneel 
 		}break;
 	    case DECLARSTMT:
 		{//ayush
+		    root->children[0]->type = root->children[1]->type;
 		   //adityan
 		   //indraneel 
 		}break;
 	    case CONDITIONALSTMT:
 		{//ayush
+		    if(root->children[0]->type!=integer || root->children[0]->type!=boolean
+			    || root->children[0]->type!=root->children[1]->type)
+		    {}//error;
+
 		   //adityan
 		   //indraneel 
 		}break;
 	    case CASESTMTS:
 		{//ayush
+		    if(root->children[2]->type!=NONE && root->children[0]->type!=root->children[2]->type)
+		    {} //ERROR
+		    else
+			root->type = root->children[0]->type;
 		   //adityan
 		   //indraneel 
 		}break;
 	    case N9:
 		{//ayush
+
+			if(root->children[0]->tok == EPS)
+			{
+			    root->type = root->children[0]->type;
+			}
+			else
+			{
+			    if(root->children[2]->type!=NONE && root->children[0]->type!=root->children[2]->type)
+			    {}//ERROR
+			    else
+			    {
+				root->type = root->children[0]->type;
+			    }
+			}
+
 		   //adityan
 		   //indraneel 
 		}break;
 	    case VALUE:
 		{//ayush
+		    root->type = root->children[0]->type;
 		   //adityan
 		   //indraneel 
 		}break;
 	    case DEFAULT1:
 		{//ayush
+		    return;
 		   //adityan
 		   //indraneel 
 		}break;
 	    case ITERATIVESTMT:
 		{//ayush
+		    return;
 		   //adityan
 		   //indraneel 
 		}break;
 	    case RANGE:
 		{//ayush
+		    if((root->children[0]->type!=integer && root->children[1]->type!=integer) || 
+			(root->children[0]->type!=variable && root->children[1]->type!=variable))
+		    {} //ERROR
 		   //adityan
 		   //indraneel 
 		}break;
@@ -412,7 +499,7 @@ void type_symantics(astnode* root, astnode* parent)
     }
     else
     {
-	return root->node = make_astnode(root);
+	if(root->tok == NUM)
+	    root->type = integer;
     }
 }
-    

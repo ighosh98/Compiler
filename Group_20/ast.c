@@ -31,9 +31,8 @@ void printAST(astnode* root)
     if(root->children){
 	printf("%s --> ",symbol_map[root->tok]);
 	for(int i=0;i<root->n;i++)
-	    if(root->children[i])
-		printf("%s  ", symbol_map[root->children[i]->tok]);
-	printf("\n\n");
+	    printf("%s  ", symbol_map[root->children[i]->tok]);
+	printf("    %d\n\n", root->type);
 	for(int i=0;i<root->n;i++)
 	    printAST(root->children[i]);
     }
