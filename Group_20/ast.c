@@ -420,11 +420,10 @@ astnode* makeAST_helper(treenode* root)
 		    else
 		    {
 			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(2*sizeof(astnode*));
-			temp->n = 2;
+			temp->children = (astnode**)malloc(1*sizeof(astnode*));
+			temp->n = 1;
 
 			temp->children[0] = makeAST_helper(root->children[1]);
-			temp->children[1] = makeAST_helper(root->children[3]);
 			return temp;
 		    }
 		}break;
