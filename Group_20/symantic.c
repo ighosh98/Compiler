@@ -3,16 +3,25 @@
 #include "ast.h"
 #include "astdef.h"
 
-void type_symantics(AST root)
+void type_symantics(astnode* root, astnode* parent)
 {
     if(root==NULL)return;
     
+    //postorder traversal of the tree
+    //apply rules on the children 
+    for(int i =0;i<root->n;i++)
+	type_symantics(root->children[i], root);
+
+
+    //after children are done then apply rule
+    //on the current node
     if(root->children)
     {
 	switch(root->tok)
 	{
 	    case PROGRAM:
 		{
+		    
 		}break;
 	    case MODULEDECLARATIONS:
 		{
@@ -37,567 +46,159 @@ void type_symantics(AST root)
 
 	    case INPUT_PLIST:
 		{
-		}
+		}break;
 
 	    case N1:
 		{
-		}
+		}break;
 	    case OUTPUT_PLIST:
 		{
-		}
+		}break;
 	    case N2:
 		{
-		}
+		}break;
 	    case DATATYPE:
 		{
-		}
+		}break;
 	    case RANGE_ARRAYS:
 		{
-		}
+		}break;
 	    case TYPE:
 		{
-		}
+		}break;
 	    case MODULEDEF:
 		{
-		}
+		}break;
 	    case STATEMENTS:
 		{
-		}
+		}break;
 	    case STATEMENT:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
-		}
+		}break;
 	    case IOSTMT:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1+1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    temp->children[1] = makeAST_helper(root->children[2]);
-		    return temp;
-		}
+		}break;
 	    case BOOLCONSTT:
 		{	
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
 
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
-
-		}
+		}break;
 	    case VAR:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
-		}
+		}break;
 	    case VAR_ID_NUM:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
-		}
+		}break;
 	    case WHICHID:
 		{
-		    if(root->children[0]->tok==EPS)
-		    {
-			return root->node = NULL;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(1*sizeof(astnode*));
-			temp->n = 1;
-
-			temp->children[0] = makeAST_helper(root->children[1]);
-			return temp;
-		    }
-		}
+		}break;
 	    case SIMPLESTMT:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
-		}
+		}break;
 	    case ASSIGNMENTSTMT:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(2*sizeof(astnode*));
-		    temp->n = 2;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    temp->children[1] = makeAST_helper(root->children[1]);
-		    return temp;
-		}
+		}break;
 	    case WHICHSTMT:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
-		}
+		}break;
 	    case LVALUEIDSTMT:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(2*sizeof(astnode*));
-		    temp->n = 2;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    temp->children[1] = makeAST_helper(root->children[1]);
-		    return temp;
-		}
+		}break;
 	    case LVALUEARRSTMT:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(3*sizeof(astnode*));
-		    temp->n = 3;
-
-		    temp->children[0] = makeAST_helper(root->children[1]);
-		    temp->children[1] = makeAST_helper(root->children[3]);
-		    temp->children[2] = makeAST_helper(root->children[4]);
-		    return temp;
-		}
+		}break;
 	    case INDEX:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
-
-
 		}break;
 	    case MODULEREUSESTMT:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(3*sizeof(astnode*));
-		    temp->n = 3;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    temp->children[1] = makeAST_helper(root->children[3]);
-		    temp->children[2] = makeAST_helper(root->children[6]);
-		    return temp;
 		}break;
 	    case OPTIONAL:
 		{
-		    if(root->children[0]->tok==EPS)
-		    {
-			return root->node = NULL;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(2*sizeof(astnode*));
-			temp->n = 2;
-
-			temp->children[0] = makeAST_helper(root->children[1]);
-			temp->children[1] = makeAST_helper(root->children[3]);
-			return temp;
-		    }
 		}break;
 	    case IDLIST:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(2*sizeof(astnode*));
-		    temp->n = 2;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    temp->children[1] = makeAST_helper(root->children[1]);
-		    return temp;
 		}break;
 	    case N3:
 		{
-		    if(root->children[0]->tok==EPS)
-		    {
-			return root->node = NULL;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(2*sizeof(astnode*));
-			temp->n = 2;
-
-			temp->children[0] = makeAST_helper(root->children[1]);
-			temp->children[1] = makeAST_helper(root->children[2]);
-			return temp;
-		    }
 		}break;
 	    case EXPRESSION:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
 		}break;
 	    case U:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(2*sizeof(astnode*));
-		    temp->n = 2;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    temp->children[1] = makeAST_helper(root->children[1]);
-		    return temp;
 		}break;
 	    case NEW_NT:
 		{
-		    if(root->children[0]->tok==BO)
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(1*sizeof(astnode*));
-			temp->n = 1;
-
-			temp->children[0] = makeAST_helper(root->children[1]);
-			return temp;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(1*sizeof(astnode*));
-			temp->n = 1;
-
-			temp->children[0] = makeAST_helper(root->children[0]);
-			return temp;
-		    }
 		}break;
 	    case UNARY_OP:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
-
 
 		}break;
 	    case ARITHMETICORBOOLEANEXPR:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(2*sizeof(astnode*));
-		    temp->n = 2;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    temp->children[1] = makeAST_helper(root->children[1]);
-		    return temp;
 		}break;
 	    case N7:
 		{
-		    if(root->children[0]->tok==EPS)
-		    {
-			return root->node = NULL;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(3*sizeof(astnode*));
-			temp->n = 3;
-
-			temp->children[0] = makeAST_helper(root->children[0]);
-			temp->children[1] = makeAST_helper(root->children[1]);
-			temp->children[2] = makeAST_helper(root->children[2]);
-			return temp;
-		    }
 		}break;
 	    case ANYTERM:
 		{
-		    if(root->children[0]->tok==BOOLCONSTT)
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(1*sizeof(astnode*));
-			temp->n = 1;
-
-			temp->children[0] = makeAST_helper(root->children[0]);
-			return temp;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(2*sizeof(astnode*));
-			temp->n = 2;
-
-			temp->children[0] = makeAST_helper(root->children[0]);
-			temp->children[1] = makeAST_helper(root->children[1]);
-			return temp;
-		    }
 		}break;
 	    case N8:
 		{
-		    if(root->children[0]->tok==EPS)
-		    {
-			return root->node = NULL;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(3*sizeof(astnode*));
-			temp->n = 3;
-
-			temp->children[0] = makeAST_helper(root->children[0]);
-			temp->children[1] = makeAST_helper(root->children[1]);
-			temp->children[2] = makeAST_helper(root->children[2]);
-			return temp;
-		    }
 		}break;
 	    case ARITHMETICEXPR:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(2*sizeof(astnode*));
-		    temp->n = 2;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    temp->children[1] = makeAST_helper(root->children[1]);
-		    return temp;
 		}break;
 	    case N4:
 		{
-		    if(root->children[0]->tok==EPS)
-		    {
-			return root->node = NULL;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(3*sizeof(astnode*));
-			temp->n = 3;
-
-			temp->children[0] = makeAST_helper(root->children[0]);
-			temp->children[1] = makeAST_helper(root->children[1]);
-			temp->children[2] = makeAST_helper(root->children[2]);
-			return temp;
-		    }
 		}break;
 	    case TERM:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(2*sizeof(astnode*));
-		    temp->n = 2;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    temp->children[1] = makeAST_helper(root->children[1]);
-		    return temp;
 		}break;
 	    case N5:
 		{
-		    if(root->children[0]->tok==EPS)
-		    {
-			return root->node = NULL;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(3*sizeof(astnode*));
-			temp->n = 3;
-
-			temp->children[0] = makeAST_helper(root->children[0]);
-			temp->children[1] = makeAST_helper(root->children[1]);
-			temp->children[2] = makeAST_helper(root->children[2]);
-			return temp;
-		    }
 		}break;
 	    case FACTOR:
 		{
-		    if(root->children[0]->tok==BO)
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(1*sizeof(astnode*));
-			temp->n = 1;
-
-			temp->children[0] = makeAST_helper(root->children[1]);
-			return temp;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(1*sizeof(astnode*));
-			temp->n = 1;
-
-			temp->children[0] = makeAST_helper(root->children[0]);
-			return temp;
-		    }
 		}break;
 	    case OP1:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
-
 		}break;
 	    case OP2:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
 
 		}break;
 	    case LOGICALOP:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
 
 		}break;
 	    case RELATIONALOP:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
 		}break;
 	    case DECLARSTMT:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(2*sizeof(astnode*));
-		    temp->n = 2;
-
-		    temp->children[0] = makeAST_helper(root->children[1]);
-		    temp->children[1] = makeAST_helper(root->children[3]);
-		    return temp;
 		}break;
 	    case CONDITIONALSTMT:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(3*sizeof(astnode*));
-		    temp->n = 3;
-
-		    temp->children[0] = makeAST_helper(root->children[2]);
-		    temp->children[1] = makeAST_helper(root->children[5]);
-		    temp->children[2] = makeAST_helper(root->children[6]);
-		    return temp;
 		}break;
 	    case CASESTMTS:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(3*sizeof(astnode*));
-		    temp->n = 3;
-
-		    temp->children[0] = makeAST_helper(root->children[1]);
-		    temp->children[1] = makeAST_helper(root->children[3]);
-		    temp->children[2] = makeAST_helper(root->children[6]);
-		    return temp;
 		}break;
 	    case N9:
 		{
-		    if(root->children[0]->tok==EPS)
-		    {
-			return root->node = NULL;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(3*sizeof(astnode*));
-			temp->n = 3;
-
-			temp->children[0] = makeAST_helper(root->children[1]);
-			temp->children[1] = makeAST_helper(root->children[3]);
-			temp->children[2] = makeAST_helper(root->children[6]);
-			return temp;
-		    }
 		}break;
 	    case VALUE:
 		{
-		    if(root->children[0]->tok==NUM)
-		    {
-			return root->node = make_astnode(root->children[0]);
-			//return root->node = NULL;
-		    }
-		    else if(root->children[0]->tok==TRUE1)
-		    {
-			return root->node = make_astnode(root->children[0]);
-			//return root->node = NULL;
-		    }
-		    else
-		    {
-			return root->node = make_astnode(root->children[0]);
-			//return root->node = NULL;
-		    }
 		}break;
 	    case DEFAULT1:
 		{
-		    if(root->children[0]->tok==EPS)
-		    {
-			return root->node = NULL;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(1*sizeof(astnode*));
-			temp->n = 1;
-
-			temp->children[0] = makeAST_helper(root->children[2]);
-			return temp;
-		    }
 		}break;
 	    case ITERATIVESTMT:
 		{
-		    if(root->children[0]->tok==FOR)
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(3*sizeof(astnode*));
-			temp->n = 3+1;
-
-			temp->children[0] = makeAST_helper(root->children[0]);
-			temp->children[1] = makeAST_helper(root->children[2]);
-			temp->children[2] = makeAST_helper(root->children[4]);
-			temp->children[3] = makeAST_helper(root->children[7]);
-			return temp;
-		    }
-		    else
-		    {
-			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(2*sizeof(astnode*));
-			temp->n = 2+1;
-
-			temp->children[0] = makeAST_helper(root->children[0]);
-			temp->children[1] = makeAST_helper(root->children[2]);
-			temp->children[2] = makeAST_helper(root->children[5]);
-			return temp;
-		    }
 		}break;
 	    case RANGE:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(2*sizeof(astnode*));
-		    temp->n = 2;
-
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    temp->children[1] = makeAST_helper(root->children[2]);
-		    return temp;
-		}
-
-
+		}break;
 	}
     }
     else

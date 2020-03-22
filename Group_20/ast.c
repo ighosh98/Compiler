@@ -67,7 +67,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -94,7 +94,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -133,7 +133,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -163,7 +163,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -192,7 +192,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -264,7 +264,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -328,7 +328,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -415,7 +415,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -442,7 +442,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -520,7 +520,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -560,7 +560,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -588,7 +588,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -616,7 +616,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -726,7 +726,7 @@ astnode* makeAST_helper(treenode* root)
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
@@ -742,27 +742,14 @@ astnode* makeAST_helper(treenode* root)
 		}break;
 	    case VALUE:
 		{
-		    if(root->children[0]->tok==NUM)
-		    {
-			return root->node = make_astnode(root->children[0]);
-			//return root->node = NULL;
-		    }
-		    else if(root->children[0]->tok==TRUE1)
-		    {
-			return root->node = make_astnode(root->children[0]);
-			//return root->node = NULL;
-		    }
-		    else
-		    {
-			return root->node = make_astnode(root->children[0]);
-			//return root->node = NULL;
-		    }
+		    return root->node = makeAST_helper(root->children[0]);
+		    
 		}break;
 	    case DEFAULT1:
 		{
 		    if(root->children[0]->tok==EPS)
 		    {
-			return root->node = NULL;
+			return root->node = makeAST_helper(root->children[0]);
 		    }
 		    else
 		    {
