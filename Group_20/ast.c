@@ -157,7 +157,7 @@ astnode* makeAST_helper(treenode* root)
 		    temp->children[2] = makeAST_helper(root->children[3]);
 		    return temp;
 
-		}
+		}break;
 
 	    case N1:
 		{
@@ -176,7 +176,8 @@ astnode* makeAST_helper(treenode* root)
 			temp->children[2] = makeAST_helper(root->children[4]);
 			return temp;
 		    }
-		}
+		}break;
+
 	    case OUTPUT_PLIST:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -187,7 +188,7 @@ astnode* makeAST_helper(treenode* root)
 		    temp->children[1] = makeAST_helper(root->children[2]);
 		    temp->children[2] = makeAST_helper(root->children[3]);
 		    return temp;
-		}
+		}break;
 	    case N2:
 		{
 		    if(root->children[0]->tok==EPS)
@@ -205,7 +206,7 @@ astnode* makeAST_helper(treenode* root)
 			temp->children[2] = makeAST_helper(root->children[4]);
 			return temp;
 		    }
-		}
+		}break;
 	    case DATATYPE:
 		{
 		    if(root->children[0]->tok==INTEGER || root->children[0]->tok==REAL
@@ -230,7 +231,7 @@ astnode* makeAST_helper(treenode* root)
 			temp->children[1] = makeAST_helper(root->children[5]);
 			return temp;
 		    }
-		}
+		}break;
 	    case RANGE_ARRAYS:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -240,7 +241,7 @@ astnode* makeAST_helper(treenode* root)
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    temp->children[1] = makeAST_helper(root->children[2]);
 		    return temp;
-		}
+		}break;
 	    case TYPE:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -250,7 +251,7 @@ astnode* makeAST_helper(treenode* root)
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    return temp;
 
-		}
+		}break;
 	    case MODULEDEF:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -259,7 +260,7 @@ astnode* makeAST_helper(treenode* root)
 
 		    temp->children[0] = makeAST_helper(root->children[1]);
 		    return temp;
-		}
+		}break;
 	    case STATEMENTS:
 		{
 		    if(root->children[0]->tok==EPS)
@@ -276,7 +277,7 @@ astnode* makeAST_helper(treenode* root)
 			temp->children[1] = makeAST_helper(root->children[1]);
 			return temp;
 		    }
-		}
+		}break;
 	    case STATEMENT:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -285,7 +286,7 @@ astnode* makeAST_helper(treenode* root)
 
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    return temp;
-		}
+		}break;
 	    case IOSTMT:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -295,7 +296,7 @@ astnode* makeAST_helper(treenode* root)
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    temp->children[1] = makeAST_helper(root->children[2]);
 		    return temp;
-		}
+		}break;
 	    case BOOLCONSTT:
 		{	
 		    astnode* temp = root->node = make_astnode(root);
@@ -304,8 +305,7 @@ astnode* makeAST_helper(treenode* root)
 
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    return temp;
-
-		}
+		}break;
 	    case VAR:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -314,7 +314,7 @@ astnode* makeAST_helper(treenode* root)
 
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    return temp;
-		}
+		}break;
 	    case VAR_ID_NUM:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -323,7 +323,7 @@ astnode* makeAST_helper(treenode* root)
 
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    return temp;
-		}
+		}break;
 	    case WHICHID:
 		{
 		    if(root->children[0]->tok==EPS)
@@ -339,7 +339,7 @@ astnode* makeAST_helper(treenode* root)
 			temp->children[0] = makeAST_helper(root->children[1]);
 			return temp;
 		    }
-		}
+		}break;
 	    case SIMPLESTMT:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -348,7 +348,7 @@ astnode* makeAST_helper(treenode* root)
 
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    return temp;
-		}
+		}break;
 	    case ASSIGNMENTSTMT:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -358,7 +358,7 @@ astnode* makeAST_helper(treenode* root)
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    temp->children[1] = makeAST_helper(root->children[1]);
 		    return temp;
-		}
+		}break;
 	    case WHICHSTMT:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -367,7 +367,7 @@ astnode* makeAST_helper(treenode* root)
 
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    return temp;
-		}
+		}break;
 	    case LVALUEIDSTMT:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -377,7 +377,7 @@ astnode* makeAST_helper(treenode* root)
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    temp->children[1] = makeAST_helper(root->children[1]);
 		    return temp;
-		}
+		}break;
 	    case LVALUEARRSTMT:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -388,7 +388,7 @@ astnode* makeAST_helper(treenode* root)
 		    temp->children[1] = makeAST_helper(root->children[3]);
 		    temp->children[2] = makeAST_helper(root->children[4]);
 		    return temp;
-		}
+		}break;
 	    case INDEX:
 		{
 		    astnode* temp = root->node = make_astnode(root);
@@ -796,7 +796,7 @@ astnode* makeAST_helper(treenode* root)
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    temp->children[1] = makeAST_helper(root->children[2]);
 		    return temp;
-		}
+		}break;
 
 
 	}
