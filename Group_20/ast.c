@@ -370,22 +370,20 @@ astnode* makeAST_helper(treenode* root)
 	    case LVALUEIDSTMT:
 		{
 		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(2*sizeof(astnode*));
-		    temp->n = 2;
+		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
+		    temp->n = 1;
 
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    temp->children[1] = makeAST_helper(root->children[1]);
+		    temp->children[0] = makeAST_helper(root->children[1]);
 		    return temp;
 		}break;
 	    case LVALUEARRSTMT:
 		{
 		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(3*sizeof(astnode*));
-		    temp->n = 3;
+		    temp->children = (astnode**)malloc(2*sizeof(astnode*));
+		    temp->n = 2;
 
 		    temp->children[0] = makeAST_helper(root->children[1]);
-		    temp->children[1] = makeAST_helper(root->children[3]);
-		    temp->children[2] = makeAST_helper(root->children[4]);
+		    temp->children[1] = makeAST_helper(root->children[4]);
 		    return temp;
 		}break;
 	    case INDEX:

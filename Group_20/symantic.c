@@ -367,7 +367,35 @@ void type_symantics(astnode* root, astnode* parent)
     }
     else
     {
-	if(root->tok == NUM)
-	    root->type = integer;
+	switch(root->tok)
+	{
+	    case INTEGER:
+	    case NUM:
+		root->type = integer;
+		break;
+
+	    case RNUM:
+	    case REAL:
+		root->type = real;
+		break;
+
+	    case FALSE1:
+	    case TRUE1:
+	    case BOOLEAN:
+		root->type = boolean;
+		break;
+	    case ID:
+		{
+		    //check the data type from the symbol table
+		    //assign type based on the table.
+		    //if type not available then the id has not been declared 
+		    //therefore its an error.
+		}break;
+	    case EPS:
+		root->type = NONE;
+		break;
+	}
+	    //lookup symbol table to find its type
+
     }
 }
