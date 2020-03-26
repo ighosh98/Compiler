@@ -1,0 +1,51 @@
+#ifndef SYMBOL_TABLE_H
+#define SYMBOL_TABLE_H
+
+#include <stdio.h>
+#include "lexerDef.h"
+#include "lexer.h"
+#include "stdbool.h"
+#include "astdef.h"
+typedef struct symbol_table_node{
+    char name[21];
+    bool isarr;
+    bool isdynamic;
+    struct symbol_table_node * dyn_range1;
+    struct symbol_table_node * dyn_range2;
+    int const_range1;
+    int const_range2;
+
+    token * lexeme;
+    datatype type;
+    struct symbol_table_node* next;
+
+} symbol_table_node;
+
+
+typedef struct symbolTable{
+    struct symbol_table_node** ar;
+    unsigned int size;
+} symbolTable;
+
+void printSymbolNode(symbol_table_node * a);
+
+symbol_table_node * makeSymbolNode(char* name , bool isarr,
+       	bool isdyn, symbol_table_node * d_range1, 
+	symbol_table_node* d_range2, int c_range1, 
+	int c_range2,token* lexeme, datatype type);
+
+symbol_table_node* insertToSymChain(symbol_table_node* ar[],
+       	symbol_table_node* t, unsigned int index);
+
+symbol_table_node* searchSymChain(symbol_table_node* head, char* str );
+
+symbol_table_node* searchSymTable(symbolTable table, char* str);
+
+symbolTable getSymbolTable(unsigned int n);
+
+symbol_table_node * insertSymbolTable(symbolTable table, 
+	char* name , bool isarr,
+	bool isdyn, symbol_table_node * d_range1, 
+	symbol_table_node* d_range2, int c_range1, 
+	int c_range2,token* lexeme, datatype type);
+#endif

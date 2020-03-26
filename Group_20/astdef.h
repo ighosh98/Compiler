@@ -2,7 +2,6 @@
 #define AST_DEF
 
 #include <stdio.h>
-#include "nary_tree.h"
 #include<stdlib.h>
 #include"lexerDef.h"
 #include "color.h"

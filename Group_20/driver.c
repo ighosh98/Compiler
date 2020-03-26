@@ -16,6 +16,7 @@ G Adityan	 2016B1A70929P
 #include "ast.h"
 #include "astdef.h"
 #include "symantic.h"
+#include "symboltable.h"
 int main(int argc,char **argv)
 {
     printf("############ Implementation Status ##############\n");
@@ -111,6 +112,7 @@ int main(int argc,char **argv)
 		    total_cpu_time, total_cpu_time_secs);
 	    
 	}
+	//////////////
 	else if(choice == 5)
 	{
 	    FILE * fptr = fopen(argv[2],"w");
