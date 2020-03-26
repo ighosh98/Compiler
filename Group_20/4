@@ -16,7 +16,7 @@
 //similarly output_list.
 
 
-symbolTable* table;
+symbolTable a = makeSymbolTable(1000);
 
 void type_symantics(astnode* root, astnode* parent)
 {
