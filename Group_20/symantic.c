@@ -2,14 +2,21 @@
 #include "lexerDef.h"
 #include "ast.h"
 #include "astdef.h"
-
+#include "symboltable.h"
 
 //SYMBOL TABLE is needed for proper symantic analysis
 //
 //type of ID is difficult. as it depends on the context. 
 //it might be a function, variable, var or array declaration, array index.
 //
+//
+//how to manage function prototype???
+//table node with type = function 
+//variable input_list which is a linked list within symbol table
+//similarly output_list.
 
+
+symbol_table = getSymbolTable(1000);
 
 void type_symantics(astnode* root, astnode* parent)
 {
@@ -399,3 +406,5 @@ void type_symantics(astnode* root, astnode* parent)
 
     }
 }
+
+

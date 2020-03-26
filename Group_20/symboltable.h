@@ -22,11 +22,14 @@ typedef struct symbol_table_node{
 } symbol_table_node;
 
 
+
 typedef struct symbolTable{
     struct symbol_table_node** ar;
+    struct symbolTable* parent;
     unsigned int size;
 } symbolTable;
 
+void deleteSymbolTable(symbolTable* table);
 void printSymbolNode(symbol_table_node * a);
 
 symbol_table_node * makeSymbolNode(char* name , bool isarr,
@@ -39,11 +42,11 @@ symbol_table_node* insertToSymChain(symbol_table_node* ar[],
 
 symbol_table_node* searchSymChain(symbol_table_node* head, char* str );
 
-symbol_table_node* searchSymTable(symbolTable table, char* str);
+symbol_table_node* searchSymbolTable(symbolTable* table, char* str);
 
-symbolTable getSymbolTable(unsigned int n);
+symbolTable* getSymbolTable(unsigned int n);
 
-symbol_table_node * insertSymbolTable(symbolTable table, 
+symbol_table_node * insertSymbolTable(symbolTable* table, 
 	char* name , bool isarr,
 	bool isdyn, symbol_table_node * d_range1, 
 	symbol_table_node* d_range2, int c_range1, 

@@ -4,6 +4,23 @@
 #include <string.h>
 #include "hash.h"
 
+void deleteSymbolTable(symbolTable* table)
+{
+    for(int i=0;i<table->size;i++)
+    {
+	symbol_table_node * head = table->ar[i];
+	while(head)
+	{
+	    symbol_table_node * temp = head;
+	    free(head);
+	    head = temp->next;
+	}
+    }
+    free(table->ar);
+    table->ar = NULL;
+    table->size = 0;
+}
+
 void printSymbolNode(symbol_table_node* a)
 {
     printf("%s  %d  %d  ",a->name,a->isarr,a->isdynamic);
@@ -34,7 +51,7 @@ symbol_table_node * makeSymbolNode(char* name , bool isarr,
     temp->const_range2 = c_range2;
     temp->lexeme = lexeme;
     temp->type = type;
-
+    
     return temp;
 }
 
@@ -64,39 +81,53 @@ symbol_table_node* searchSymChain(symbol_table_node* head, char* str )
     return temp;
 }
 
-symbol_table_node* searchSymTable(symbolTable table, char* str)
+symbol_table_node* searchSymbolTableHelper(symbolTable* table, char* str)
 {
-    unsigned int index = hashf(str)%table.size;
-    return searchSymChain(table.ar[index],str);
+    unsigned int index = hashf(str)%table->size;
+    
+    return searchSymChain(table->ar[index],str);
 }
 
-symbolTable getSymbolTable(unsigned int n)
+symbol_table_node* searchSymbolTable(symbolTable* table, char* str)
 {
-    symbolTable temp;
-    temp.ar = (symbol_table_node**) malloc(
+    if(table == NULL) return NULL;
+    
+    symbol_table_node* a = searchSymbolTableHelper(table, str);
+    if(a == NULL)
+	return searchSymbolTable(table->parent, str);
+    else
+	return a;
+
+}
+
+symbolTable* getSymbolTable(unsigned int n)
+{
+    symbolTable* temp = (symbolTable*)malloc(sizeof(symbolTable));;
+    temp->parent = NULL;
+    temp->ar = (symbol_table_node**) malloc(
 	    sizeof(symbol_table_node*)*n);
     for(int i=0;i<n;i++)
-	temp.ar[i]=NULL;
-    temp.size=n;
+	temp->ar[i]=NULL;
+    temp->size=n;
     return temp;
 }
 
-symbol_table_node * insertSymbolTable(symbolTable table,
+symbol_table_node * insertSymbolTable(symbolTable* table,
        	char* name , bool isarr,
 	bool isdyn, symbol_table_node * d_range1, 
 	symbol_table_node* d_range2, int c_range1, 
 	int c_range2,token* lexeme, datatype type)
 {
-    symbol_table_node * temp = searchSymTable(table,name);
+    symbol_table_node * temp = searchSymbolTable(table,name);
 
     if(temp!=NULL)return temp;
 
     temp = makeSymbolNode(name ,isarr, isdyn, d_range1, d_range2,
 	   c_range1, c_range2, lexeme, type);
 
-    unsigned int index = hashf(name)%table.size;
+    unsigned int index = hashf(name)%table->size;
 
-    symbol_table_node* check = insertToSymChain(table.ar,temp,index);
+    symbol_table_node* check = insertToSymChain(table->ar,temp,index);
     if(check!=NULL)
 	return temp;
     else
