@@ -6,14 +6,21 @@
 
 //SYMBOL TABLE is needed for proper symantic analysis
 //
-//type of ID is difficult. as it depends on the context. 
+//type of ID is difficult. as it depends on the context.
 //it might be a function, variable, var or array declaration, array index.
 //
 //
 //how to manage function prototype???
-//table node with type = function 
+//table node with type = function
 //variable input_list which is a linked list within symbol table
 //similarly output_list.
+
+/*
+* Type of expression should remain the same
+* Repeat declaration of identifier
+* Handling undeclared variable
+*/
+
 
 
 symbolTable* table;
@@ -21,9 +28,9 @@ symbolTable* table;
 void type_symantics(astnode* root, astnode* parent)
 {
     if(root==NULL)return;
-    
+
     //postorder traversal of the tree
-    //apply rules on the children 
+    //apply rules on the children
     for(int i =0;i<root->n;i++)
 	type_symantics(root->children[i], root);
 
@@ -34,6 +41,11 @@ void type_symantics(astnode* root, astnode* parent)
     {
 	switch(root->tok)
 	{
+	    /*
+	    * Check if default is defined or not defined
+        * The switch statement cannot have case statement with case keyword followed by any non integer value
+        * switch statement with an identifier of type real????
+	    */
 	    case PROGRAM:
 	    case MODULEDECLARATIONS:
 	    case MODULEDECLARATION:
@@ -42,6 +54,12 @@ void type_symantics(astnode* root, astnode* parent)
 	    case DRIVERMODULE:
 	    case RET:
 		{
+		    /*
+		    * Module Overloading not allowed
+            * Redundant declaration of module/Undeclared module
+            * variable returned by function is not assigned any value/assigned garbage value
+            * Function can't be invoked recursively
+		    */
 		    return;
 		}break;
 
@@ -50,9 +68,19 @@ void type_symantics(astnode* root, astnode* parent)
 	    case OUTPUT_PLIST:
 	    case N2:
 		{
+		    /*
+		    * Input parameter type mismatch
+            * Range mismatch of input parameter???
+            * Mismatch in the number of formal parameters and actual parameters
+
+		    * Output list of function can't contain array as parameter???
+		    * Check return type of function(integer,null,...)????
+            * Type mismatch of return/output parameter(Function skeleton return data type is different from actual return data type)
+            * Number of values returned mismatch???
+		    */
 		    root->children[0]->type = root->children[1]->type;
 		}break;
-	    
+
 	    case DATATYPE:
 		{
 		    root->type = root->children[0]->type;
@@ -65,8 +93,8 @@ void type_symantics(astnode* root, astnode* parent)
 
 		    //how to handle var in array range??
 //###############################################################################################
-		   
-		    
+
+
 		}break;
 	    case TYPE:
 		{
@@ -78,7 +106,7 @@ void type_symantics(astnode* root, astnode* parent)
 		{
 		    return;
 		}break;
-	    
+
 	    case IOSTMT:
 		{
 		    //first child stores while/for info. hence nothing needs to be done.
@@ -89,15 +117,15 @@ void type_symantics(astnode* root, astnode* parent)
 		{
 		    root->type = root->children[0]->type;
 		}break;
-	   
+
 	    case VAR_ID_NUM:
 		{
 		    root->type = root->children[0]->type;
 
 		    //if var_id_num -> id whichstmt. then type of ID can only be seen from symbol table.
 
-		   
-		    
+
+
 		}break;
 	    case WHICHID:
 		{
@@ -105,8 +133,8 @@ void type_symantics(astnode* root, astnode* parent)
 		    if(root->type!=NONE && root->type!=integer)
 		    {}
 			//ERROR;
-		   
-		    
+
+
 		}break;
 	    case SIMPLESTMT:
 		{
@@ -114,41 +142,45 @@ void type_symantics(astnode* root, astnode* parent)
 		}break;
 	    case ASSIGNMENTSTMT:
 		{
+		    /*
+		    * Assignment Errors
+            * Left var type!= right var type in assignment statement
+		    */
 		    if(root->children[0]->type!=root->children[1]->type)
 		    {}
 			///ERROR;
-		   
-		    
+
+
 		}break;
 	    case WHICHSTMT:
 	    case LVALUEIDSTMT:
 		{
 		    root->type = root->children[0]->type;
 		}break;
-	    
+
 	    case LVALUEARRSTMT:
 		{
 		    if(root->children[0]->type!=integer){}//ERROR;
 		    root->type = root->children[1]->type;
 		}break;
-	    
+
 	    case INDEX:
 		{
-		    root->type = root->children[0]->type;	   
+		    root->type = root->children[0]->type;
 		}break;
 
 	    case MODULEREUSESTMT:
 		{
 		    root->children[1]->type = NONE; //this idlist has no type
 
-		   
-		    
+
+
 		}break;
 	    case OPTIONAL:
 		{
 		    root->children[0]->type = NONE;  //idlist has no type
-		   
-		    
+
+
 		}break;
 	    case IDLIST:
 		{
@@ -156,8 +188,8 @@ void type_symantics(astnode* root, astnode* parent)
 			root->children[1]->type = NONE;
 		    else
 			root->children[0]->type = root->type;
-		   
-		    
+
+
 		}break;
 	    case N3:
 		{
@@ -172,34 +204,34 @@ void type_symantics(astnode* root, astnode* parent)
 			else
 			    root->children[0]->type = root->type;
 		    }
-		   
-		    
+
+
 
 		}break;
 	    case EXPRESSION:
 		{
 		    root->type = root->children[0]->type;
-		   
-		    
+
+
 		}break;
 	    case U:
 		{
 		    root->type = root->children[1]->type;
 
-		   
-		    
+
+
 		}break;
 	    case NEW_NT:
 		{
 		    root->type = root->children[0]->type;
-		   
-		    
+
+
 		}break;
 	    case UNARY_OP:
 		{
 		    return;
-		   
-		    
+
+
 
 		}break;
 	    case ARITHMETICORBOOLEANEXPR:
@@ -208,8 +240,8 @@ void type_symantics(astnode* root, astnode* parent)
 		    {}//	ERROR;
 		    else
 			root->type = root->children[0]->type;
-		   
-		    
+
+
 		}break;
 	    case N7:
 		{
@@ -222,8 +254,8 @@ void type_symantics(astnode* root, astnode* parent)
 			else
 			    root->type = root->children[1]->type;
 		    }
-		    
-		    
+
+
 		}break;
 	    case ANYTERM:
 		{
@@ -235,9 +267,9 @@ void type_symantics(astnode* root, astnode* parent)
 		       {} // ERROR;
 		       else
 			   root->type = root->children[0]->type;
-		   } 
-		   
-		    
+		   }
+
+
 		}break;
 	    case N8:
 		{
@@ -250,8 +282,8 @@ void type_symantics(astnode* root, astnode* parent)
 			else
 			    root->type = root->children[1]->type;
 		    }
-		   
-		    
+
+
 		}break;
 	    case ARITHMETICEXPR:
 		{
@@ -261,8 +293,8 @@ void type_symantics(astnode* root, astnode* parent)
 		    {
 			root->type = root->children[0]->type;
 		    }
-		   
-		    
+
+
 		}break;
 	    case N4:
 		{
@@ -276,8 +308,8 @@ void type_symantics(astnode* root, astnode* parent)
 			    root->type = root->children[1]->type;
 		    }
 
-		   
-		    
+
+
 		}break;
 	    case TERM:
 		{
@@ -309,6 +341,9 @@ void type_symantics(astnode* root, astnode* parent)
 	    case LOGICALOP:
 	    case RELATIONALOP:
 		{
+		    /*
+		    * Relational operations possible only on int and real
+		    */
 		    return;
 		}break;
 	    case DECLARSTMT:
@@ -321,8 +356,8 @@ void type_symantics(astnode* root, astnode* parent)
 			    || root->children[0]->type!=root->children[1]->type)
 		    {}//error;
 
-		   
-		    
+
+
 		}break;
 	    case CASESTMTS:
 		{
@@ -330,8 +365,8 @@ void type_symantics(astnode* root, astnode* parent)
 		    {} //ERROR
 		    else
 			root->type = root->children[0]->type;
-		   
-		    
+
+
 		}break;
 	    case N9:
 		{
@@ -350,8 +385,8 @@ void type_symantics(astnode* root, astnode* parent)
 			    }
 			}
 
-		   
-		    
+
+
 		}break;
 	    case VALUE:
 		{
@@ -364,11 +399,11 @@ void type_symantics(astnode* root, astnode* parent)
 		}break;
 	    case RANGE:
 		{
-		    if((root->children[0]->type!=integer && root->children[1]->type!=integer) || 
+		    if((root->children[0]->type!=integer && root->children[1]->type!=integer) ||
 			(root->children[0]->type!=variable && root->children[1]->type!=variable))
 		    {} //ERROR
-		   
-		    
+
+
 		}break;
 	}
     }
@@ -395,7 +430,7 @@ void type_symantics(astnode* root, astnode* parent)
 		{
 		    //check the data type from the symbol table
 		    //assign type based on the table.
-		    //if type not available then the id has not been declared 
+		    //if type not available then the id has not been declared
 		    //therefore its an error.
 		}break;
 	    case EPS:
