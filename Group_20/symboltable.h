@@ -15,6 +15,8 @@ typedef struct symbol_table_node{
     int const_range1;
     int const_range2;
 
+    bool isUsed;
+    bool isDefined;
     token * lexeme;
     datatype type;
     struct symbol_table_node* next;

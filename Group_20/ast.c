@@ -316,12 +316,26 @@ astnode* makeAST_helper(treenode* root)
 		}break;
 	    case VAR_ID_NUM:
 		{
-		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
+		    if(root->children[0]->tok==ID)
+		    {
+			astnode* temp = root->node = make_astnode(root);
+			temp->children = (astnode**)malloc(2*sizeof(astnode*));
+			temp->n = 2;
 
-		    temp->children[0] = makeAST_helper(root->children[0]);
-		    return temp;
+			temp->children[0] = makeAST_helper(root->children[0]);
+			temp->children[1] = makeAST_helper(root->children[1]);
+			return temp;
+
+		    }
+		    else
+		    {
+			astnode* temp = root->node = make_astnode(root);
+			temp->children = (astnode**)malloc(1*sizeof(astnode*));
+			temp->n = 1;
+
+			temp->children[0] = makeAST_helper(root->children[0]);
+			return temp;
+		    }
 		}break;
 	    case WHICHID:
 		{
@@ -686,7 +700,7 @@ astnode* makeAST_helper(treenode* root)
 		    temp->children[0] = makeAST_helper(root->children[0]);
 		    return temp;
 		}break;
-	    case DECLARSTMT:
+	    case DECLARESTMT:
 		{
 		    astnode* temp = root->node = make_astnode(root);
 		    temp->children = (astnode**)malloc(2*sizeof(astnode*));

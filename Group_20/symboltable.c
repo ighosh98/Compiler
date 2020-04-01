@@ -45,13 +45,14 @@ symbol_table_node * makeSymbolNode(char* name , bool isarr,
     strcpy(temp->name, name);
     temp->isarr = isarr;
     temp->isdynamic = isdyn;
-    temp->dyn_range1 = d_range1;
+    temp->dyn_range1 = d_range1;  
     temp->dyn_range2 = d_range2;
     temp->const_range1 = c_range1;
     temp->const_range2 = c_range2;
     temp->lexeme = lexeme;
     temp->type = type;
-    
+    temp->isUsed = false;
+    temp->isDefined = false;
     return temp;
 }
 

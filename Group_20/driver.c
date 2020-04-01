@@ -15,8 +15,8 @@ G Adityan	 2016B1A70929P
 #include <string.h>
 #include "ast.h"
 #include "astdef.h"
-#include "symantic.h"
 #include "symboltable.h"
+#include "symantic.h"
 int main(int argc,char **argv)
 {
     printf("############ Implementation Status ##############\n");
@@ -128,7 +128,13 @@ int main(int argc,char **argv)
 	    //makeParsingTable(p);
 	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
 	    AST a = makeAST(t.root);
+
+	    yellow();
+	    printf("created AST\n");
+	    reset();
+
 	    type_symantics(a.root,NULL);
+	    
 	    printAST(a.root);
 	    fclose(fptr);
 

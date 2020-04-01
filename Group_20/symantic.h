@@ -6,6 +6,6 @@
 #include "ast.h"
 #include "lexerDef.h"
 
-void type_symantics(astnode* root, astnode* parent);
+void type_symantics(astnode* root, symbolTable* current_table);
 
 #endif
