@@ -9,11 +9,11 @@ void deleteSymbolTable(symbolTable* table)
     for(int i=0;i<table->size;i++)
     {
 	symbol_table_node * head = table->ar[i];
-	while(head)
+	while(head!=NULL)
 	{
-	    symbol_table_node * temp = head;
+	    symbol_table_node * temp = head->next;
 	    free(head);
-	    head = temp->next;
+	    head = temp;
 	}
     }
     free(table->ar);
@@ -26,9 +26,9 @@ void printSymbolNode(symbol_table_node* a)
     printf("%s  %d  %d  ",a->name,a->isarr,a->isdynamic);
     
     if(a->isdynamic)
-	printf("%s  %s  ",a->dyn_range1->name, a->dyn_range2->name);
+	printf("%s  %s  ",a->drange1->name, a->drange2->name);
     else
-	printf("%d  %d  ",a->const_range1,a->const_range2);
+	printf("%d  %d  ",a->crange1,a->crange2);
     if(a->lexeme)
 	printf("%s",a->lexeme->str);
     printf("\n\n");
@@ -45,14 +45,16 @@ symbol_table_node * makeSymbolNode(char* name , bool isarr,
     strcpy(temp->name, name);
     temp->isarr = isarr;
     temp->isdynamic = isdyn;
-    temp->dyn_range1 = d_range1;  
-    temp->dyn_range2 = d_range2;
-    temp->const_range1 = c_range1;
-    temp->const_range2 = c_range2;
+    temp->drange1 = d_range1;  
+    temp->drange2 = d_range2;
+    temp->crange1 = c_range1;
+    temp->crange2 = c_range2;
     temp->lexeme = lexeme;
     temp->type = type;
     temp->isUsed = false;
     temp->isDefined = false;
+    temp->iplist =NULL;
+    temp->oplist = NULL;
     return temp;
 }
 

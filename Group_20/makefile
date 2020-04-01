@@ -1,7 +1,7 @@
 
-output: symboltable.c symantic.c ast.c lexer.c parser.c hashtable.c hash.c color.c set.c driver.c stack.c nary_tree.c
+output: symboltable.c semantic.c ast.c lexer.c parser.c hashtable.c hash.c color.c set.c driver.c stack.c nary_tree.c
 	gcc -c symboltable.c
-	gcc -c symantic.c
+	gcc -c semantic.c
 	gcc -c ast.c
 	gcc -c stack.c
 	gcc -c nary_tree.c
@@ -11,6 +11,6 @@ output: symboltable.c symantic.c ast.c lexer.c parser.c hashtable.c hash.c color
 	gcc -c hash.c
 	gcc -c color.c
 	gcc -c set.c
-	gcc symboltable.o symantic.o ast.o stack.o nary_tree.o lexer.o parser.o hashtable.o hash.o color.o set.o driver.c -o stage1exe
+	gcc symboltable.o semantic.o ast.o stack.o nary_tree.o lexer.o parser.o hashtable.o hash.o color.o set.o driver.c -o stage1exe
 	rm -vf *.o out *~
 

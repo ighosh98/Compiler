@@ -16,7 +16,7 @@ G Adityan	 2016B1A70929P
 #include "ast.h"
 #include "astdef.h"
 #include "symboltable.h"
-#include "symantic.h"
+#include "semantic.h"
 int main(int argc,char **argv)
 {
     printf("############ Implementation Status ##############\n");
@@ -133,7 +133,7 @@ int main(int argc,char **argv)
 	    printf("created AST\n");
 	    reset();
 
-	    type_symantics(a.root,NULL);
+	    type_semantics(a.root,NULL);
 	    
 	    printAST(a.root);
 	    fclose(fptr);

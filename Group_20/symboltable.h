@@ -10,13 +10,15 @@ typedef struct symbol_table_node{
     char name[21];
     bool isarr;
     bool isdynamic;
-    struct symbol_table_node * dyn_range1;
-    struct symbol_table_node * dyn_range2;
-    int const_range1;
-    int const_range2;
+    struct symbol_table_node * drange1;
+    struct symbol_table_node * drange2;
+    int crange1;
+    int crange2;
 
     bool isUsed;
     bool isDefined;
+    struct symbol_table_node* iplist;
+    struct symbol_table_node* oplist;
     token * lexeme;
     datatype type;
     struct symbol_table_node* next;
