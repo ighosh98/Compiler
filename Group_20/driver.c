@@ -132,10 +132,13 @@ int main(int argc,char **argv)
 	    yellow();
 	    printf("created AST\n");
 	    reset();
+	    
+	    type_semantics(a.root,NULL);
+	    printf("\n\n");
 
 	    type_semantics(a.root,NULL);
-	    
-	    printAST(a.root);
+	    //printAST(a.root);
+
 	    fclose(fptr);
 
 	}

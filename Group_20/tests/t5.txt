@@ -7,7 +7,6 @@ start
 	declare index:integer;
 	declare t:boolean;
 	sum:=0.0;
-	a[12] := b[12];
 	for(index in  1..15)
 	start
 		t:= index<=n;
@@ -40,7 +39,6 @@ end
 ** the array elements are populated with the read values**
 **The array variable is not returned as the translation will**
 **use the same locations for array elements**
-
 <<module readArr>>
 takes input [arr1:array[1..15] of real,k:integer];
 start
@@ -55,3 +53,6 @@ start
 		** the semantics of while needs an increment and will be taken care of at the second phase**
 	end
 end
+
+
+

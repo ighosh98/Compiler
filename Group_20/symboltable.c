@@ -30,7 +30,7 @@ void printSymbolNode(symbol_table_node* a)
     else
 	printf("%d  %d  ",a->crange1,a->crange2);
     if(a->lexeme)
-	printf("%s",a->lexeme->str);
+	printf("%s  %d  ",a->lexeme->str,a->type);
     printf("\n\n");
 }
 
@@ -86,6 +86,7 @@ symbol_table_node* searchSymChain(symbol_table_node* head, char* str )
 
 symbol_table_node* searchSymbolTableHelper(symbolTable* table, char* str)
 {
+
     unsigned int index = hashf(str)%table->size;
     
     return searchSymChain(table->ar[index],str);
@@ -121,6 +122,7 @@ symbol_table_node * insertSymbolTable(symbolTable* table,
 	symbol_table_node* d_range2, int c_range1, 
 	int c_range2,token* lexeme, datatype type)
 {
+    if(table==NULL)return NULL;
     symbol_table_node * temp = searchSymbolTable(table,name);
 
     if(temp!=NULL)return temp;

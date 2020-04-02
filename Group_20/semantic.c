@@ -2,14 +2,164 @@
 #include "lexerDef.h"
 #include "ast.h"
 #include "astdef.h"
+#include <string.h>
 #include "symboltable.h"
 #include "semantic.h"
-symbolTable* function_table;
+
+//2 passes required for making sure that all the functions are defined and checked
+//make sure errors are only printed once in the first pass for normal errors
+//and for MODULEREUSE the errors are printed in the 2nd pass.
+symbolTable * function_table;
+int pass_no = 1;
+bool checkCases(astnode* root, datatype type)
+{
+    astnode* head = root;
+    symbolTable* table = getSymbolTable(100);
+    while(root->tok!=EPS)
+    {
+	//checking that all cases are unique
+	symbol_table_node* a = searchSymbolTable(table, root->children[0]->lexeme->str);
+	if(a!=NULL)
+	{
+	    printf("Line No %d: Cases must be unique\n",root->lexeme->line_no);
+	    return false;
+	}
+	else
+	{
+	    insertSymbolTable(table, root->children[0]->lexeme->str,false,false,
+		    NULL,NULL,-1,-1,NULL,NONE);
+	}
+	root = root->children[2];
+    }
+    if(type==boolean)
+    {
+	//check that if boolean cases. then true and false are both included
+	symbol_table_node* a = searchSymbolTable(table,"false");
+	symbol_table_node* b = searchSymbolTable(table,"true");
+	if(a==NULL || b== NULL)
+	{
+	    printf("Line no %d: Boolean cases must include true and false\n",head->lexeme->line_no);
+	    return false;
+	}
+    }
+    return true;
+}
+
+bool checkCallInput(symbolTable* table, astnode* input_list, symbol_table_node* func)
+{
+    astnode* head = input_list;
+    symbol_table_node* iplist = func->iplist;  //checking input list (iplist)
+    while(1)
+    {
+	if((input_list->tok==EPS && iplist!=NULL))
+	{
+	    printf("Line no %d: Incorrect Number of arguments\n",head->lexeme->line_no);
+	    return false;
+	} 
+	if((iplist==NULL&&input_list->tok!=EPS))
+	{
+	    printf("Line no %d: Incorrect Number of arguments\n",head->lexeme->line_no);
+	    return false;  
+	}//ERROR: Number of arguments do not match the Function signature
+    
+	if(input_list->children[0]->type != iplist->type)
+	{
+	    printf("Line no %d: Argument '%s' is incompatible with function arguments\n",
+		    input_list->lexeme->line_no,input_list->children[0]->lexeme->str);
+	    return false;   //ERROR: Type mismatch in function argument
+	}
+	if(iplist->isarr==true) //verify array ranges
+	{
+	    symbol_table_node* temp = searchSymbolTable(table,input_list->children[0]->lexeme->str);
+	    if(temp->isarr==false)
+	    {
+		printf("Line no %d: Argument '%s' is incompatible with function arguments (Array expected)\n",
+		    input_list->lexeme->line_no,input_list->children[0]->lexeme->str);
+	    
+	    	return false; //Array type argument expected for function.
+	    }
+	    if(temp->isdynamic==false)
+	    {
+		if(temp->crange1!=iplist->crange1 || temp->crange2!=iplist->crange2)
+		{
+		    printf("Line no %d: Argument '%s' is incompatible with function arguments(Range Mismatch)\n",
+		    input_list->lexeme->line_no,input_list->children[0]->lexeme->str);
+		    return false; //Array range mismatch in function argument
+		}
+	    }
+	    else
+	    {
+		return true;
+		//code for verifying range if dynamic array passed.
+	    }
+	}
+
+	iplist = iplist->iplist;
+	input_list = input_list->children[1];
+
+	if(iplist==NULL && input_list->tok==EPS)
+	    return true;
+    }
+}
+
+bool checkCallOutput(symbolTable* table, astnode* input_list, symbol_table_node* func)
+{
+    symbol_table_node* iplist = func->oplist; //checking output list (oplist)
+    while(1)
+    {
+	if((input_list->tok==EPS && iplist!=NULL))
+	{
+	    return false;
+	} 
+	if((iplist==NULL&&input_list->tok!=EPS))
+	{
+	    return false;  
+	}//ERROR: Number of arguments do not match the Function signature
+    
+	if(input_list->children[0]->type != iplist->type)
+	{
+	    return false;   //ERROR: Type mismatch in function argument
+	}
+	iplist = iplist->iplist;
+	input_list = input_list->children[1];
+
+	if(iplist==NULL && input_list->tok==EPS)
+	    return true;
+    }
+}
+
+void fillCheckTable(symbolTable* check_table, astnode* root)
+{
+    if(root->tok==ID)
+	insertSymbolTable(check_table,root->lexeme->str,false,false,
+		NULL,NULL,-1,-1,NULL,NONE);
+
+    for(int i =0;i<root->n;i++)
+	fillCheckTable(check_table, root->children[i]);
+}
+
+bool checkWhile(symbolTable* check_table, astnode* root)
+{
+    if(root->tok==ASSIGNMENTSTMT)
+    {
+	if(searchSymbolTable(check_table,root->children[0]->lexeme->str)!=NULL)
+	    return true;
+    }
+    else
+    {
+	bool ans = false;
+	for(int i =0;i<root->n;i++)
+	    ans = ans | checkWhile(check_table,root->children[i]);
+	return ans;
+    }
+}
 
 void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 {
+    ////////////////////////////////////////////////////////////////
+    /////////////// Check for redeclaration ////////////////////////
+    ////////////////////////////////////////////////////////////////
     astnode* dataTypeVar = datatype;
-
     while(idlist->tok!=EPS)
     {
 	if(dataTypeVar->children[0]->tok==INTEGER)
@@ -70,7 +220,7 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
     }
 }
 
-symbol_table_node* makeInputList(astnode* inputTree)
+symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
 {
 
     if(inputTree->tok==EPS)return NULL;
@@ -82,6 +232,7 @@ symbol_table_node* makeInputList(astnode* inputTree)
 
     //update the datatype of the variable
     astnode* dataTypeVar = inputTree->children[1];
+    type_semantics(dataTypeVar,table);
     if(dataTypeVar->children[0]->tok==INTEGER)
 	nextinput->type = integer;
     
@@ -122,7 +273,7 @@ symbol_table_node* makeInputList(astnode* inputTree)
 	}
     }
 
-    nextinput->iplist = makeInputList(inputTree->children[2]);
+    nextinput->iplist = makeInputList(inputTree->children[2],table);
     return nextinput;
 }
 
@@ -146,7 +297,8 @@ symbol_table_node* makeOutputList(astnode* outputTree)
 
     else if(TypeVar->children[0]->tok==BOOLEAN)
 	nextoutput->type = boolean;
-
+    else
+    {}//ERROR: ARRAY OUTPUT NOT ALLOWED
 
     nextoutput->oplist = makeOutputList(outputTree->children[2]);
     return nextoutput;
@@ -165,10 +317,13 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		{
 		    
 		    //initialize the function table and move forward    
-		    function_table = getSymbolTable(100);
+		    if(pass_no==1)
+			function_table = getSymbolTable(100);
 		    
 		    for(int i =0;i<root->n;i++)
 			type_semantics(root->children[i], current_table);
+		    
+		    pass_no++;
 		    return;
 		}break;
 
@@ -186,18 +341,18 @@ void type_semantics(astnode* root, symbolTable* current_table)
 
 	    case MODULEDECLARATION:
 		{
-		    //add entry for the function in the function table. and mark IsCalled = False and isDefined = false
-		    
-		    symbol_table_node* temp = insertSymbolTable(function_table, 
-			    root->children[0]->lexeme->str , false, false, NULL, NULL, 
-			    -1,-1, root->children[0]->lexeme, function); //type = function
-		    
-		    temp -> isUsed = false;
-		    temp -> isDefined = false;
-		    
-		    //assign function type to the ID node.
-		    root->children[0]->type = function;
-		    
+		    if(pass_no==1){
+			//add entry for the function in the function table. and mark IsCalled = False and isDefined = false
+			symbol_table_node* temp = insertSymbolTable(function_table, 
+				root->children[0]->lexeme->str , false, false, NULL, NULL, 
+				-1,-1, root->children[0]->lexeme, function); //type = function
+
+			temp -> isUsed = false;
+			temp -> isDefined = false;
+
+			//assign function type to the ID node.
+			root->children[0]->type = function;
+		    }
 		    return;
 		}break;
 
@@ -215,43 +370,44 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		{
 		    symbol_table_node* temp = searchSymbolTable(function_table, root->children[0]->lexeme->str);
 		    
-		    //if entry already exists
-		    if(temp!=NULL)
-		    {
-			//function has already been declared
-			if(temp->isUsed==false)
-			{} //Error: function not used after declaration
-			else if(temp->isDefined==true)
-			{}  //Error: Redefinition of the function
-		    }
+			//if entry already exists
+			if(temp!=NULL)
+			{
+			    //function has already been declared
+			    if(temp->isUsed==false)
+			    {} //Error: function not used after declaration
+			    else if(temp->isDefined==true)
+			    {}  //Error: Redefinition of the function
+			}
 
-		    ///////// add the function definition/signature to the function table.///////////
 
-		    //type of the id is function.
-		    root->children[0]->type = function;
-		    
-		    //insert function name into symboltable/ retreive the entry if  already present
-		    temp = insertSymbolTable(function_table, root->children[0]->lexeme->str,
-			    false, false, NULL, NULL, -1,-1, 
-			    root->children[0]->lexeme, function);
-		    
-		    //add input list into function
-		    temp->iplist = makeInputList(root->children[1]); 
-		    
-		    //add output_plist into function
-		    if(root->children[2]->tok!=EPS)
-			temp->oplist = makeOutputList(root->children[2]->children[0]);
+			///////// add the function definition/signature to the function table.///////////
 
-		    //function is now defined. redefinition not allowed
-		    temp->isDefined = true;
-		    
+			//type of the id is function.
+			root->children[0]->type = function;
 
+			//insert function name into symboltable/ retreive the entry if  already present
+			temp = insertSymbolTable(function_table, root->children[0]->lexeme->str,
+				false, false, NULL, NULL, -1,-1, 
+				root->children[0]->lexeme, function);
+
+			//add input list into function
+			temp->iplist = makeInputList(root->children[1],current_table); 
+
+			//add output_plist into function
+			if(root->children[2]->tok!=EPS)
+			    temp->oplist = makeOutputList(root->children[2]->children[0]);
+
+			//function is now defined. redefinition not allowed
+			temp->isDefined = true;
+		    
 		    //go onto moduledef with a new symbol table which has
 		    //the entries for input_plist vars and out_plist vars
 
 
 		    symbolTable* new_table = getSymbolTable(100);
-		    new_table->parent = current_table;
+		    new_table->parent = NULL; //new function has no parent scope
+
 		    //insert input vars
 		    symbol_table_node* a = temp->iplist;
 		    while(a)
@@ -321,7 +477,9 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    if(root->children[0]->tok!=RANGE_ARRAYS)
 			root->type = root->children[0]->type;
 		    else
+		    {
 			root->type = root->children[1]->type;
+		    }
 		    // handle by input_list and declare statement
 		}break;
    
@@ -348,8 +506,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    }
 
 		    root->type = root->children[0]->type;
-		    //handle by datatype
-
+		    return;
 		}break;
 
 	    case TYPE:
@@ -398,8 +555,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    //first child stores print/get info. hence nothing needs to be done.
 		    //move forward to check variables.
 		    for(int i =0;i<root->n;i++)
-			type_semantics(root->children[i], current_table);
-		    
+			type_semantics(root->children[i], current_table); 
 		    return;
 		}break;
 	    case GET_VALUE: case PRINT:
@@ -448,7 +604,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			    // temp = INDEX
 			    astnode* temp = root->children[1]->children[0];
 			    
-			    if(temp->children[0]->tok!=NUM) 
+			    if(temp->children[0]->type!=integer) 
 				{}	//ERROR: index must be integer
 
 
@@ -496,35 +652,88 @@ void type_semantics(astnode* root, symbolTable* current_table)
 
 	    case ASSIGNMENTSTMT:
 		{
-		    //call a function to handle whichstmt , lvalueidstmt, lvaluearrstmt. 
-		    //pass the ID to this function so that it can verify that the index 
-		    //is within range in case of array.
-		    //also check that the type of lhs == type of rhs.
+		    //move forward
+		    for(int i =0;i<root->n;i++)
+			type_semantics(root->children[i], current_table);
+		  
+		    symbol_table_node* a = searchSymbolTable(current_table, root->children[0]->lexeme->str);
+		    astnode* lvalue = root->children[1]->children[0];
+
+		    
+		    if(lvalue->tok==LVALUEIDSTMT)
+		    {
+			//lvalue id statement
+			
+			if(a->isarr == true)
+			{}//ERROR: The variable is an array. Index not provided.
+			
+			if(lvalue->children[0]->type != a->type)
+			{}//ERROR: type mismatch. The lavalue and rvalue have incompatible types.
+
+		    }
+		    else
+		    {
+			//lvalue array statement
+
+			if(a->isarr==false)
+			{}//ERROR: The variable is not an array. Cannot be Indexed.
+			if(lvalue->children[1]->type != a->type)
+			{}//ERROR: type mismatch. The lavalue and rvalue have incompatible types.
+
+			    // temp = INDEX
+			    astnode* temp = lvalue->children[0];
+			    
+			    if(temp->children[0]->type!=integer) 
+			    {}	//ERROR: index must be integer
+
+			    if(a->isdynamic)
+			    {
+				//code for bound check in dynamic array.
+			    }
+			    else
+			    {
+				if(temp->children[0]->tok==NUM)
+				{
+				    //static check in static array and static index
+				    int value = atoi(temp->children[0]->lexeme->str);
+				    
+				    if(value<a->crange1 || value>a->crange2)
+				    {}//ERROR: index out of bounds
+				}
+				else
+				{
+				    //code for bound check in static array but dynamic index.
+				}	
+			    }
+		    }
 		}break;
 
-/////////////////////// Handled in assignment stmt /////////////////////////////
-/////////////////////////////////////////////////////////////////////////////////]
-
-	/*
 	    case WHICHSTMT:
 		{
 		    //move forward and assign type of child to whichstmt
+		    for(int i =0;i<root->n;i++)
+			type_semantics(root->children[i], current_table);
+		    
+		    root->type = root->children[0]->type;
 		}
 
 	    case LVALUEIDSTMT:
 		{
+		    for(int i =0;i<root->n;i++)
+			type_semantics(root->children[i], current_table);
+		    
 		    //move forward and assign type of child to lvalueidstmt
 		    root->type = root->children[0]->type;
 		}break;
 
 	    case LVALUEARRSTMT:
 		{
-		    //check type of index.
-		    //also check if index is within range of the array.
-		    if(root->children[0]->type!=integer){}//ERROR;
+		    for(int i =0;i<root->n;i++)
+			type_semantics(root->children[i], current_table);
+		    
 		    root->type = root->children[1]->type;
 		}break;
-	*/
+	    
 	    case INDEX:
 		{
 		    //move forward and assign type
@@ -536,28 +745,65 @@ void type_semantics(astnode* root, symbolTable* current_table)
 
 	    case MODULEREUSESTMT:
 		{
-		    //make a separate function for this.
-		    //verify idlist is same as function inputplist
-		    //if option not eps then verify output plist also.
-		    //
-		    //idlist in this case has no type.
-		    //DO NOT ALLOW RECURSIVE CALL
-		    root->children[1]->type = NONE; //this idlist has no type
+			//get the function entry
+			symbol_table_node* a = searchSymbolTable(function_table, root->children[1]->lexeme->str); //ID i.e function name
+			
+
+			//verify that the ID is really a function
+			if(a==NULL)
+			{}//ERROR: the ID is not a Fucntion.
+
+			//the function has been called once;
+			a->isUsed = true;
+
+			//check if recursion. if yes then error
+			symbol_table_node* current_func = searchSymbolTable(current_table,"currentfunction");
+			current_func = current_func->iplist;
+
+			if(strcmp(a->name,current_func->name)!=0)
+			{}//ERROR: Recursion Not allowed.
+			
+		    if(pass_no==2)
+		    {
+			//verify the function signature in pass 2 when it is defined
+
+			//verify idlist is same as function inputplist
+			type_semantics(root->children[2],current_table);
+
+			astnode* input_list = root->children[2];
+			if(!checkCallInput(current_table, input_list, a))
+			{
+			    printf("error found######################\n");
+			}//ERROR: Input parameters dont match the function called.
+
+			//if option not eps then verify if output idlist is same as output plist also.
+			if(root->children[0]->tok!=EPS)
+			{
+			    astnode* output_list = root->children[0]->children[0];
+			    type_semantics(output_list, current_table);
+			    if(!checkCallOutput(current_table, output_list, a))
+			    {
+				printf("ERROR FOUND#################\n");
+			    }//ERROR: Output Parameters dont match the function called
+
+			}
+		    }
 		}break;
 
-////////////////// handled above/////////////////////		
-/*
 	    case OPTIONAL:
 		{
-		    root->children[0]->type = NONE;  //idlist has no type
+		    if(root->tok==EPS)
+			return;
+		    else
+			for(int i =0;i<root->n;i++)
+			    type_semantics(root->children[i], current_table);
+		    return;
 
-
-		}break;
-*/
-
+		}
 	    case IDLIST: case N3:
 		{
-		    //handled by caller.
+		    for(int i =0;i<root->n;i++)
+			    type_semantics(root->children[i], current_table);
 		    return;
 		}break;
 	    
@@ -779,9 +1025,8 @@ void type_semantics(astnode* root, symbolTable* current_table)
 	    case DECLARESTMT:
 		{
 		    //move forward
-		    for(int i =0;i<root->n;i++)
-			type_semantics(root->children[i], current_table);
-
+		    type_semantics(root->children[1], current_table);
+		    
 		    declareVariables(current_table, root->children[0], root->children[1]);
 		}break;
 
@@ -802,10 +1047,14 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    if(root->children[0]->type==integer)
 		    {
 			if(root->children[0]->type != root->children[1]->type)
-			{}  //ERROR: case type does not match argument type
-			if(root->children[2]->children[0]->tok==EPS)
-			{}  //ERROR: default case not included
-			
+			{
+			}  //ERROR: case type does not match argument type
+			if(root->children[2]->tok==EPS)
+			{
+			}  //ERROR: default case not included
+			if(!checkCases(root->children[1],integer))
+			{
+			}//cases must be unique
 			    
 			//check all case statements are unique!!
 		    }
@@ -813,13 +1062,15 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    {
 			if(root->children[0]->type != root->children[1]->type)
 			{}//ERROR: case type does not match argument type
-			if(root->children[2]->children[0]->tok!=EPS)
+			if(root->children[2]->tok!=EPS)
 			{}  //ERROR: boolean case cannot have default case.
-		    
-			//check that TRUE and FALSE are included and all cases are unique
+			if(!checkCases(root->children[1],boolean))
+			{
+			}//only true and false must be included in case  statement     
+
 		    }
 		    else
-			//ERROR: switch can only have integer of boolean argument
+		    {}//ERROR: switch can only have integer of boolean argument
 
 		    return;
 		}break;
@@ -880,26 +1131,78 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		}break;
 	    case ITERATIVESTMT:
 		{
-		    /////Temporary///////
-		     for(int i =0;i<root->n;i++)
-			    type_semantics(root->children[i], current_table);
-		    
-		    if(FOR)
-		    {}
-		    //create new scope(symbol table) and insert the iterator variable.
-		    //assign the current table as the parent of the new table. then use the new table for further fuction calls.
-		    //if range is variable. then type should be integer
-		    //if range is constant then range2 <= range1
-		    //then move forward.
-		    else if(WHILE)
-		    {}
-		    //create new scope(symbol table) and assign the current table as its parent
-		    //then move forward
+		    if(root->children[0]->tok == FOR)
+		    {
+			//check ID
+			type_semantics(root->children[1],current_table);
+			symbol_table_node* a = searchSymbolTable(current_table, root->children[0]->lexeme->str);
+			if(root->children[1]->type!=integer) 
+			{}//ERROR: The variable must be an integer
+			if(a->isarr==true)
+			{}//ERROR: The variable cannot be an array
+
+			//Check Range
+			type_semantics(root->children[2],current_table);
+			if(root->children[2]->type!=integer)
+			{}//ERROR: type error
+
+
+			//for loop
+			symbolTable* new_table = getSymbolTable(100);
+			new_table->parent = current_table;
+			type_semantics(root->children[3],new_table);
+		    }
+		    else
+		    {
+			//while loop
+			
+			//create check table
+			symbolTable* check_table = getSymbolTable(100);
+			astnode* exprnode = root->children[1];
+			fillCheckTable(check_table, exprnode);
+			
+			if(!checkWhile(check_table,root->children[2]))
+			{}//ERROR: None of the variables in the while condition are updated.
+
+			//check that conditional expression is boolean
+			type_semantics(root->children[1],current_table);
+			if(root->children[1]->type!=boolean)
+			{}//ERROR: the condition inside while must evaluate to boolean;
+
+
+			//create new scope(symbol table) and assign the current table as its parent
+			//then move forward
+			symbolTable* new_table = getSymbolTable(100);
+			new_table->parent = current_table;
+			type_semantics(root->children[2],new_table);
+		    }
 		    return;
 		}break;
 	    case RANGE:
 		{
-		    //handled by FOR loop. Iterative stmt.
+		    
+		    for(int i =0;i<root->n;i++)
+			    type_semantics(root->children[i], current_table);
+
+		    if(root->children[0]->type!=root->children[1]->type)
+		    {}//ERROR: range has to be of same type.
+
+		    if((root->children[0]->children[0]->tok==ID && root->children[1]->children[0]->tok==NUM)
+			|| (root->children[0]->children[0]->tok==NUM && root->children[1]->children[0]->tok==ID))	
+		    {}//ERROR: range arrays should be both NUM or both ID
+		    
+		    if(root->children[0]->type!=integer)
+		    {}//ERROR: range can only be integer.
+		    else if(root->children[0]->tok==NUM && 
+			    (atoi(root->children[0]->lexeme->str)>atoi(root->children[0]->lexeme->str)))
+		    {}//ERROR: Invalid range. arg1 greater then arg2.
+		    else if(root->children[0]->tok==ID)
+		    {
+			//dynamic check of index1 < index2
+		    }
+
+		    root->type = root->children[0]->type;
+		    return;
 		}break;
 	    default: return;
 	}
@@ -928,11 +1231,10 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		{
 		    //check symbol table to find the type of the id.
 		    //if symbol table has no entry then error.
-		    
 		    symbol_table_node* temp = searchSymbolTable(current_table,root->lexeme->str);
 		    if(temp==NULL)
 		    {
-			printf("ERROR: Symbol Not Recognized");
+			printf("ERROR: Symbol '%s' Not Recognized\n",root->lexeme->str);
 		    }//ERROR: symbol not recognized.
 
 		    else
