@@ -98,11 +98,22 @@ symbol_table_node* searchSymbolTable(symbolTable* table, char* str)
     
     symbol_table_node* a = searchSymbolTableHelper(table, str);
     if(a == NULL)
+    {
 	return searchSymbolTable(table->parent, str);
+    }
     else
 	return a;
 
 }
+
+symbol_table_node* searchSymbolTableLocal(symbolTable* table, char* str)
+{
+    if(table == NULL) return NULL;
+    
+    symbol_table_node* a = searchSymbolTableHelper(table, str);
+    return a; //does not search the parent
+}
+
 
 symbolTable* getSymbolTable(unsigned int n)
 {

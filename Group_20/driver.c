@@ -134,9 +134,9 @@ int main(int argc,char **argv)
 	    reset();
 	    
 	    type_semantics(a.root,NULL);
-	    printf("\n\n");
 
 	    type_semantics(a.root,NULL);
+	    printf("DONE\n");
 	    //printAST(a.root);
 
 	    fclose(fptr);

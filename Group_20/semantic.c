@@ -5,12 +5,12 @@
 #include <string.h>
 #include "symboltable.h"
 #include "semantic.h"
-
+#include "color.h"
 //2 passes required for making sure that all the functions are defined and checked
 //make sure errors are only printed once in the first pass for normal errors
 //and for MODULEREUSE the errors are printed in the 2nd pass.
 symbolTable * function_table;
-int pass_no = 1;
+int pass_no = 0;
 bool checkCases(astnode* root, datatype type)
 {
     astnode* head = root;
@@ -21,7 +21,10 @@ bool checkCases(astnode* root, datatype type)
 	symbol_table_node* a = searchSymbolTable(table, root->children[0]->lexeme->str);
 	if(a!=NULL)
 	{
-	    printf("Line No %d: Cases must be unique\n",root->lexeme->line_no);
+	    blue();
+	    printf("Line No %d: ",root->lexeme->line_no);
+	    reset();
+	    printf("Cases must be unique\n");
 	    return false;
 	}
 	else
@@ -38,7 +41,10 @@ bool checkCases(astnode* root, datatype type)
 	symbol_table_node* b = searchSymbolTable(table,"true");
 	if(a==NULL || b== NULL)
 	{
-	    printf("Line no %d: Boolean cases must include true and false\n",head->lexeme->line_no);
+	    blue();
+	    printf("Line no %d: ",head->lexeme->line_no);
+	    reset();
+	    printf("Boolean cases must include true and false\n");
 	    return false;
 	}
     }
@@ -53,19 +59,27 @@ bool checkCallInput(symbolTable* table, astnode* input_list, symbol_table_node* 
     {
 	if((input_list->tok==EPS && iplist!=NULL))
 	{
-	    printf("Line no %d: Incorrect Number of arguments\n",head->lexeme->line_no);
+	    blue();
+	    printf("Line no %d: ",head->lexeme->line_no);
+	    reset();
+	    printf("Incorrect number of arguments in Input\n");
 	    return false;
 	} 
 	if((iplist==NULL&&input_list->tok!=EPS))
 	{
-	    printf("Line no %d: Incorrect Number of arguments\n",head->lexeme->line_no);
+	    blue();
+	    printf("Line no %d: ",head->lexeme->line_no);
+	    reset();
+	    printf("Incorrect number of arguments in Input\n");
 	    return false;  
 	}//ERROR: Number of arguments do not match the Function signature
     
 	if(input_list->children[0]->type != iplist->type)
 	{
-	    printf("Line no %d: Argument '%s' is incompatible with function arguments\n",
-		    input_list->lexeme->line_no,input_list->children[0]->lexeme->str);
+	    blue();
+	    printf("Line no %d: ",input_list->lexeme->line_no);
+	    reset();
+	    printf("Argument '%s' is incompatible with the function arguments\n",input_list->children[0]->lexeme->str);
 	    return false;   //ERROR: Type mismatch in function argument
 	}
 	if(iplist->isarr==true) //verify array ranges
@@ -73,17 +87,20 @@ bool checkCallInput(symbolTable* table, astnode* input_list, symbol_table_node* 
 	    symbol_table_node* temp = searchSymbolTable(table,input_list->children[0]->lexeme->str);
 	    if(temp->isarr==false)
 	    {
-		printf("Line no %d: Argument '%s' is incompatible with function arguments (Array expected)\n",
-		    input_list->lexeme->line_no,input_list->children[0]->lexeme->str);
-	    
-	    	return false; //Array type argument expected for function.
+		blue();
+		printf("Line no %d: ",input_list->lexeme->line_no);
+		reset();
+		printf("Argument '%s' is incompatible with the function arguments(Array Expected)\n",input_list->children[0]->lexeme->str);
+		return false; //Array type argument expected for function.
 	    }
 	    if(temp->isdynamic==false)
 	    {
 		if(temp->crange1!=iplist->crange1 || temp->crange2!=iplist->crange2)
 		{
-		    printf("Line no %d: Argument '%s' is incompatible with function arguments(Range Mismatch)\n",
-		    input_list->lexeme->line_no,input_list->children[0]->lexeme->str);
+		    blue();
+		    printf("Line no %d: ",input_list->lexeme->line_no);
+		    reset();
+		    printf("Argument '%s' is incompatible with the function arguments(Range Mismatch)\n",input_list->children[0]->lexeme->str);
 		    return false; //Array range mismatch in function argument
 		}
 	    }
@@ -104,20 +121,33 @@ bool checkCallInput(symbolTable* table, astnode* input_list, symbol_table_node* 
 
 bool checkCallOutput(symbolTable* table, astnode* input_list, symbol_table_node* func)
 {
+    astnode* head = input_list;
     symbol_table_node* iplist = func->oplist; //checking output list (oplist)
     while(1)
     {
 	if((input_list->tok==EPS && iplist!=NULL))
 	{
+	    blue();
+	    printf("Line no %d: ",head->lexeme->line_no);
+	    reset();
+	    printf("Incorrect number variable in function Output\n");
 	    return false;
 	} 
 	if((iplist==NULL&&input_list->tok!=EPS))
 	{
+	    blue();
+	    printf("Line no %d: ",head->lexeme->line_no);
+	    reset();
+	    printf("Incorrect number of variable in function Output\n");
 	    return false;  
 	}//ERROR: Number of arguments do not match the Function signature
     
 	if(input_list->children[0]->type != iplist->type)
 	{
+	    blue();
+	    printf("Line no %d: ",input_list->lexeme->line_no);
+	    reset();
+	    printf("Argument '%s' is Incompatibel with function output (Type Mismatch)\n",input_list->children[0]->lexeme->str);
 	    return false;   //ERROR: Type mismatch in function argument
 	}
 	iplist = iplist->iplist;
@@ -162,7 +192,18 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
     astnode* dataTypeVar = datatype;
     while(idlist->tok!=EPS)
     {
-	if(dataTypeVar->children[0]->tok==INTEGER)
+	if(searchSymbolTableLocal(table, idlist->children[0]->lexeme->str))
+	{
+	    //ERROR: Redeclaration of variable that already exists
+	    if(pass_no==1){
+	    blue();
+	    printf("Line no %d: ",idlist->children[0]->lexeme->line_no);
+	    reset();
+	    printf("Redeclaration of %s not allowed.\n",idlist->children[0]->lexeme->str);
+	    }
+	    idlist = idlist->children[1];
+	}
+	else if(dataTypeVar->children[0]->tok==INTEGER)
 	{
 	    idlist->children[0]->type = integer;
 	    insertSymbolTable(table,idlist->children[0]->lexeme->str,false, false,
@@ -298,7 +339,12 @@ symbol_table_node* makeOutputList(astnode* outputTree)
     else if(TypeVar->children[0]->tok==BOOLEAN)
 	nextoutput->type = boolean;
     else
-    {}//ERROR: ARRAY OUTPUT NOT ALLOWED
+    {
+	blue();
+	printf("Line no: %d ", TypeVar->children[0]->lexeme->line_no);
+	reset();
+	printf("Array cannot be returned from function.\n");
+    }//ERROR: ARRAY OUTPUT NOT ALLOWED
 
     nextoutput->oplist = makeOutputList(outputTree->children[2]);
     return nextoutput;
@@ -306,7 +352,7 @@ symbol_table_node* makeOutputList(astnode* outputTree)
 
 void type_semantics(astnode* root, symbolTable* current_table)
 {
-    printf("%s\n",symbol_map[root->tok]);
+//    printf("%s\n",symbol_map[root->tok]);
     if(root==NULL)return;
 
     if(root->children)
@@ -315,7 +361,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 	{   
 	    case PROGRAM:
 		{
-		    
+		    pass_no++; 
 		    //initialize the function table and move forward    
 		    if(pass_no==1)
 			function_table = getSymbolTable(100);
@@ -323,7 +369,6 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    for(int i =0;i<root->n;i++)
 			type_semantics(root->children[i], current_table);
 		    
-		    pass_no++;
 		    return;
 		}break;
 
@@ -374,10 +419,21 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			if(temp!=NULL)
 			{
 			    //function has already been declared
-			    if(temp->isUsed==false)
-			    {} //Error: function not used after declaration
-			    else if(temp->isDefined==true)
-			    {}  //Error: Redefinition of the function
+			    if(pass_no==1 && temp->isUsed==false)
+			    {
+				blue();
+				printf("Line no: %d ", root->lexeme->line_no);
+				reset();
+				printf("Redundant Declaration and Definition of function\n");
+			    } //Error: function not used after declaration
+			    else if(pass_no==1 && temp->isDefined==true)
+			    {
+				blue();
+				printf("Line no: %d ", root->lexeme->line_no);
+				reset();
+				printf("Redefinition of Module '%s'\n", root->children[0]->lexeme->str);
+
+			    }  //Error: Redefinition of the function
 			}
 
 
@@ -405,26 +461,39 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    //the entries for input_plist vars and out_plist vars
 
 
-		    symbolTable* new_table = getSymbolTable(100);
-		    new_table->parent = NULL; //new function has no parent scope
+		    symbolTable* input_table = getSymbolTable(100); //input_list scope
+		    input_table->parent = NULL; //new function has no parent scope
 
 		    //insert input vars
 		    symbol_table_node* a = temp->iplist;
 		    while(a)
 		    {
-			if(searchSymbolTable(new_table,a->name))
-			{}//ERROR: cannot have vars with same name
-			insertSymbolTable(new_table, a->name,a->isarr,a->isdynamic,
+			if(pass_no == 1 && searchSymbolTable(input_table,a->name))
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Reused variable '%s' in function Input\n",a->name);
+			}//ERROR: cannot have vars with same name
+			insertSymbolTable(input_table, a->name,a->isarr,a->isdynamic,
 				a->drange1,a->drange2,a->crange1,a->crange2,a->lexeme,a->type);
 			a = a->iplist;
 		    }
 
+		    symbolTable* new_table = getSymbolTable(100); //table for the function scope.
+		    new_table->parent =  input_table;		  //function scope shadows input scope
 		    //insert output vars
 		    a = temp->oplist;
 		    while(a)
 		    {
-			if(searchSymbolTable(new_table, a->name))
-			{}//ERROR: cannot have vars with same name
+			if(pass_no==1 && searchSymbolTable(new_table, a->name))
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Reused variable '%s' in function Output\n",a->name);
+
+			}//ERROR: cannot have vars with same name
 			insertSymbolTable(new_table, a->name,a->isarr,a->isdynamic,
 				a->drange1,a->drange2,a->crange1,a->crange2,a->lexeme,a->type);
 			a = a->oplist;
@@ -487,26 +556,48 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		{
 		    for(int i =0;i<root->n;i++)
 			    type_semantics(root->children[i], current_table);
-
-		    if(root->children[0]->type!=root->children[1]->type)
-		    {}//ERROR: range has to be of same type.
-
-		    if((root->children[0]->children[0]->tok==ID && root->children[1]->children[0]->tok==NUM)
-			|| (root->children[0]->children[0]->tok==NUM && root->children[1]->children[0]->tok==ID))	
-		    {}//ERROR: range arrays should be both NUM or both ID
 		    
-		    if(root->children[0]->type!=integer)
-		    {}//ERROR: range can only be integer.
-		    else if(root->children[0]->tok==NUM && 
-			    (atoi(root->children[0]->lexeme->str)>atoi(root->children[0]->lexeme->str)))
-		    {}//ERROR: Invalid range. arg1 greater then arg2.
+		    if((root->children[0]->children[0]->tok==ID && root->children[1]->children[0]->tok==NUM))
+		    {
+			//dynamic range check. arg1->ID arg2->NUM
+		    }
+		    if((root->children[0]->children[0]->tok==NUM && root->children[1]->children[0]->tok==ID))	
+		    {
+			//dynamic range check. arg1->NUM arg2->ID
+		    }
+
+		    //           INDEX1!=integer                                    INDEX2!=integer
+		    if(pass_no==1&&(root->children[0]->children[0]->type!=integer || root->children[1]->children[0]->type!=integer))
+		    {
+			    blue();
+			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
+			    reset();
+			    printf("Arguments of range must be integers\n"); 
+		    
+
+		    }//ERROR: range can only be integer.
+
+		    else if(pass_no==1 && 
+			    (root->children[0]->children[0]->tok==NUM && root->children[1]->children[0]->tok==NUM &&
+			    (atoi(root->children[0]->children[0]->lexeme->str)>atoi(root->children[1]->children[0]->lexeme->str))))
+		    {
+		    
+			    blue();
+			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
+			    reset();
+			  printf("Invalid range, %d is greater than %d\n",
+				atoi(root->children[0]->children[0]->lexeme->str),
+				atoi(root->children[1]->children[0]->lexeme->str));
+		    
+
+		    }//ERROR: Invalid range. arg1 greater then arg2.
 		    else if(root->children[0]->tok==ID)
 		    {
 			//dynamic check of index1 < index2
 		    }
 
 		    root->type = root->children[0]->type;
-		    return;
+
 		}break;
 
 	    case TYPE:
@@ -604,8 +695,13 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			    // temp = INDEX
 			    astnode* temp = root->children[1]->children[0];
 			    
-			    if(temp->children[0]->type!=integer) 
-				{}	//ERROR: index must be integer
+			    if(pass_no==1 && temp->children[0]->type!=integer) 
+				{
+				    blue();
+				    printf("Line no: %d ",root->lexeme->line_no);
+				    reset();
+				    printf("Array index must be an integer\n");
+				}	//ERROR: index must be integer
 
 
 			    if(arr->isdynamic)
@@ -619,8 +715,13 @@ void type_semantics(astnode* root, symbolTable* current_table)
 				    //static check in static array and static index
 				    int value = atoi(temp->children[0]->lexeme->str);
 				    
-				    if(value<arr->crange1 || value>arr->crange2)
-				    {}//ERROR: index out of bounds
+				    if(pass_no==1 && (value<arr->crange1 || value>arr->crange2))
+				    {
+					blue();
+					printf("Line no: %d ",root->lexeme->line_no);
+					reset();
+					printf("Index out of bound\n");
+				    }//ERROR: index out of bounds
 				}
 				else
 				{
@@ -664,27 +765,58 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    {
 			//lvalue id statement
 			
-			if(a->isarr == true)
-			{}//ERROR: The variable is an array. Index not provided.
+			if(pass_no==1 && a->isarr == true)
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Cannot assign to array type. Index not provided\n"); 
+			}//ERROR: The variable is an array. Index not provided.
 			
-			if(lvalue->children[0]->type != a->type)
-			{}//ERROR: type mismatch. The lavalue and rvalue have incompatible types.
+			if(pass_no==1 && lvalue->children[0]->type != a->type)
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Incompatible types in assignment\n"); 
+
+			}//ERROR: type mismatch. The lavalue and rvalue have incompatible types.
 
 		    }
 		    else
 		    {
 			//lvalue array statement
 
-			if(a->isarr==false)
-			{}//ERROR: The variable is not an array. Cannot be Indexed.
-			if(lvalue->children[1]->type != a->type)
-			{}//ERROR: type mismatch. The lavalue and rvalue have incompatible types.
+			if(pass_no==1 && a->isarr==false)
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("The variable is not an array. Cannot be indexed\n"); 
+
+			}//ERROR: The variable is not an array. Cannot be Indexed.
+			if(pass_no==1 && lvalue->children[1]->type != a->type)
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Incompatible types in assignment\n"); 
+
+
+			}//ERROR: type mismatch. The lavalue and rvalue have incompatible types.
 
 			    // temp = INDEX
 			    astnode* temp = lvalue->children[0];
 			    
-			    if(temp->children[0]->type!=integer) 
-			    {}	//ERROR: index must be integer
+			    if(pass_no==1 && temp->children[0]->type!=integer) 
+			    {
+				blue();
+				printf("Line no: %d ", root->lexeme->line_no);
+				reset();
+				printf("Index of array must be integer\n"); 
+
+
+			    }	//ERROR: index must be integer
 
 			    if(a->isdynamic)
 			    {
@@ -697,8 +829,15 @@ void type_semantics(astnode* root, symbolTable* current_table)
 				    //static check in static array and static index
 				    int value = atoi(temp->children[0]->lexeme->str);
 				    
-				    if(value<a->crange1 || value>a->crange2)
-				    {}//ERROR: index out of bounds
+				    if(pass_no==1 && (value<a->crange1 || value>a->crange2))
+				    {
+					blue();
+					printf("Line no: %d ", root->lexeme->line_no);
+					reset();
+					printf("Index out of bounds\n"); 
+
+
+				    }//ERROR: index out of bounds
 				}
 				else
 				{
@@ -751,17 +890,31 @@ void type_semantics(astnode* root, symbolTable* current_table)
 
 			//verify that the ID is really a function
 			if(a==NULL)
-			{}//ERROR: the ID is not a Fucntion.
+			{
+			    if(pass_no==1)
+			    {
+				blue();
+				printf("Line no: %d ", root->lexeme->line_no);
+				reset();
+				printf("'%s' is not a function\n",root->children[1]->lexeme->str); 
+			    }
+			    return;
+			}//ERROR: the ID is not a Fucntion.
 
 			//the function has been called once;
 			a->isUsed = true;
-
 			//check if recursion. if yes then error
 			symbol_table_node* current_func = searchSymbolTable(current_table,"currentfunction");
-			current_func = current_func->iplist;
-
-			if(strcmp(a->name,current_func->name)!=0)
-			{}//ERROR: Recursion Not allowed.
+			char* tempstr = current_func->iplist->name;
+    
+			if(pass_no==1 && strcmp(a->name,tempstr)==0)
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("The functin '%s' cannot call itself. Recursion id not allowed\n", 
+				    root->children[1]->lexeme->str); 
+			}//ERROR: Recursion Not allowed.
 			
 		    if(pass_no==2)
 		    {
@@ -773,7 +926,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			astnode* input_list = root->children[2];
 			if(!checkCallInput(current_table, input_list, a))
 			{
-			    printf("error found######################\n");
+			    //handled inside
 			}//ERROR: Input parameters dont match the function called.
 
 			//if option not eps then verify if output idlist is same as output plist also.
@@ -783,7 +936,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			    type_semantics(output_list, current_table);
 			    if(!checkCallOutput(current_table, output_list, a))
 			    {
-				printf("ERROR FOUND#################\n");
+				//handled inside
 			    }//ERROR: Output Parameters dont match the function called
 
 			}
@@ -850,19 +1003,22 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			    type_semantics(root->children[i], current_table);
 		    
 		    //then check 
-		    if(root->children[1]->type!=NONE && root->children[0]->type!=root->children[1]->type)
-		    {}//ERROR: Type mismatch in expression
-		    
 		    if(root->children[1]->tok!=EPS)
 		    {
-			//check that expression has type integer or boolean for logical op
-			if(root->children[0]->type!=integer || root->children[0]->type!=boolean)
-			{}  //ERROR: logical op can only have integer of boolean type
+			if(pass_no==1 && root->children[0]->type!=boolean)
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Logical operations can only have boolean operands\n"); 
+			    //ERROR: Logical Operations expect boolean type.
+			}
+			root->type = boolean;
 		    }
-		    
-		    
-		    root->type = root->children[0]->type;
-
+		    else
+		    {
+			root->type = root->children[0]->type; //Anyterm.type
+		    }
 		    return;
 		}break;
 
@@ -877,10 +1033,16 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			return;
 		    else
 		    {
-			if(root->children[2]->type!=NONE && root->children[1]->type!=root->children[2]->type)
-			{}//ERROR: Type mismatch in expression
-			
-			root->type = root->children[1]->type;
+			if(pass_no==1 && root->children[1]->type!=boolean)
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Logical operations can only have boolean operands\n"); 
+
+			    //ERROR: Logical Operation can only have boolean type.
+			}
+			root->type = boolean;
 		    }
 		    return;
 
@@ -896,18 +1058,24 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		      root->type = root->children[0]->type;
 		   else
 		   {
-			if(root->children[1]->type!=NONE && root->children[0]->type!=root->children[1]->type)
-			{}//ERROR: type mismatch in expression
-			
-			if(root->children[1]->tok!=EPS)
-			{
-			    if(root->children[1]->type==boolean)
-			    {}//ERROR: relational op cannot have boolean type
-			}
-			
-			root->type = root->children[0]->type;
-		   return;
+		       if(root->children[1]->tok!=EPS)
+		       {
+			   if(pass_no==1 && root->children[0]->type!=integer)  //only integer can be used in relational op
+			   {
+			       blue();
+			       printf("Line no: %d ", root->lexeme->line_no);
+			       reset();
+			       printf("Relational operations can only have integer operands\n"); 
+			       //ERROR: Relational ops expect integer operands
+			   }
+			   root->type = boolean;
+		       }
+		       else
+		       {
+			   root->type = root->children[0]->type; //arithExpr.type
+		       }
 		   }
+		   return;
 		}break;
 	    
 	    case N8:
@@ -916,16 +1084,28 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    for(int i =0;i<root->n;i++)
 			    type_semantics(root->children[i], current_table);
 		    
-		    if(root->tok == EPS)
+		    if(root->tok==EPS)
 			return;
 		    else
 		    {
-			if(root->children[2]->type!=NONE && root->children[1]->type!=root->children[2]->type)
-			{}//ERROR: type mismatch
-			
-			root->type = root->children[1]->type;
-		    }
+			if(pass_no==1 && (root->children[1]->type!=integer)) //Only integer comparison allowed
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Relational operations can only have integer operands\n"); 
 
+			    //ERROR: relational Operation can only have integer type.
+			}
+			if(pass_no==1 && root->children[2]->tok!=EPS)
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Cannot chain relational operations. Cannot compare boolean operands\n"); 
+			}//ERROR: cannot compare boolean operands.
+			root->type = boolean;
+		    }
 		    return;
 		}break;
 
@@ -935,15 +1115,31 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    for(int i =0;i<root->n;i++)
 			    type_semantics(root->children[i], current_table);
 		    
-		    if(root->children[1]->type!=NONE && root->children[0]->type!=root->children[1]->type)
-		    {}//ERROR: type mismatch in expression
 		    if(root->children[1]->tok!=EPS)
 		    {
-			if(root->children[1]->type == boolean)
-			{}  //ERROR: arithmetic operation cannot have boolean type
+			if(pass_no==1 && root->children[0]->type==boolean)
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Arithmetic operations cannot boolean operands\n"); 
+			    //ERROR: Arithmetic operations cannot have boolean oprands
+			}
+			if(pass_no==1 && root->children[1]->type!=NONE &&
+				(root->children[0]->type!=root->children[1]->type))
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Type Mismatch in expression\n"); 
+			    //ERROR: Type mismatch in expression
+			}
+			root->type = root->children[0]->type;
 		    }
-		    
-		    root->type = root->children[0]->type;
+		    else
+		    {
+			root->type = root->children[0]->type; //Anyterm.type
+		    }
 		    return;
 		}break;
 
@@ -957,54 +1153,102 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			return;
 		    else
 		    {
-			if(root->children[2]->type!=NONE && root->children[1]->type!=root->children[2]->type)
-			{}  //ERROR: type mismatch in expression
-			
+			if(pass_no==1 && (root->children[1]->type==boolean)) 
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Arithmetic operations cannot have boolean operands\n"); 
+
+			    //ERROR: Arithmetic ops cannot have bool operands
+			}
+			if(pass_no==1 && root->children[2]->type!=NONE &&
+				(root->children[1]->type!=root->children[2]->type))
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Type Mismatch in expression\n"); 
+			}//ERROR: Type mismatch in expression
+
 			root->type = root->children[1]->type;
+
 		    }
 		    return;
 		}break;
 
 	    case TERM:
 		{
-		    //move forward then check
 		    for(int i =0;i<root->n;i++)
-			type_semantics(root->children[i], current_table);
-		    
-		    if(root->children[1]->type!=NONE && root->children[0]->type!=root->children[1]->type)
-		    {}//ERROR: type mismatch in expression
+			    type_semantics(root->children[i], current_table);
 		    
 		    if(root->children[1]->tok!=EPS)
 		    {
-			if(root->children[1]->type == boolean)
-			{}//ERROR: arithmetic op cannot have boolean type
-
+			if(pass_no==1 && root->children[0]->type==boolean)
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Arithmetic operations cannot boolean operands\n"); 
+			    //ERROR: Arithmetic operations cannot have boolean oprands
+			}
+			if(pass_no==1 && root->children[1]->type!=NONE &&
+				(root->children[0]->type!=root->children[1]->type))
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Type Mismatch in expression\n"); 
+			    //ERROR: Type mismatch in expression
+			}
+			root->type = root->children[0]->type;
 		    }
-		    
+		    else
+		    {
+			root->type = root->children[0]->type; //Anyterm.type
+		    }
 		    root->type = root->children[0]->type;
 		    return;
+
 		}break;
 
 	    case N5:
-		{
+		{  
 		    //move forward then check
 		    for(int i =0;i<root->n;i++)
-			type_semantics(root->children[i], current_table);
+			    type_semantics(root->children[i], current_table);
 		    
-		    if(root->tok == EPS)
+		    if(root->children[0]->tok == EPS)
 			return;
 		    else
 		    {
-			if(root->children[2]->type!=NONE && root->children[1]->type!=root->children[2]->type)
-			{}// ERROR: type mismatch in expression
-			
+			if(pass_no==1 && (root->children[1]->type==boolean)) 
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Arithmetic operations cannot have boolean operands\n"); 
+
+			    //ERROR: Arithmetic ops cannot have bool operands
+			}
+			if(pass_no==1 && root->children[2]->type!=NONE&&
+				(root->children[1]->type!=root->children[2]->type))
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Type Mismatch in expression\n"); 
+			}//ERROR: Type mismatch in expression
 			root->type = root->children[1]->type;
+
 		    }
-		}break;
+		    return;
+		    }
+		break;
 	    case FACTOR:
 		{
 		    //move forward then assign type
-		    for(int i =0;i<root->n;i++)
+		   for(int i =0;i<root->n;i++)
 			    type_semantics(root->children[i], current_table);
 		    
 		    //assign type
@@ -1026,7 +1270,6 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		{
 		    //move forward
 		    type_semantics(root->children[1], current_table);
-		    
 		    declareVariables(current_table, root->children[0], root->children[1]);
 		}break;
 
@@ -1042,35 +1285,67 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			    type_semantics(root->children[i], new_table);
 		    
 
-
 		    //check if the type of the switch statemt matches.
-		    if(root->children[0]->type==integer)
+		    if(pass_no==1 && root->children[0]->type==integer)
 		    {
 			if(root->children[0]->type != root->children[1]->type)
 			{
+			    blue();
+			    printf("Line no: %d ", root->children[1]->lexeme->line_no);
+			    reset();
+			    printf("Case type does not match argument type\n"); 
+			
 			}  //ERROR: case type does not match argument type
 			if(root->children[2]->tok==EPS)
 			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("No default case provided for integer argument\n"); 
+			
 			}  //ERROR: default case not included
 			if(!checkCases(root->children[1],integer))
 			{
+			    //prints inside function.
 			}//cases must be unique
 			    
 			//check all case statements are unique!!
 		    }
-		    else if(root->children[0]->type==boolean)
+		    else if(pass_no==1 && root->children[0]->type==boolean)
 		    {
 			if(root->children[0]->type != root->children[1]->type)
-			{}//ERROR: case type does not match argument type
+			{
+			    blue();
+			    printf("Line no: %d ", root->children[1]->lexeme->line_no);
+			    reset();
+			    printf("Case type does not match argument type.\n"); 
+			
+			}//ERROR: case type does not match argument type
 			if(root->children[2]->tok!=EPS)
-			{}  //ERROR: boolean case cannot have default case.
+			{
+			    blue();
+			    printf("Line no: %d ", root->children[2]->lexeme->line_no);
+			    reset();
+			    printf("Boolean argument does not require default case.\n"); 
+			
+			}  //ERROR: boolean case cannot have default case.
 			if(!checkCases(root->children[1],boolean))
 			{
+			    //prints inside function
 			}//only true and false must be included in case  statement     
 
 		    }
 		    else
-		    {}//ERROR: switch can only have integer of boolean argument
+		    {
+			if(pass_no==1)
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Switch can only have integer or boolean type\n"); 
+			}
+
+		    }//ERROR: switch can only have integer of boolean argument
 
 		    return;
 		}break;
@@ -1081,14 +1356,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    for(int i =0;i<root->n;i++)
 			    type_semantics(root->children[i], current_table);
 		    
-		    //keep checking somehow that all the cases are unique (maybe use symbol table somehow
-		    //							    by inserting the value as a string)
-		    
-		    if(root->children[2]->type!=NONE && root->children[0]->type!=root->children[2]->type)
-		    {}//ERROR: Case type mismatch. 
-		    else
-			root->type = root->children[0]->type;
-
+		    root->type = root->children[0]->type;
 		    return;
 		}break;
 
@@ -1098,14 +1366,10 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    for(int i =0;i<root->n;i++)
 			    type_semantics(root->children[i], current_table);
 		    
-		    //keep checking somehow that all the cases are unique
 			if(root->tok == EPS)
 			    return;
 			else
 			{
-			    if(root->children[2]->type!=NONE && root->children[0]->type!=root->children[2]->type)
-			    {}//ERROR: Case type mismatch.
-			    
 			    root->type = root->children[0]->type;   
 			}
 		    return;
@@ -1135,22 +1399,32 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    {
 			//check ID
 			type_semantics(root->children[1],current_table);
-			symbol_table_node* a = searchSymbolTable(current_table, root->children[0]->lexeme->str);
-			if(root->children[1]->type!=integer) 
-			{}//ERROR: The variable must be an integer
-			if(a->isarr==true)
-			{}//ERROR: The variable cannot be an array
+			symbol_table_node* a = searchSymbolTable(current_table, root->children[1]->lexeme->str);
+			if(pass_no==1&&root->children[1]->type!=integer) 
+			{
+			    blue();
+			    printf("Line no: %d ", root->children[1]->lexeme->line_no);
+			    reset();
+			    printf("Loop variable must be of integer type\n"); 
+			
+			}//ERROR: The variable must be an integer
+			if(pass_no==1 && a->isarr==true)
+			{
+			    blue();
+			    printf("Line no: %d ", root->children[1]->lexeme->line_no);
+			    reset();
+			    printf("Loop iterator cannot be array variable\n"); 
+			
+			}//ERROR: The variable cannot be an array
 
 			//Check Range
 			type_semantics(root->children[2],current_table);
-			if(root->children[2]->type!=integer)
-			{}//ERROR: type error
-
 
 			//for loop
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
 			type_semantics(root->children[3],new_table);
+
 		    }
 		    else
 		    {
@@ -1161,13 +1435,25 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			astnode* exprnode = root->children[1];
 			fillCheckTable(check_table, exprnode);
 			
-			if(!checkWhile(check_table,root->children[2]))
-			{}//ERROR: None of the variables in the while condition are updated.
+			if(pass_no==1 && !checkWhile(check_table,root->children[2]))
+			{
+			    blue();
+			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
+			    reset();
+			    printf("No variable in the condition of while loop is updated in the body of the loop.\n"); 
+
+			}//ERROR: None of the variables in the while condition are updated.
 
 			//check that conditional expression is boolean
 			type_semantics(root->children[1],current_table);
-			if(root->children[1]->type!=boolean)
-			{}//ERROR: the condition inside while must evaluate to boolean;
+			if(pass_no==1 && root->children[1]->type!=boolean)
+			{
+			    blue();
+			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
+			    reset();
+			    printf("Condition in the while loop must evaluate to boolean\n"); 
+		    
+			}//ERROR: the condition inside while must evaluate to boolean;
 
 
 			//create new scope(symbol table) and assign the current table as its parent
@@ -1184,18 +1470,40 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    for(int i =0;i<root->n;i++)
 			    type_semantics(root->children[i], current_table);
 
-		    if(root->children[0]->type!=root->children[1]->type)
-		    {}//ERROR: range has to be of same type.
+		    if((root->children[0]->children[0]->tok==ID && root->children[1]->children[0]->tok==NUM))
+		    {
+			//dynamic range check. arg1->ID arg2->NUM
+		    }
+		    if((root->children[0]->children[0]->tok==NUM && root->children[1]->children[0]->tok==ID))	
+		    {
+			//dynamic range check. arg1->NUM arg2->ID
+		    }
 
-		    if((root->children[0]->children[0]->tok==ID && root->children[1]->children[0]->tok==NUM)
-			|| (root->children[0]->children[0]->tok==NUM && root->children[1]->children[0]->tok==ID))	
-		    {}//ERROR: range arrays should be both NUM or both ID
+		    //           INDEX1!=integer                                    INDEX2!=integer
+		    if(pass_no==1&&(root->children[0]->children[0]->type!=integer || root->children[1]->children[0]->type!=integer))
+		    {
+			    blue();
+			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
+			    reset();
+			    printf("Arguments of range must be integers\n"); 
 		    
-		    if(root->children[0]->type!=integer)
-		    {}//ERROR: range can only be integer.
-		    else if(root->children[0]->tok==NUM && 
-			    (atoi(root->children[0]->lexeme->str)>atoi(root->children[0]->lexeme->str)))
-		    {}//ERROR: Invalid range. arg1 greater then arg2.
+
+		    }//ERROR: range can only be integer.
+
+		    else if(pass_no==1 && 
+			    (root->children[0]->children[0]->tok==NUM && root->children[1]->children[0]->tok==NUM &&
+			    (atoi(root->children[0]->children[0]->lexeme->str)>atoi(root->children[1]->children[0]->lexeme->str))))
+		    {
+		    
+			    blue();
+			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
+			    reset();
+			  printf("Invalid range, %d is greater than %d\n",
+				atoi(root->children[0]->children[0]->lexeme->str),
+				atoi(root->children[1]->children[0]->lexeme->str));
+		    
+
+		    }//ERROR: Invalid range. arg1 greater then arg2.
 		    else if(root->children[0]->tok==ID)
 		    {
 			//dynamic check of index1 < index2
@@ -1234,7 +1542,17 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    symbol_table_node* temp = searchSymbolTable(current_table,root->lexeme->str);
 		    if(temp==NULL)
 		    {
-			printf("ERROR: Symbol '%s' Not Recognized\n",root->lexeme->str);
+			insertSymbolTable(current_table, root->lexeme->str,false, false,
+				NULL,NULL,-1,-1,NULL,NONE); //add into symbol table so that seg faults dont occur
+							    //and the symbol is reported only once
+			if(pass_no==1)
+			{
+			    blue();
+			    printf("Line no %d: ",root->lexeme->line_no);
+			    reset();
+			    printf("Symbol '%s' Not Recognized. (Each symbol is reported only once)\n",
+				    root->lexeme->str);
+			}
 		    }//ERROR: symbol not recognized.
 
 		    else

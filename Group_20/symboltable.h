@@ -48,6 +48,8 @@ symbol_table_node* searchSymChain(symbol_table_node* head, char* str );
 
 symbol_table_node* searchSymbolTable(symbolTable* table, char* str);
 
+symbol_table_node* searchSymbolTableLocal(symbolTable* table, char* str);
+
 symbolTable* getSymbolTable(unsigned int n);
 
 symbol_table_node * insertSymbolTable(symbolTable* table, 
