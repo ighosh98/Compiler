@@ -35,7 +35,7 @@ void printSymbolNode(symbol_table_node* a)
 }
 
 symbol_table_node * makeSymbolNode(char* name , bool isarr,
-       	bool isdyn, symbol_table_node * d_range1, 
+       	int isdyn, symbol_table_node * d_range1, 
 	symbol_table_node* d_range2, int c_range1, 
 	int c_range2,token* lexeme, datatype type)
 {
@@ -131,7 +131,7 @@ symbolTable* getSymbolTable(unsigned int n)
 
 symbol_table_node * insertSymbolTable(symbolTable* table,
        	char* name , bool isarr,
-	bool isdyn, symbol_table_node * d_range1, 
+	int isdyn, symbol_table_node * d_range1, 
 	symbol_table_node* d_range2, int c_range1, 
 	int c_range2,token* lexeme, datatype type)
 {

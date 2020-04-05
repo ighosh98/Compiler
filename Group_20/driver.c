@@ -17,6 +17,7 @@ G Adityan	 2016B1A70929P
 #include "astdef.h"
 #include "symboltable.h"
 #include "semantic.h"
+#include "codegen.h"
 int main(int argc,char **argv)
 {
     printf("############ Implementation Status ##############\n");
@@ -131,12 +132,19 @@ int main(int argc,char **argv)
 
 	    yellow();
 	    printf("created AST\n");
-	    reset();
+	    reset(); 
 	    
-	    type_semantics(a.root,NULL);
+	    check_semantics(a.root); //helper function that does 2 passes automatically
 
-	    type_semantics(a.root,NULL);
-	    printf("DONE\n");
+	    blue();
+	    printf("Semantics done.\n");
+	    reset();
+
+	    
+	    codegen(a.root,NULL,0);
+	    green();
+	    printf("Offsets assigned\n");
+	    reset();
 	    //printAST(a.root);
 
 

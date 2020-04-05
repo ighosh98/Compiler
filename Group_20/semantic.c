@@ -168,7 +168,59 @@ void fillCheckTable(symbolTable* check_table, astnode* root)
     for(int i =0;i<root->n;i++)
 	fillCheckTable(check_table, root->children[i]);
 }
+bool checkForDeclare(astnode* id, astnode* root)
+{
+    if(root->tok == DECLARESTMT)
+    {
+	astnode* idlist = root->children[0];
+	while(idlist->tok!=EPS)
+	{
+	    if(strcmp(id->lexeme->str,idlist->children[0]->lexeme->str)==0)
+		return false;
+	    idlist = idlist->children[1];
+	}
+    }	
+    else
+    {
+	bool ans = true;
+	for(int i =0;i<root->n;i++)
+	    ans = ans && checkForDeclare(id,root->children[i]);
+	return ans;
+    }
 
+}
+
+bool checkFor(astnode* id, astnode* root)
+{
+    if(root->tok==ASSIGNMENTSTMT)
+    {
+	if(strcmp(id->lexeme->str,root->children[0]->lexeme->str)==0)
+	    return false;
+    }
+    else if(root->tok == IOSTMT && root->children[0]->tok==GET_VALUE)
+    {
+	if(strcmp(id->lexeme->str,root->children[1]->lexeme->str)==0)
+	    return false;
+    }
+    else if(root->tok == OPTIONAL)
+    {
+	astnode* idlist = root->children[0];
+	while(idlist->tok!=EPS)
+	{
+	    if(strcmp(id->lexeme->str,idlist->children[0]->lexeme->str)==0)
+		return false;
+	    idlist = idlist->children[1];
+	}
+    }	
+    else
+    {
+	bool ans = true;
+	for(int i =0;i<root->n;i++)
+	    ans = ans && checkFor(id,root->children[i]);
+	return ans;
+    }
+
+}
 bool checkWhile(symbolTable* check_table, astnode* root)
 {
     if(root->tok==ASSIGNMENTSTMT)
@@ -176,6 +228,21 @@ bool checkWhile(symbolTable* check_table, astnode* root)
 	if(searchSymbolTable(check_table,root->children[0]->lexeme->str)!=NULL)
 	    return true;
     }
+    else if(root->tok == IOSTMT && root->children[0]->tok==GET_VALUE)
+    {
+	if(searchSymbolTable(check_table, root->children[1]->lexeme->str)!=NULL)
+	    return true;
+    }
+    else if(root->tok == OPTIONAL)
+    {
+	astnode* idlist = root->children[0];
+	while(idlist->tok!=EPS)
+	{
+	    if(searchSymbolTable(check_table, idlist->children[0]->lexeme->str))
+		return true;
+	    idlist = idlist->children[1];
+	}
+    }	
     else
     {
 	bool ans = false;
@@ -263,12 +330,32 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 
 		curr_func->stackSize+=0;  //the memory is allocated on heap.
 		//dynamic range of array
-		a->isdynamic = true;
-		astnode* indexVar1 = dataTypeVar->children[0]->children[0]; //index nodes
-		astnode* indexVar2 = dataTypeVar->children[0]->children[1];
 
-		a->drange1 = searchSymbolTable(table,indexVar1->children[0]->lexeme->str); //assign the symbol table entry
-		a->drange2 = searchSymbolTable(table,indexVar2->children[0]->lexeme->str); //of the variable.
+		astnode* indexVar1 = dataTypeVar->children[0]->children[0]; //index nodes
+    		astnode* indexVar2 = dataTypeVar->children[0]->children[1];
+			
+		if(indexVar1->children[0]->tok==ID && indexVar2->children[0]->tok==ID)
+		{
+		    //11 -> ID ID
+		    a->isdynamic = 3;
+		    a->drange1 = searchSymbolTable(table,indexVar1->children[0]->lexeme->str); //assign the symbol table entry
+		    a->drange2 = searchSymbolTable(table,indexVar2->children[0]->lexeme->str); //of the variable.
+		}
+		else if(indexVar1->children[0]->tok==NUM && indexVar2->children[0]->tok==ID)
+		{
+		    //01 -> NUM ID
+		    a->isdynamic = 1;
+		    a->crange1 = atoi(indexVar1->children[0]->lexeme->str); //assign the symbol table entry
+		    a->drange2 = searchSymbolTable(table,indexVar2->children[0]->lexeme->str); //of the variable.
+		
+		}
+		else if(indexVar1->children[0]->tok==ID && indexVar2->children[0]->tok==NUM)
+		{
+		    //10  -> ID NUM
+		    a->isdynamic = 2;
+		    a->drange1 = searchSymbolTable(table,indexVar1->children[0]->lexeme->str); //assign the symbol table entry
+		    a->crange2 = atoi(indexVar2->children[0]->lexeme->str); //of the variable.
+		}
 	    }
 
 	    idlist = idlist->children[1];
@@ -336,15 +423,33 @@ symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
 	    //dynamic range of array
 	    
 	    curr_func->stackSize+=0;
-	    nextinput->isdynamic = true;
 	    astnode* indexVar1 = dataTypeVar->children[0]->children[0];
 	    astnode* indexVar2 = dataTypeVar->children[0]->children[1];
 
-	    nextinput->drange1 = makeSymbolNode(indexVar1->children[0]->lexeme->str,
-		    false,false, NULL,NULL,-1,-1,indexVar1->children[0]->lexeme,integer); //first index variable
+	    symbol_table_node* a = nextinput;	
+	    if(indexVar1->children[0]->tok==ID && indexVar2->children[0]->tok==ID)
+	    {
+		//11 -> ID ID
+		a->isdynamic = 3;
+		a->drange1 = searchSymbolTable(table,indexVar1->children[0]->lexeme->str); 
+		a->drange2 = searchSymbolTable(table,indexVar2->children[0]->lexeme->str);
+	    }
+	    else if(indexVar1->children[0]->tok==NUM && indexVar2->children[0]->tok==ID)
+	    {
+		//01 -> NUM ID
+		a->isdynamic = 1;
+		a->crange1 = atoi(indexVar1->children[0]->lexeme->str); 
+		a->drange2 = searchSymbolTable(table,indexVar2->children[0]->lexeme->str); 
 
-	    nextinput->drange2 = makeSymbolNode(indexVar2->children[0]->lexeme->str,
-		    false,false, NULL,NULL,-1,-1,indexVar2->children[0]->lexeme,integer);  //second index variable
+	    }
+	    else if(indexVar1->children[0]->tok==ID && indexVar2->children[0]->tok==NUM)
+	    {
+		//10  -> ID NUM
+		a->isdynamic = 2;
+		a->drange1 = searchSymbolTable(table,indexVar1->children[0]->lexeme->str);
+		a->crange2 = atoi(indexVar2->children[0]->lexeme->str); 
+	    }
+
 	}
     }
 
@@ -635,7 +740,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    
 		    }//ERROR: Invalid range. arg1 greater then arg2.
 
-		    else if(root->children[0]->tok==ID)
+		    else if(root->children[0]->children[0]->tok==ID && root->children[1]->children[0]->tok==ID)
 		    {
 			//dynamic check of index1 < index2
 		    }
@@ -748,7 +853,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 				}	//ERROR: index must be integer
 
 
-			    if(arr->isdynamic)
+			    if(arr->isdynamic!=false)
 			    {
 				//code for bound check in dynamic array.
 			    }
@@ -1262,7 +1367,6 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    {
 			root->type = root->children[0]->type; //Anyterm.type
 		    }
-		    root->type = root->children[0]->type;
 		    return;
 
 		}break;
@@ -1471,6 +1575,22 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			    printf("Loop iterator cannot be array variable\n"); 
 			
 			}//ERROR: The variable cannot be an array
+			
+			if(pass_no==1 && !checkFor(root->children[1],root->children[3]))
+			{
+			    blue();
+			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
+			    reset();
+			    printf("Loop variable cannot be updated in the body of the loop.\n");
+			}
+			if(pass_no==1 && !checkForDeclare(root->children[1],root->children[3]))
+			{
+			    blue();
+			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
+			    reset();
+			    printf("Loop variable cannot be Redeclared.\n");
+			
+			}
 
 			//Check Range
 			type_semantics(root->children[2],current_table);
@@ -1478,6 +1598,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			//for loop
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
+			
 			type_semantics(root->children[3],new_table);
 
 		    }
@@ -1559,7 +1680,8 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    
 
 		    }//ERROR: Invalid range. arg1 greater then arg2.
-		    else if(root->children[0]->tok==ID)
+		   
+		    else if(root->children[0]->children[0]->tok==ID && root->children[1]->children[0]->tok==ID)
 		    {
 			//dynamic check of index1 < index2
 		    }
@@ -1623,4 +1745,9 @@ void type_semantics(astnode* root, symbolTable* current_table)
     }
 }
 
+void check_semantics(astnode* root)
+{
+    type_semantics(root,NULL);
+    type_semantics(root,NULL);
 
+}

@@ -6,13 +6,15 @@
 #include "symboltable.h"
 #include "semantic.h"
 #include "color.h"
-#include "codegen.h"
+
 //create a way to get the total size of the function in the function table.
 //for Driver and for all other functions
 
 //return the next available offset
-int declareVariablesOffset(symbolTable* table, astnode* idlist, astnode* datatype, int curr_offset)
+int declareVariables(symbolTable* table, astnode* idlist, astnode* datatype, int curr_offset)
 {
+    symbol_table_node* curr_func = searchSymbolTable(table, "_currentfunction")->iplist;
+
     astnode* dataTypeVar = datatype;
     while(idlist->tok!=EPS)
     {
@@ -119,9 +121,9 @@ int declareVariablesOffset(symbolTable* table, astnode* idlist, astnode* datatyp
     return curr_offset;
 }
 
-int codegen(astnode* root, symbolTable* current_table,int curr_offset)
+void type_semantics(astnode* root, symbolTable* current_table,int curr_offset)
 {
-    if(root==NULL)return 0;
+    if(root==NULL)return;
 
     if(root->children)
     {
@@ -130,9 +132,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 	    case PROGRAM:
 		{
 		    for(int i =0;i<root->n;i++)
-			curr_offset = codegen(root->children[i], current_table,0); //the program starts with zero
+			type_semantics(root->children[i], current_table);
 		    
-		    return curr_offset;
+		    return;
 		}break;
 
 	    case MODULEDECLARATIONS:
@@ -140,26 +142,26 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 		    //if empty then return. else process the subtree
 		    if(root->tok == EPS)
-			return curr_offset;
+			return;
 		    else
 			for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
-		    return curr_offset;
+			    type_semantics(root->children[i], current_table);
+		    return;
 		}break;
 
 	    case MODULEDECLARATION:
 		{
-		    return curr_offset;
+		    return;
 		}break;
 
 	    case OTHERMODULES:
 		{
 		    if(root->tok == EPS)
-			return curr_offset;
+			return;
 		    else
 			for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,0);
-		    return curr_offset;
+			    type_semantics(root->children[i], current_table);
+		    return;
 		}break;
 
 	    case MODULE1:
@@ -235,7 +237,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			a = a->oplist;
 		    }
 		    //call moduledef
-		    curr_offset = codegen(root->children[3],new_table, curr_offset);
+		    type_semantics(root->children[3],new_table, curr_offset);
 		    
 		}break;
 
@@ -247,22 +249,22 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    
 		    //call moduledef
 		    for(int i =0;i<root->n;i++)
-			curr_offset = codegen(root->children[i], new_table,0);
-		    return curr_offset;
+			type_semantics(root->children[i], new_table,0);
+		    return;
 		}break;
 
 	    
 	    case RET: case INPUT_PLIST: case N1: case OUTPUT_PLIST: case N2:
 		{
 		    //handled by module1.
-		    return curr_offset;    
+		    return;    
 		}break;
 
 
 	    case DATATYPE:
 		{
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 
 		    if(root->children[0]->tok!=RANGE_ARRAYS)
 			root->type = root->children[0]->type;
@@ -271,13 +273,12 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			root->type = root->children[1]->type;
 		    }
 		    // handle by input_list and declare statement
-		    return curr_offset;
 		}break;
    
 	    case RANGE_ARRAYS:
 		{
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    if((root->children[0]->children[0]->tok==ID && root->children[1]->children[0]->tok==NUM))
 		    {
@@ -293,44 +294,42 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    }
 
 		    root->type = root->children[0]->type;
-		    return curr_offset;
 		}break;
 
 	    case TYPE:
 		{
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    root->type = root->children[0]->type;
-		    return curr_offset;
 		}break;
 	    
 	    case MODULEDEF:
 		{
 		    //move forward
 		    for(int i =0;i<root->n;i++)
-			curr_offset = codegen(root->children[i], current_table,curr_offset);
-		    return curr_offset;
+			type_semantics(root->children[i], current_table);
+		    return;
 		}break;
 
 
 	    case STATEMENTS:
 		{
 		    if(root->tok == EPS)
-			return curr_offset;
+			return;
 		    else
 			//move forward
 			for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
-
-		    return curr_offset;
+			    type_semantics(root->children[i], current_table);
+		    
+		    return;
 		}break;
 
 	    case STATEMENT:
 		{
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
-		    return curr_offset;
+			    type_semantics(root->children[i], current_table);
+		    return;
 		}break;
 
 	    case IOSTMT:
@@ -338,12 +337,12 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //first child stores print/get info. hence nothing needs to be done.
 		    //move forward to check variables.
 		    for(int i =0;i<root->n;i++)
-			curr_offset = codegen(root->children[i], current_table,curr_offset); 
-		    return curr_offset;
+			type_semantics(root->children[i], current_table); 
+		    return;
 		}break;
 	    case GET_VALUE: case PRINT:
 		{
-		    return curr_offset;
+		    return;
 		}break;
 
 
@@ -351,25 +350,25 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		{
 		    //move forward then assign type
 		    for(int i =0;i<root->n;i++)
-			curr_offset = codegen(root->children[i], current_table,curr_offset);
+			type_semantics(root->children[i], current_table);
 		    root->type = root->children[0]->type;
-		    return curr_offset;
+		    return;
 		}break;
 	    case VAR:
 		{
 		    //move forward then assign type
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    root->type = root->children[0]->type;
-		    return curr_offset;
+		    return;
 		}break;
 
 	    case VAR_ID_NUM:
 		{
 		    //move forward
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    //assign type
 		    root->type = root->children[0]->type;
@@ -378,7 +377,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    if(root->children[0]->tok==ID)
 		    {
 			if(root->children[1]->tok==EPS)
-			    return curr_offset;
+			    return;
 			else
 			{
 			    //search the entry for the array
@@ -399,7 +398,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			    }
 			}
 		    }
-		    return curr_offset;
+		    return;
 		}break;
 	    
 		
@@ -407,24 +406,24 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		{
 		    //move forward
 		    for(int i =0;i<root->n;i++)
-			curr_offset = codegen(root->children[i], current_table,curr_offset);
+			type_semantics(root->children[i], current_table);
 		    
-		    return curr_offset;
+		    return;
 		}break;
 
 	    case SIMPLESTMT:
 		{
 		    //move forward
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
-		    return curr_offset;
+			    type_semantics(root->children[i], current_table);
+		    return;
 		}break;
 
 	    case ASSIGNMENTSTMT:
 		{
 		    //move forward
 		    for(int i =0;i<root->n;i++)
-			curr_offset = codegen(root->children[i], current_table,curr_offset);
+			type_semantics(root->children[i], current_table);
 		  
 		    symbol_table_node* a = searchSymbolTable(current_table, root->children[0]->lexeme->str);
 		    astnode* lvalue = root->children[1]->children[0];
@@ -453,112 +452,107 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			    }	
 			}
 		    }
-		    return curr_offset;
 		}break;
 
 	    case WHICHSTMT:
 		{
 		    //move forward and assign type of child to whichstmt
 		    for(int i =0;i<root->n;i++)
-			curr_offset = codegen(root->children[i], current_table,curr_offset);
+			type_semantics(root->children[i], current_table);
 		    
 		    root->type = root->children[0]->type;
-		    return curr_offset;
 		}
 
 	    case LVALUEIDSTMT:
 		{
 		    for(int i =0;i<root->n;i++)
-			curr_offset = codegen(root->children[i], current_table,curr_offset);
+			type_semantics(root->children[i], current_table);
 		    
 		    //move forward and assign type of child to lvalueidstmt
 		    root->type = root->children[0]->type;
-		    return curr_offset;
 		}break;
 
 	    case LVALUEARRSTMT:
 		{
 		    for(int i =0;i<root->n;i++)
-			curr_offset = codegen(root->children[i], current_table,curr_offset);
+			type_semantics(root->children[i], current_table);
 		    
 		    root->type = root->children[1]->type;
-		    return curr_offset;
 		}break;
 	    
 	    case INDEX:
 		{
 		    //move forward and assign type
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		
 		    root->type = root->children[0]->type;
-		    return curr_offset;
 		}break;
 
 	    case MODULEREUSESTMT:
 		{
 		    //code to call the function
-		    return curr_offset;	
+		    return;	
 		}break;
 
 	    case OPTIONAL:
 		{
 		    if(root->tok==EPS)
-			return curr_offset;
+			return;
 		    else
 			for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
-		    return curr_offset;
+			    type_semantics(root->children[i], current_table);
+		    return;
 
 		}
 	    case IDLIST: case N3:
 		{
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
-		    return curr_offset;
+			    type_semantics(root->children[i], current_table);
+		    return;
 		}break;
 	    
 	    case EXPRESSION:
 		{
 		    //move forward and assign type
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    root->type = root->children[0]->type;
-		    return curr_offset;
+		    return;
 		}break;
 	    case U:
 		{
 		    //move forward and assign type
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    root->type = root->children[1]->type;  //type of NEW_NT
-		    return curr_offset;
+		    return;
 		}break;
 	    case NEW_NT:
 		{
 		    //move forward and assign type
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    root->type = root->children[0]->type;
 
-		    return curr_offset;
+		    return;
 		}break;
 	    case UNARY_OP:
 		{
 		    //do nothing
 		    //this is instruction for code generator to 
 		    //take know the sign 
-		    return curr_offset;
+		    return;
 		}break;
 	    
 	    case ARITHMETICORBOOLEANEXPR:
 		{
 		    //move forward
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    //then check 
 		    if(root->children[1]->tok!=EPS)
@@ -569,30 +563,30 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    {
 			root->type = root->children[0]->type; //Anyterm.type
 		    }
-		    return curr_offset;
+		    return;
 		}break;
 
 	    case N7:
 		{
 		    //move forward 
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		   
 		    //then check 
 		    if(root->tok==EPS)
-			return curr_offset;
+			return;
 		    else
 		    {
 			root->type = boolean;
 		    }
-		    return curr_offset;
+		    return;
 
 		}break;
 	    case ANYTERM:
 		{
 		    //move forward then check
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    //then check
 		   if(root->children[0]->tok == BOOLCONSTT)
@@ -608,29 +602,29 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			   root->type = root->children[0]->type; //arithExpr.type
 		       }
 		   }
-		   return curr_offset;
+		   return;
 		}break;
 	    
 	    case N8:
 		{
 		    //move forward then check
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    if(root->tok==EPS)
-			return curr_offset;
+			return;
 		    else
 		    {
 			root->type = boolean;
 		    }
-		    return curr_offset;
+		    return;
 		}break;
 
 	    case ARITHMETICEXPR:
 		{
 		    //move forward then check
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    if(root->children[1]->tok!=EPS)
 		    {
@@ -640,28 +634,28 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    {
 			root->type = root->children[0]->type; //Anyterm.type
 		    }
-		    return curr_offset;
+		    return;
 		}break;
 
 	    case N4:
 		{
 		    //move forward then check
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    if(root->children[0]->tok == EPS)
-			return curr_offset;
+			return;
 		    else
 		    {
 			root->type = root->children[1]->type;
 		    }
-		    return curr_offset;
+		    return;
 		}break;
 
 	    case TERM:
 		{
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    if(root->children[1]->tok!=EPS)
 		    {
@@ -671,7 +665,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    {
 			root->type = root->children[0]->type; //Anyterm.type
 		    }
-		    return curr_offset;
+		    return;
 
 		}break;
 
@@ -679,27 +673,27 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		{  
 		    //move forward then check
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    if(root->children[0]->tok == EPS)
-			return curr_offset;
+			return;
 		    else
 		    {
 			root->type = root->children[1]->type;
 		    }
-		    return curr_offset;
+		    return;
 		    }
 		break;
 	    case FACTOR:
 		{
 		    //move forward then assign type
 		   for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    //assign type
 		    root->type = root->children[0]->type;
 		    
-		    return curr_offset;
+		    return;
 		}break;
 	    case OP1:
 	    case OP2:
@@ -708,15 +702,14 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		{
 		    //do nothing
 		    //this is for code generator
-		    return curr_offset;
+		    return;
 		}break;
 	    
 	    case DECLARESTMT:
 		{
 		    //move forward
-		    curr_offset = codegen(root->children[1], current_table,curr_offset);
-		    curr_offset = declareVariablesOffset(current_table, root->children[0], root->children[1],curr_offset);
-		    return curr_offset;
+		    type_semantics(root->children[1], current_table);
+		    curr_offset = declareVariables(current_table, root->children[0], root->children[1],curr_offset);
 		}break;
 
 	    case CONDITIONALSTMT:
@@ -728,68 +721,68 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //move forward. type of ID is handled by the symbol table when it is called.
 		    
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], new_table, curr_offset);
-		    return curr_offset;
+			    type_semantics(root->children[i], new_table);
+		    return;
 		}break;
 
 	    case CASESTMTS:
 		{
 		    //move forward 
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    root->type = root->children[0]->type;
-		    return curr_offset;
+		    return;
 		}break;
 
 	    case N9:
 		{
 		    //move forward
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 			if(root->tok == EPS)
-			    return curr_offset;
+			    return;
 			else
 			{
 			    root->type = root->children[0]->type;   
 			}
-		    return curr_offset;
+		    return;
 		}break;
 
 	    case VALUE:
 		{
 		    //move forward
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
 		    root->type = root->children[0]->type;
-		    return curr_offset;
+		    return;
 		}break;
 	    case DEFAULT1:
 		{
 		    //move forward.
 		    //nothing else needs to be done
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+			    type_semantics(root->children[i], current_table);
 		    
-		    return curr_offset;
+		    return;
 		}break;
 	    case ITERATIVESTMT:
 		{
 		    if(root->children[0]->tok == FOR)
 		    {
 			//check ID
-			curr_offset = codegen(root->children[1],current_table,curr_offset);
+			type_semantics(root->children[1],current_table);
 			symbol_table_node* a = searchSymbolTable(current_table, root->children[1]->lexeme->str);
 			
 			//Check Range
-			curr_offset = codegen(root->children[2],current_table,curr_offset);
+			type_semantics(root->children[2],current_table);
 
 			//for loop
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
-			curr_offset = codegen(root->children[3],new_table,curr_offset);
+			type_semantics(root->children[3],new_table);
 
 		    }
 		    else
@@ -797,21 +790,21 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			//while loop
 			
 			//check that conditional expression is boolean
-			curr_offset = codegen(root->children[1],current_table,curr_offset);
+			type_semantics(root->children[1],current_table);
 
 			//create new scope(symbol table) and assign the current table as its parent
 			//then move forward
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
-			curr_offset = codegen(root->children[2],new_table,curr_offset);
+			type_semantics(root->children[2],new_table);
 		    }
-		    return curr_offset;
+		    return;
 		}break;
 	    case RANGE:
 		{
 		    
 		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+			    type_semantics(root->children[i], current_table);
 
 		    if((root->children[0]->children[0]->tok==ID && root->children[1]->children[0]->tok==NUM))
 		    {
@@ -827,9 +820,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    }
 
 		    root->type = root->children[0]->type;
-		    return curr_offset;
+		    return;
 		}break;
-	    default: return curr_offset;
+	    default: return;
 	}
     }
     else
@@ -857,6 +850,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //check symbol table to find the type of the id.
 		    //if symbol table has no entry then error.
 		    symbol_table_node* temp = searchSymbolTable(current_table,root->lexeme->str);
+		    
 		    root->type = temp->type;
 
 		}break;
@@ -864,7 +858,8 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		root->type = NONE;
 		break;
 	}
-	return curr_offset; 
+	    
+
     }
 }
 
