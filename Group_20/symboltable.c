@@ -55,6 +55,7 @@ symbol_table_node * makeSymbolNode(char* name , bool isarr,
     temp->isDefined = false;
     temp->iplist =NULL;
     temp->oplist = NULL;
+    temp->stackSize= 0;
     return temp;
 }
 

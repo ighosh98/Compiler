@@ -23,6 +23,7 @@ typedef struct symbol_table_node{
     datatype type;
     struct symbol_table_node* next;
 
+    int stackSize;
 } symbol_table_node;
 
 

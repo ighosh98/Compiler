@@ -6,9 +6,10 @@
 #include "symboltable.h"
 #include "semantic.h"
 #include "color.h"
-//2 passes required for making sure that all the functions are defined and checked
-//make sure errors are only printed once in the first pass for normal errors
-//and for MODULEREUSE the errors are printed in the 2nd pass.
+
+//create a way to get the total size of the function in the function table.
+//for Driver and for all other functions
+
 symbolTable * function_table;
 int pass_no = 0;
 bool checkCases(astnode* root, datatype type)
@@ -186,9 +187,8 @@ bool checkWhile(symbolTable* check_table, astnode* root)
 
 void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 {
-    ////////////////////////////////////////////////////////////////
-    /////////////// Check for redeclaration ////////////////////////
-    ////////////////////////////////////////////////////////////////
+    symbol_table_node* curr_func = searchSymbolTable(table, "_currentfunction")->iplist;
+
     astnode* dataTypeVar = datatype;
     while(idlist->tok!=EPS)
     {
@@ -205,6 +205,7 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 	}
 	else if(dataTypeVar->children[0]->tok==INTEGER)
 	{
+	    pass_no==1? curr_func->stackSize+=4 : pass_no;
 	    idlist->children[0]->type = integer;
 	    insertSymbolTable(table,idlist->children[0]->lexeme->str,false, false,
 		    NULL,NULL,-1,-1,idlist->children[0]->lexeme, integer); //integer type variable
@@ -213,6 +214,7 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 	}	
 	else if(dataTypeVar->children[0]->tok==REAL)
 	{
+	    pass_no==1? curr_func->stackSize+=8 : pass_no;
 	    idlist->children[0]->type = real;
 	    insertSymbolTable(table,idlist->children[0]->lexeme->str,false, false,
 		    NULL,NULL,-1,-1,idlist->children[0]->lexeme, real); //integer type variable
@@ -220,6 +222,7 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 	}	
 	else if(dataTypeVar->children[0]->tok==BOOLEAN)
 	{
+	    pass_no==1? curr_func->stackSize+=4 : pass_no;
 	    idlist->children[0]->type = boolean;
 	    insertSymbolTable(table,idlist->children[0]->lexeme->str,false, false,
 		    NULL,NULL,-1,-1,idlist->children[0]->lexeme, boolean); //integer type variable
@@ -238,15 +241,27 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 
 	    //static or dynamic range of array??
 	    //datatype->rangearrays->index->(NUM/ID)
-	    if(dataTypeVar->children[0]->children[0]->children[0]->tok==NUM)
+	    if(dataTypeVar->children[0]->children[0]->children[0]->tok==NUM
+		    && dataTypeVar->children[0]->children[1]->children[0]->tok==NUM)
 	    {
 		//static range of array
 		a->isdynamic = false;
 		a->crange1 = atoi(dataTypeVar->children[0]->children[0]->children[0]->lexeme->str); //first index
 		a->crange2 = atoi(dataTypeVar->children[0]->children[1]->children[0]->lexeme->str); //second index
+		
+		//array size in memory
+		if(a->type==integer)
+		    pass_no==1? curr_func->stackSize +=  4*(a->crange2 - a->crange1 + 1) : pass_no;
+		else if(a->type==real)
+		    pass_no==1? curr_func->stackSize +=  8*(a->crange2 - a->crange1 + 1) : pass_no;
+		else if(a->type == boolean)
+		    pass_no==1?curr_func->stackSize +=  4*(a->crange2 - a->crange1 + 1) : pass_no;
+
 	    }
 	    else
 	    {
+
+		curr_func->stackSize+=0;  //the memory is allocated on heap.
 		//dynamic range of array
 		a->isdynamic = true;
 		astnode* indexVar1 = dataTypeVar->children[0]->children[0]; //index nodes
@@ -263,7 +278,7 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 
 symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
 {
-
+    symbol_table_node* curr_func = searchSymbolTable(table,"_currentfunction")->iplist;
     if(inputTree->tok==EPS)return NULL;
 
     //insert FIRST variable into inputlist
@@ -275,14 +290,20 @@ symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
     astnode* dataTypeVar = inputTree->children[1];
     type_semantics(dataTypeVar,table);
     if(dataTypeVar->children[0]->tok==INTEGER)
+    {
+	pass_no==1? curr_func->stackSize+=4: pass_no;
 	nextinput->type = integer;
-    
+    }
     else if(dataTypeVar->children[0]->tok==REAL)
+    {
+	pass_no==1? curr_func->stackSize+=4: pass_no;
 	nextinput->type = real;
-
+    }
     else if(dataTypeVar->children[0]->tok==BOOLEAN)
+    {	
+	pass_no==1? curr_func->stackSize+=4: pass_no;
 	nextinput->type = boolean;
-
+    }
     else
     {
 	//input is of type array.
@@ -292,16 +313,29 @@ symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
 	
 	//static or dynamic range of array??
 	//datatype->rangearrays->index->(NUM/ID)
-	if(dataTypeVar->children[0]->children[0]->children[0]->tok==NUM)
+	if(dataTypeVar->children[0]->children[0]->children[0]->tok==NUM 
+		&& dataTypeVar->children[0]->children[1]->children[0]->tok==NUM)
 	{
 	    //static range of array
 	    nextinput->isdynamic = false;
 	    nextinput->crange1 = atoi(dataTypeVar->children[0]->children[0]->children[0]->lexeme->str); //first index
 	    nextinput->crange2 = atoi(dataTypeVar->children[0]->children[1]->children[0]->lexeme->str); //second index
+	    
+	    //array size in memory
+		if(nextinput->type==integer)
+		    pass_no==1? curr_func->stackSize +=  4*(nextinput->crange2 - nextinput->crange1 + 1) : pass_no;
+		else if(nextinput->type==real)
+		    pass_no==1? curr_func->stackSize +=  8*(nextinput->crange2 - nextinput->crange1 + 1) : pass_no;
+		else if(nextinput->type == boolean)
+		    pass_no==1?curr_func->stackSize +=  4*(nextinput->crange2 - nextinput->crange1 + 1) : pass_no;
+
+
 	}
 	else
 	{
 	    //dynamic range of array
+	    
+	    curr_func->stackSize+=0;
 	    nextinput->isdynamic = true;
 	    astnode* indexVar1 = dataTypeVar->children[0]->children[0];
 	    astnode* indexVar2 = dataTypeVar->children[0]->children[1];
@@ -318,9 +352,10 @@ symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
     return nextinput;
 }
 
-symbol_table_node* makeOutputList(astnode* outputTree)
+symbol_table_node* makeOutputList(astnode* outputTree, symbolTable* table)
 {
 
+    symbol_table_node* curr_func = searchSymbolTable(table,"_currentfunction")->iplist;
     if(outputTree->tok==EPS)return NULL;
 
     //insert FIRST variable into inputlist
@@ -331,13 +366,20 @@ symbol_table_node* makeOutputList(astnode* outputTree)
     //update the datatype of the variable
     astnode* TypeVar = outputTree->children[1];
     if(TypeVar->children[0]->tok==INTEGER)
+    {
+	pass_no==1? curr_func->stackSize+=4: pass_no;
 	nextoutput->type = integer;
-
+    }
     else if(TypeVar->children[0]->tok==REAL)
+    {
+	pass_no==1? curr_func->stackSize+=8: pass_no;
 	nextoutput->type = real;
-
+    }
     else if(TypeVar->children[0]->tok==BOOLEAN)
+    {
+	pass_no==1? curr_func->stackSize+=4: pass_no;
 	nextoutput->type = boolean;
+    }
     else
     {
 	blue();
@@ -346,7 +388,7 @@ symbol_table_node* makeOutputList(astnode* outputTree)
 	printf("Array cannot be returned from function.\n");
     }//ERROR: ARRAY OUTPUT NOT ALLOWED
 
-    nextoutput->oplist = makeOutputList(outputTree->children[2]);
+    nextoutput->oplist = makeOutputList(outputTree->children[2],table);
     return nextoutput;
 }
 
@@ -447,12 +489,25 @@ void type_semantics(astnode* root, symbolTable* current_table)
 				false, false, NULL, NULL, -1,-1, 
 				root->children[0]->lexeme, function);
 
+			
+			//insert current function
+			symbolTable* input_table = getSymbolTable(100); //input_list scope
+			input_table->parent = NULL; //new function has no parent scope
+
+			symbolTable* new_table = getSymbolTable(100); //table for the function scope.
+			new_table->parent =  input_table;		  //function scope shadows input scope
+
+			symbol_table_node * a = insertSymbolTable(new_table,"_currentfunction",false,false,NULL,NULL,
+			    -1,-1,NULL,NONE);
+
+			a->iplist = temp;
+
 			//add input list into function
-			temp->iplist = makeInputList(root->children[1],current_table); 
+			temp->iplist = makeInputList(root->children[1],new_table); 
 
 			//add output_plist into function
 			if(root->children[2]->tok!=EPS)
-			    temp->oplist = makeOutputList(root->children[2]->children[0]);
+			    temp->oplist = makeOutputList(root->children[2]->children[0],new_table);
 
 			//function is now defined. redefinition not allowed
 			temp->isDefined = true;
@@ -460,12 +515,8 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    //go onto moduledef with a new symbol table which has
 		    //the entries for input_plist vars and out_plist vars
 
-
-		    symbolTable* input_table = getSymbolTable(100); //input_list scope
-		    input_table->parent = NULL; //new function has no parent scope
-
 		    //insert input vars
-		    symbol_table_node* a = temp->iplist;
+		    a = temp->iplist;
 		    while(a)
 		    {
 			if(pass_no == 1 && searchSymbolTable(input_table,a->name))
@@ -479,9 +530,6 @@ void type_semantics(astnode* root, symbolTable* current_table)
 				a->drange1,a->drange2,a->crange1,a->crange2,a->lexeme,a->type);
 			a = a->iplist;
 		    }
-
-		    symbolTable* new_table = getSymbolTable(100); //table for the function scope.
-		    new_table->parent =  input_table;		  //function scope shadows input scope
 		    //insert output vars
 		    a = temp->oplist;
 		    while(a)
@@ -500,10 +548,6 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    }
 
 
-		    //add current function
-		    a = insertSymbolTable(new_table,"currentfunction",false,false,NULL,NULL,
-			    -1,-1,NULL,NONE);
-		    a->iplist = temp;
 
 		    //call moduledef
 		    type_semantics(root->children[3],new_table);
@@ -519,7 +563,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    //function table entry for driver module
 		    insertSymbolTable(function_table,"driver",false,false,NULL,NULL,-1,-1,NULL,function);
 		    //set current funtion as the driver function
-		    symbol_table_node* a = insertSymbolTable(new_table,"currentfunction",false,false,NULL,NULL,
+		    symbol_table_node* a = insertSymbolTable(new_table,"_currentfunction",false,false,NULL,NULL,
 			    -1,-1,NULL,NONE);
 
 		    a->iplist = searchSymbolTable(function_table,"driver");
@@ -900,11 +944,22 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			    }
 			    return;
 			}//ERROR: the ID is not a Fucntion.
+			else
+			{
+			    if(pass_no==2 && a->isDefined==false)
+			    {
+			    	blue();
+				printf("Line no: %d ", root->lexeme->line_no);
+				reset();
+				printf("'%s' function definition missing\n",root->children[1]->lexeme->str); 
+			    }
+			}
+			
 
 			//the function has been called once;
 			a->isUsed = true;
 			//check if recursion. if yes then error
-			symbol_table_node* current_func = searchSymbolTable(current_table,"currentfunction");
+			symbol_table_node* current_func = searchSymbolTable(current_table,"_currentfunction");
 			char* tempstr = current_func->iplist->name;
     
 			if(pass_no==1 && strcmp(a->name,tempstr)==0)
