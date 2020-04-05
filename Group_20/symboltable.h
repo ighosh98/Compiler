@@ -24,6 +24,7 @@ typedef struct symbol_table_node{
     struct symbol_table_node* next;
 
     int stackSize;
+    int offset;
 } symbol_table_node;
 
 

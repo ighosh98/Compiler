@@ -139,7 +139,6 @@ int main(int argc,char **argv)
 	    printf("DONE\n");
 	    //printAST(a.root);
 
-	    printf("stacksize: %d\n",searchSymbolTable(function_table, "arraySum")->stackSize);
 
 	    fclose(fptr);
 
