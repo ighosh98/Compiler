@@ -120,13 +120,13 @@ bool checkCallInput(symbolTable* table, astnode* input_list, symbol_table_node* 
     }
 }
 
-bool checkCallOutput(symbolTable* table, astnode* input_list, symbol_table_node* func)
+bool checkCallOutput(symbolTable* table, astnode* output_list, symbol_table_node* func)
 {
-    astnode* head = input_list;
-    symbol_table_node* iplist = func->oplist; //checking output list (oplist)
+    astnode* head = output_list;
+    symbol_table_node* oplist = func->oplist; //checking output list (oplist)
     while(1)
     {
-	if((input_list->tok==EPS && iplist!=NULL))
+	if((output_list->tok==EPS && oplist!=NULL))
 	{
 	    blue();
 	    printf("Line no %d: ",head->lexeme->line_no);
@@ -134,7 +134,7 @@ bool checkCallOutput(symbolTable* table, astnode* input_list, symbol_table_node*
 	    printf("Incorrect number variable in function Output\n");
 	    return false;
 	} 
-	if((iplist==NULL && input_list->tok!=EPS))
+	if((oplist==NULL && output_list->tok!=EPS))
 	{
 	    blue();
 	    printf("Line no %d: ",head->lexeme->line_no);
@@ -143,19 +143,19 @@ bool checkCallOutput(symbolTable* table, astnode* input_list, symbol_table_node*
 	    return false;  
 	}//ERROR: Number of arguments do not match the Function signature
     
-	if(input_list->children[0]->type != iplist->type)
+	if(output_list->children[0]->type != oplist->type)
 	{
 	    blue();
-	    printf("Line no %d: ",input_list->lexeme->line_no);
+	    printf("Line no %d: ",output_list->lexeme->line_no);
 	    reset();
-	    printf("Argument '%s' is Incompatible with function output (Type Mismatch)\n",input_list->children[0]->lexeme->str);
+	    printf("Argument '%s' is Incompatible with function output (Type Mismatch)\n",output_list->children[0]->lexeme->str);
 	    return false;   //ERROR: Type mismatch in function argument
 	}
 	
-	iplist = iplist->iplist;
-	input_list = input_list->children[1];
+	oplist = oplist->oplist;
+	output_list = output_list->children[1];
 
-	if(iplist==NULL && input_list->tok==EPS)
+	if(oplist==NULL && output_list->tok==EPS)
 	    return true;
     }
 }
@@ -1118,7 +1118,9 @@ void type_semantics(astnode* root, symbolTable* current_table)
 
 	    case MODULEREUSESTMT:
 		{
-
+			type_semantics(root->children[0], current_table);
+			type_semantics(root->children[2],current_table);
+			
 			//get the function entry
 			symbol_table_node* a = searchSymbolTable(function_table, root->children[1]->lexeme->str); //ID i.e function name
 
@@ -1166,7 +1168,6 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			//verify the function signature in pass 2 when it is defined
 
 			//verify idlist is same as function inputplist
-			type_semantics(root->children[2],current_table);
 
 			astnode* input_list = root->children[2];
 			if(!checkCallInput(current_table, input_list, a))
@@ -1178,7 +1179,6 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			if(root->children[0]->tok!=EPS)
 			{
 			    astnode* output_list = root->children[0]->children[0];
-			    type_semantics(output_list, current_table);
 			    if(!checkCallOutput(current_table, output_list, a))
 			    {
 				//handled inside
