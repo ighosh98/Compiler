@@ -140,13 +140,11 @@ int main(int argc,char **argv)
 	    printf("Semantics done.\n");
 	    reset();
 
-	    
 	    codegen(a.root,NULL,0);
 	    green();
 	    printf("Offsets assigned\n");
 	    reset();
 	    //printAST(a.root);
-
 
 	    fclose(fptr);
 

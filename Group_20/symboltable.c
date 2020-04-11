@@ -77,7 +77,7 @@ symbol_table_node* insertToSymChain(symbol_table_node* ar[],
 symbol_table_node* searchSymChain(symbol_table_node* head, char* str )
 {   
     symbol_table_node* temp = head;
-    while(temp)
+    while(temp!=NULL)
     {
 	if(strcmp(temp->name,str) == 0)
 	    return temp;
@@ -96,13 +96,12 @@ symbol_table_node* searchSymbolTableHelper(symbolTable* table, char* str)
 
 symbol_table_node* searchSymbolTable(symbolTable* table, char* str)
 {
+
     if(table == NULL) return NULL;
     
     symbol_table_node* a = searchSymbolTableHelper(table, str);
     if(a == NULL)
-    {
 	return searchSymbolTable(table->parent, str);
-    }
     else
 	return a;
 
@@ -137,6 +136,32 @@ symbol_table_node * insertSymbolTable(symbolTable* table,
 {
     if(table==NULL)return NULL;
     symbol_table_node * temp = searchSymbolTable(table,name);
+
+    if(temp!=NULL)return temp;
+
+    temp = makeSymbolNode(name ,isarr, isdyn, d_range1, d_range2,
+	   c_range1, c_range2, lexeme, type);
+
+    unsigned int index = hashf(name)%table->size;
+
+    symbol_table_node* check = insertToSymChain(table->ar,temp,index);
+    if(check!=NULL)
+	return temp;
+    else
+    {
+	printf("ERROR: Symbol table entry could not be inserted\n");
+	return NULL;
+    }
+
+}
+symbol_table_node * insertSymbolTableLocal(symbolTable* table,
+       	char* name , bool isarr,
+	int isdyn, symbol_table_node * d_range1, 
+	symbol_table_node* d_range2, int c_range1, 
+	int c_range2,token* lexeme, datatype type)
+{
+    if(table==NULL)return NULL;
+    symbol_table_node * temp = searchSymbolTableLocal(table,name);
 
     if(temp!=NULL)return temp;
 

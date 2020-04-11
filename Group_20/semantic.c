@@ -134,7 +134,7 @@ bool checkCallOutput(symbolTable* table, astnode* input_list, symbol_table_node*
 	    printf("Incorrect number variable in function Output\n");
 	    return false;
 	} 
-	if((iplist==NULL&&input_list->tok!=EPS))
+	if((iplist==NULL && input_list->tok!=EPS))
 	{
 	    blue();
 	    printf("Line no %d: ",head->lexeme->line_no);
@@ -148,9 +148,10 @@ bool checkCallOutput(symbolTable* table, astnode* input_list, symbol_table_node*
 	    blue();
 	    printf("Line no %d: ",input_list->lexeme->line_no);
 	    reset();
-	    printf("Argument '%s' is Incompatibel with function output (Type Mismatch)\n",input_list->children[0]->lexeme->str);
+	    printf("Argument '%s' is Incompatible with function output (Type Mismatch)\n",input_list->children[0]->lexeme->str);
 	    return false;   //ERROR: Type mismatch in function argument
 	}
+	
 	iplist = iplist->iplist;
 	input_list = input_list->children[1];
 
@@ -266,7 +267,7 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 	    blue();
 	    printf("Line no %d: ",idlist->children[0]->lexeme->line_no);
 	    reset();
-	    printf("Redeclaration of %s not allowed.\n",idlist->children[0]->lexeme->str);
+	    printf("Redeclaration of '%s' not allowed.\n",idlist->children[0]->lexeme->str);
 	    }
 	    idlist = idlist->children[1];
 	}
@@ -274,7 +275,7 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 	{
 	    pass_no==1? curr_func->stackSize+=4 : pass_no;
 	    idlist->children[0]->type = integer;
-	    insertSymbolTable(table,idlist->children[0]->lexeme->str,false, false,
+	    insertSymbolTableLocal(table,idlist->children[0]->lexeme->str,false, false,
 		    NULL,NULL,-1,-1,idlist->children[0]->lexeme, integer); //integer type variable
 
 	    idlist = idlist->children[1];
@@ -283,7 +284,7 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 	{
 	    pass_no==1? curr_func->stackSize+=8 : pass_no;
 	    idlist->children[0]->type = real;
-	    insertSymbolTable(table,idlist->children[0]->lexeme->str,false, false,
+	    insertSymbolTableLocal(table,idlist->children[0]->lexeme->str,false, false,
 		    NULL,NULL,-1,-1,idlist->children[0]->lexeme, real); //integer type variable
 	    idlist = idlist->children[1];
 	}	
@@ -291,7 +292,7 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 	{
 	    pass_no==1? curr_func->stackSize+=4 : pass_no;
 	    idlist->children[0]->type = boolean;
-	    insertSymbolTable(table,idlist->children[0]->lexeme->str,false, false,
+	    insertSymbolTableLocal(table,idlist->children[0]->lexeme->str,false, false,
 		    NULL,NULL,-1,-1,idlist->children[0]->lexeme, boolean); //integer type variable
 
 	    idlist = idlist->children[1];
@@ -299,7 +300,7 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 	else
 	{
 	    //input is of type array. insert variable of type array.
-	    symbol_table_node* a = insertSymbolTable(table,idlist->children[0]->lexeme->str,false, false,
+	    symbol_table_node* a = insertSymbolTableLocal(table,idlist->children[0]->lexeme->str,false, false,
 		    NULL,NULL,-1,-1,idlist->children[0]->lexeme, NONE); //integer type variable
 
 	    a->isarr = true; //the variable is array;
@@ -357,9 +358,10 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 		    a->crange2 = atoi(indexVar2->children[0]->lexeme->str); //of the variable.
 		}
 	    }
-
+	    
 	    idlist = idlist->children[1];
 	}
+
     }
 }
 
@@ -495,6 +497,38 @@ symbol_table_node* makeOutputList(astnode* outputTree, symbolTable* table)
 
     nextoutput->oplist = makeOutputList(outputTree->children[2],table);
     return nextoutput;
+}
+
+symbol_table_node* getArrVar(astnode* root, symbolTable* current_table)
+{
+    //finding varidnum while checking that expression only has one var
+    //root is expression
+    if(root->children[0]->tok==U)
+	return NULL;
+    root = root->children[0]->children[0];
+    //root is anyterm
+    if(root->children[0]->tok==BOOLCONSTT)
+	return NULL;
+    root = root->children[0];
+    if(root->children[1]->tok!=EPS)return NULL;
+    root = root->children[0];
+    if(root->children[1]->tok!=EPS)return NULL;
+    root = root->children[0];
+    
+    //factor to varidnum
+    root =  root->children[0];
+    if(root->tok== VAR_ID_NUM)
+    {
+	if(root->children[0]->tok == ID)
+	{
+	    return searchSymbolTable(current_table, root->children[0]->lexeme->str);
+	}
+	else
+	    return NULL;
+    }
+    else
+	return NULL;
+    
 }
 
 void type_semantics(astnode* root, symbolTable* current_table)
@@ -639,7 +673,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    a = temp->oplist;
 		    while(a)
 		    {
-			if(pass_no==1 && searchSymbolTable(new_table, a->name))
+			if(pass_no==1 && searchSymbolTable(input_table, a->name))
 			{
 			    blue();
 			    printf("Line no: %d ", root->lexeme->line_no);
@@ -647,16 +681,14 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			    printf("Reused variable '%s' in function Output\n",a->name);
 
 			}//ERROR: cannot have vars with same name
-			insertSymbolTable(new_table, a->name,a->isarr,a->isdynamic,
+			insertSymbolTable(input_table, a->name,a->isarr,a->isdynamic,
 				a->drange1,a->drange2,a->crange1,a->crange2,a->lexeme,a->type);
 			a = a->oplist;
 		    }
 
-
-
 		    //call moduledef
 		    type_semantics(root->children[3],new_table);
-		    
+		    return;  
 		}break;
 
 	    case DRIVERMODULE:
@@ -699,6 +731,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			root->type = root->children[1]->type;
 		    }
 		    // handle by input_list and declare statement
+		    return;
 		}break;
    
 	    case RANGE_ARRAYS:
@@ -746,7 +779,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    }
 
 		    root->type = root->children[0]->type;
-
+		    return;
 		}break;
 
 	    case TYPE:
@@ -756,6 +789,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    
 		    root->type = root->children[0]->type;
 		    //handle by outputplist and datatype
+		    return;
 		}break;
 	    
 	    case MODULEDEF:
@@ -908,21 +942,67 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		  
 		    symbol_table_node* a = searchSymbolTable(current_table, root->children[0]->lexeme->str);
 		    astnode* lvalue = root->children[1]->children[0];
-
 		    
 		    if(lvalue->tok==LVALUEIDSTMT)
 		    {
 			//lvalue id statement
 			
-			if(pass_no==1 && a->isarr == true)
+			if(a->isarr == true)
 			{
-			    blue();
-			    printf("Line no: %d ", root->lexeme->line_no);
-			    reset();
-			    printf("Cannot assign to array type. Index not provided\n"); 
-			}//ERROR: The variable is an array. Index not provided.
-			
-			if(pass_no==1 && lvalue->children[0]->type != a->type)
+			    //////////// assigning to array is only possible if other array is of the same type./////////////////
+			    /////////////////////////////////////////////////////////////////////////////////////////////////////
+			    symbol_table_node* rightvar = getArrVar(lvalue->children[0],current_table);
+			    if(rightvar==NULL)
+			    {
+				if(pass_no==1)
+				{
+				    blue();
+				    printf("Line no: %d ", root->lexeme->line_no);
+				    reset();
+				    printf("Cannot assign to array type. Index not provided\n"); 
+				}//ERROR: The variable is an array. Index not provided.
+			    }
+			    else
+			    {
+				//variable is found now check if it is correct array type
+				if(rightvar->isarr==false)
+				{
+				    blue();
+				    printf("Line no: %d ", root->lexeme->line_no);
+				    reset();
+				    printf("Cannot assign to array type. Index not provided\n"); 
+				}
+				else
+				{
+				   if(rightvar->isdynamic || a->isdynamic)
+				   {
+					//code for dynamic range checks//////////////////////////////////
+					////////////////////////////////////////////////////////////////
+					////////////////////////////////////////////////////////////////////
+				   } 
+				   else
+				   {
+					if(rightvar->type!=a->type)
+					{
+					    blue();
+					    printf("Line no: %d ", root->lexeme->line_no);
+					    reset();
+					    printf("Array type mismatch\n"); 
+				
+					}
+					else if(rightvar->crange1!=a->crange1 || rightvar->crange2!=a->crange2)
+					{
+					    blue();
+					    printf("Line no: %d ", root->lexeme->line_no);
+					    reset();
+					    printf("Array Range Mismatch\n"); 
+				    
+					}
+				   }
+				}
+			    }
+			}
+			else if(pass_no==1 && lvalue->children[0]->type != a->type)
 			{
 			    blue();
 			    printf("Line no: %d ", root->lexeme->line_no);
@@ -994,6 +1074,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 				}	
 			    }
 		    }
+		    return;
 		}break;
 
 	    case WHICHSTMT:
@@ -1003,7 +1084,8 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			type_semantics(root->children[i], current_table);
 		    
 		    root->type = root->children[0]->type;
-		}
+		    return;
+		}break;
 
 	    case LVALUEIDSTMT:
 		{
@@ -1012,6 +1094,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    
 		    //move forward and assign type of child to lvalueidstmt
 		    root->type = root->children[0]->type;
+		    return;
 		}break;
 
 	    case LVALUEARRSTMT:
@@ -1020,6 +1103,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			type_semantics(root->children[i], current_table);
 		    
 		    root->type = root->children[1]->type;
+		    return;
 		}break;
 	    
 	    case INDEX:
@@ -1029,13 +1113,14 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			    type_semantics(root->children[i], current_table);
 		
 		    root->type = root->children[0]->type;
+		    return;
 		}break;
 
 	    case MODULEREUSESTMT:
 		{
+
 			//get the function entry
 			symbol_table_node* a = searchSymbolTable(function_table, root->children[1]->lexeme->str); //ID i.e function name
-			
 
 			//verify that the ID is really a function
 			if(a==NULL)
@@ -1101,6 +1186,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 
 			}
 		    }
+		    return;
 		}break;
 
 	    case OPTIONAL:
@@ -1112,7 +1198,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			    type_semantics(root->children[i], current_table);
 		    return;
 
-		}
+		}break;
 	    case IDLIST: case N3:
 		{
 		    for(int i =0;i<root->n;i++)
@@ -1220,7 +1306,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		   {
 		       if(root->children[1]->tok!=EPS)
 		       {
-			   if(pass_no==1 && root->children[0]->type!=integer)  //only integer can be used in relational op
+			   if(pass_no==1 && (root->children[0]->type!=integer && root->children[0]->type!=real))  //only integer/real can be used in relational op
 			   {
 			       blue();
 			       printf("Line no: %d ", root->lexeme->line_no);
@@ -1248,7 +1334,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			return;
 		    else
 		    {
-			if(pass_no==1 && (root->children[1]->type!=integer)) //Only integer comparison allowed
+			if(pass_no==1 && (root->children[1]->type!=integer && root->children[1]->type!=real)) //Only integer comparison allowed
 			{
 			    blue();
 			    printf("Line no: %d ", root->lexeme->line_no);
@@ -1402,7 +1488,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 
 		    }
 		    return;
-		    }
+		}
 		break;
 	    case FACTOR:
 		{
@@ -1430,6 +1516,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    //move forward
 		    type_semantics(root->children[1], current_table);
 		    declareVariables(current_table, root->children[0], root->children[1]);
+		    return;
 		}break;
 
 	    case CONDITIONALSTMT:

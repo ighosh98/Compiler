@@ -122,7 +122,6 @@ int declareVariablesOffset(symbolTable* table, astnode* idlist, astnode* datatyp
 int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 {
     if(root==NULL)return 0;
-
     if(root->children)
     {
 	switch(root->tok)
@@ -857,7 +856,13 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //check symbol table to find the type of the id.
 		    //if symbol table has no entry then error.
 		    symbol_table_node* temp = searchSymbolTable(current_table,root->lexeme->str);
-		    root->type = temp->type;
+		    if(temp==NULL)
+		    {
+			printf("Undeclared variable '%s'",root->lexeme->str);
+			exit(1);
+		    }
+		    else
+			root->type = temp->type;
 
 		}break;
 	    case EPS:

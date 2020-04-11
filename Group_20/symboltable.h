@@ -59,4 +59,10 @@ symbol_table_node * insertSymbolTable(symbolTable* table,
 	int isdyn, symbol_table_node * d_range1, 
 	symbol_table_node* d_range2, int c_range1, 
 	int c_range2,token* lexeme, datatype type);
+symbol_table_node * insertSymbolTableLocal(symbolTable* table, 
+	char* name , bool isarr,
+	int isdyn, symbol_table_node * d_range1, 
+	symbol_table_node* d_range2, int c_range1, 
+	int c_range2,token* lexeme, datatype type);
+
 #endif
