@@ -531,6 +531,31 @@ symbol_table_node* getArrVar(astnode* root, symbolTable* current_table)
     
 }
 
+bool hasInvalidArray(astnode* root, symbolTable* current_table)
+{
+    if(root->tok == VAR_ID_NUM)
+    {
+	if(root->children[0]->tok==ID && root->children[1]->tok==EPS)
+	{
+	    root = root->children[0];
+	    symbol_table_node* temp = searchSymbolTable(current_table, root->lexeme->str);
+	    if(temp==NULL || temp->isarr)
+		return true;
+	    else
+		return false;
+	}
+	return false;
+    }
+    else
+    {
+	for(int i=0;i<root->n;i++)
+	    if(hasInvalidArray(root->children[i],current_table))
+		return true;
+	return false;
+    }
+    
+}
+
 void type_semantics(astnode* root, symbolTable* current_table)
 {
 //    printf("%s\n",symbol_map[root->tok]);
@@ -870,8 +895,9 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    {
 			if(root->children[1]->tok==EPS)
 			{
+		    /*
 			    symbol_table_node* arr = searchSymbolTable(current_table, root->children[0]->lexeme->str);
-			    if(arr->isarr)
+			    if(pass_no==1 && arr->isarr)
 			    {
 				blue();
 				printf("Line no: %d ",root->lexeme->line_no);
@@ -879,6 +905,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 				printf("Array Variable used without index\n");
 				
 			    }//ERROR: Array without index used
+		    */
 			    return;
 			}
 			else
@@ -1012,6 +1039,13 @@ void type_semantics(astnode* root, symbolTable* current_table)
 				   }
 				}
 			    }
+			}
+			else if(hasInvalidArray(lvalue->children[0],current_table))
+			{
+			    blue();
+			    printf("Line no: %d ", root->lexeme->line_no);
+			    reset();
+			    printf("Array cannot be used without index\n"); 
 			}
 			else if(pass_no==1 && lvalue->children[0]->type != a->type)
 			{
