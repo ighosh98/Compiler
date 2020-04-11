@@ -869,7 +869,18 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    if(root->children[0]->tok==ID)
 		    {
 			if(root->children[1]->tok==EPS)
+			{
+			    symbol_table_node* arr = searchSymbolTable(current_table, root->children[0]->lexeme->str);
+			    if(arr->isarr)
+			    {
+				blue();
+				printf("Line no: %d ",root->lexeme->line_no);
+				reset();
+				printf("Array Variable used without index\n");
+				
+			    }//ERROR: Array without index used
 			    return;
+			}
 			else
 			{
 			    //search the entry for the array
