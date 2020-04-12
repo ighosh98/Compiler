@@ -80,7 +80,7 @@ int main(int argc,char **argv)
 	    //makeParsingTable(p);
 	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
 	    inorder(t,fptr);
-	    printTree(t.root);
+	    //printTree(t.root);
 	    fclose(fptr);
 	}
 	else if(choice == 4)
@@ -116,6 +116,8 @@ int main(int argc,char **argv)
 	//////////////
 	else if(choice == 5)
 	{
+	    pass_no = 0; //reset the semantic analyser so that the option can be used multiple times
+	    
 	    FILE * fptr = fopen(argv[2],"w");
 	    if(!fptr)
 	    {
