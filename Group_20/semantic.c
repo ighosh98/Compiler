@@ -556,6 +556,70 @@ bool hasInvalidArray(astnode* root, symbolTable* current_table)
     
 }
 
+void checkModuleOutputHelper(symbol_table_node* head, astnode* root)
+{
+    for(int i=0;i<root->n;i++)
+	checkModuleOutputHelper(head, root->children[i]);
+
+    if(root->tok==ASSIGNMENTSTMT)
+    {
+	while(head)
+	{
+	    if(strcmp(head->name,  root->children[0]->lexeme->str)==0)
+		head->isUsed = true;
+	    
+	    head = head->iplist;
+	}
+    }
+    else if(root->tok == IOSTMT && root->children[0]->tok==GET_VALUE)
+    {
+	while(head)
+	{
+	    if(strcmp(head->name,  root->children[1]->lexeme->str)==0)
+		head->isUsed = true;
+	    
+	    head = head->iplist;
+	}
+    }
+    else if(root->tok == OPTIONAL)
+    {
+	astnode* idlist = root->children[0];
+	while(idlist->tok!=EPS)
+	{
+	    symbol_table_node* temp = head;
+	    while(temp)
+	    {
+		if(strcmp(temp->name,  idlist->children[0]->lexeme->str)==0)
+		    temp->isUsed = true;;
+		temp = temp->iplist;
+	    }
+	    idlist = idlist->children[1];
+	}
+    }
+
+}
+bool checkModuleOutput(symbol_table_node* head, astnode* root)
+{
+    checkModuleOutputHelper(head,root);
+
+    bool ans = true;
+    symbol_table_node* temp = head;
+    while(temp)
+    {
+	if(temp->isUsed == false)
+	    ans = false;
+	temp = temp->iplist;
+    }
+
+    //reset isUsed variables to false
+    while(head)
+    {
+	head->isUsed = false;
+	head = head->iplist;
+    }
+
+    return ans;
+}
 void type_semantics(astnode* root, symbolTable* current_table)
 {
 //    printf("%s\n",symbol_map[root->tok]);
@@ -696,6 +760,15 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    }
 		    //insert output vars
 		    a = temp->oplist;
+		    
+		    if(pass_no==1 && checkModuleOutput(a,root->children[3])==false)  //outputlist , moduledef
+		    {
+			blue();
+			printf("Line no: %d ", root->lexeme->line_no);
+			reset();
+			printf("All output variables not assigned\n");
+		    }
+
 		    while(a)
 		    {
 			if(pass_no==1 && searchSymbolTable(input_table, a->name))
