@@ -771,7 +771,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 
 		    while(a)
 		    {
-			if(pass_no==1 && searchSymbolTable(input_table, a->name))
+			if(pass_no==1 && searchSymbolTable(new_table, a->name))
 			{
 			    blue();
 			    printf("Line no: %d ", root->lexeme->line_no);
@@ -779,7 +779,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			    printf("Reused variable '%s' in function Output\n",a->name);
 
 			}//ERROR: cannot have vars with same name
-			insertSymbolTable(input_table, a->name,a->isarr,a->isdynamic,
+			insertSymbolTable(new_table, a->name,a->isarr,a->isdynamic,
 				a->drange1,a->drange2,a->crange1,a->crange2,a->lexeme,a->type);
 			a = a->oplist;
 		    }
