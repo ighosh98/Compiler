@@ -1343,7 +1343,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			       blue();
 			       printf("Line no: %d ", root->lexeme->line_no);
 			       reset();
-			       printf("Relational operations can only have integer operands\n"); 
+			       printf("Relational operations can only have integer/real operands\n"); 
 			       //ERROR: Relational ops expect integer operands
 			   }
 			   root->type = boolean;
