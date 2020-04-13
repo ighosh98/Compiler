@@ -147,8 +147,8 @@ int main(int argc,char **argv)
 
 	    yellow();
 	    printf("created AST\n");
-	    printf("Size of n-ary tree: %d\n",naryTreesize(t.root));
-	    printf("Size of AST tree: %d\n",ASTsize(a.root));
+	    printf("Size of n-ary tree: %d bytes\n",naryTreesize(t.root)*sizeof(treenode));
+	    printf("Size of AST tree: %d bytes\n",ASTsize(a.root)*sizeof(astnode);
 	    reset(); 
 	   
 	    symbolTable* symbol_table;
