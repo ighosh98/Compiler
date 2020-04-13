@@ -1,0 +1,4 @@
+<<<driver program>>>
+start
+	declare v_1_2_3:integer;
+end

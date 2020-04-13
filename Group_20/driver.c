@@ -18,7 +18,7 @@ G Adityan	 2016B1A70929P
 #include "symboltable.h"
 #include "semantic.h"
 #include "codegen.h"
-
+#include "treefiles.h"
 
 void printSymbolTableDriver(symbolTable* symbol_table)
 {
@@ -147,8 +147,10 @@ int main(int argc,char **argv)
 
 	    yellow();
 	    printf("created AST\n");
+	    printf("Size of n-ary tree: %d\n",naryTreesize(t.root));
+	    printf("Size of AST tree: %d\n",ASTsize(a.root));
 	    reset(); 
-	    
+	   
 	    symbolTable* symbol_table;
 	    symbol_table = check_semantics(a.root); //helper function that does 2 passes automatically
 
