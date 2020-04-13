@@ -25,7 +25,9 @@ typedef struct symbol_table_node{
 
     int stackSize;
     int offset;
-} symbol_table_node;
+
+
+    } symbol_table_node;
 
 
 
@@ -33,6 +35,10 @@ typedef struct symbolTable{
     struct symbol_table_node** ar;
     struct symbolTable* parent;
     unsigned int size;
+    
+    struct symbolTable* children[50];
+    int no_children;
+
 } symbolTable;
 
 void deleteSymbolTable(symbolTable* table);

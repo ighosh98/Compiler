@@ -82,8 +82,8 @@ int declareVariablesOffset(symbolTable* table, astnode* idlist, astnode* datatyp
 	    else
 	    {
 
-		a->offset = -1;  //the memory is allocated on heap. -1 says that this offset will come from heap.
-		curr_offset+=0;  //current offset does not change since array on heap not stack
+		a->offset = curr_offset;  //the memory is allocated on heap. memory location is stores in the current offset mem location.
+		curr_offset+=4;  //4 bit pointer to the heap memory location
 
 		//dynamic range of array
 		astnode* indexVar1 = dataTypeVar->children[0]->children[0]; //index nodes
@@ -863,7 +863,6 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    }
 		    else
 			root->type = temp->type;
-
 		}break;
 	    case EPS:
 		root->type = NONE;

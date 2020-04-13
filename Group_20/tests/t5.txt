@@ -5,7 +5,6 @@ takes input[list:array[1..15] of    real, n:integer];
 returns  [sum:real];
 start
 	declare index:integer;
-	declare asdf: real;
 	declare t:boolean;
     	declare n:real;	
 	sum:=0.0;

@@ -125,6 +125,11 @@ symbolTable* getSymbolTable(unsigned int n)
     for(int i=0;i<n;i++)
 	temp->ar[i]=NULL;
     temp->size=n;
+
+    temp->no_children = 0;
+    for(int i=0;i<20;i++)
+	temp->children[i] = NULL;
+
     return temp;
 }
 

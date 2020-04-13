@@ -18,6 +18,17 @@ G Adityan	 2016B1A70929P
 #include "symboltable.h"
 #include "semantic.h"
 #include "codegen.h"
+
+
+void printSymbolTableDriver(symbolTable* symbol_table)
+{
+    if(symbol_table == NULL)return;
+
+    printf("%s\n",searchSymbolTable(symbol_table,"_currentfunction")->iplist->name);
+    for(int i=0;i<symbol_table->no_children;i++)
+	printSymbolTableDriver(symbol_table->children[i]);
+}
+
 int main(int argc,char **argv)
 {
     printf("############ Implementation Status ##############\n");
@@ -43,7 +54,7 @@ int main(int argc,char **argv)
     {
 	printf("Enter Choice: ");
 	scanf("%d",&choice);
-
+	
 	if(choice == 0)
 	    break;
 	else if(choice == 1)
@@ -116,6 +127,8 @@ int main(int argc,char **argv)
 	//////////////
 	else if(choice == 5)
 	{
+
+
 	    pass_no = 0; //reset the semantic analyser so that the option can be used multiple times
 	    
 	    FILE * fptr = fopen(argv[2],"w");
@@ -136,11 +149,16 @@ int main(int argc,char **argv)
 	    printf("created AST\n");
 	    reset(); 
 	    
-	    check_semantics(a.root); //helper function that does 2 passes automatically
+	    symbolTable* symbol_table;
+	    symbol_table = check_semantics(a.root); //helper function that does 2 passes automatically
 
 	    blue();
 	    printf("Semantics done.\n");
 	    reset();
+	    
+	   // for(int i=0;i<symbol_table->no_children;i++)
+	//	printSymbolTableDriver(symbol_table->children[i]);
+
 
 	    codegen(a.root,NULL,0);
 	    green();
@@ -149,7 +167,7 @@ int main(int argc,char **argv)
 	    //printAST(a.root);
 
 	    fclose(fptr);
-
+	  
 	}
 	else
 	{

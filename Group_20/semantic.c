@@ -620,7 +620,7 @@ bool checkModuleOutput(symbol_table_node* head, astnode* root)
 
     return ans;
 }
-void type_semantics(astnode* root, symbolTable* current_table)
+void type_semantics(astnode* root, symbolTable* current_table)   //pass a table to current table in order to get it back
 {
 //    printf("%s\n",symbol_map[root->tok]);
     if(root==NULL)return;
@@ -720,12 +720,15 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			
 			//insert current function
 			symbolTable* input_table = getSymbolTable(100); //input_list scope
-			input_table->parent = NULL; //new function has no parent scope
+			input_table->parent = current_table; //new function has no parent scope
+			current_table->children[current_table->no_children++] = input_table;  //assign the child of the current table
+
 
 			symbolTable* new_table = getSymbolTable(100); //table for the function scope.
 			new_table->parent =  input_table;		  //function scope shadows input scope
+			input_table->children[input_table->no_children++] = new_table;	     
 
-			symbol_table_node * a = insertSymbolTable(new_table,"_currentfunction",false,false,NULL,NULL,
+			symbol_table_node * a = insertSymbolTable(input_table,"_currentfunction",false,false,NULL,NULL,
 			    -1,-1,NULL,NONE);
 
 			a->iplist = temp;
@@ -793,8 +796,9 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		{
 		    //create symbol table for the program
 		    symbolTable* new_table = getSymbolTable(100);
-		    new_table->parent = NULL;
-		    
+		    new_table->parent = current_table;
+		    current_table->children[current_table->no_children++] = new_table;
+
 		    //function table entry for driver module
 		    insertSymbolTable(function_table,"driver",false,false,NULL,NULL,-1,-1,NULL,function);
 		    //set current funtion as the driver function
@@ -1629,7 +1633,7 @@ void type_semantics(astnode* root, symbolTable* current_table)
 		    //create a new scope(symbol table) and make the current table as the parent of the new table.
 		    symbolTable* new_table = getSymbolTable(100);
 		    new_table->parent = current_table;
-
+		    current_table->children[current_table->no_children++] = new_table; 
 		    //move forward. type of ID is handled by the symbol table when it is called.
 		    
 		    for(int i =0;i<root->n;i++)
@@ -1790,7 +1794,8 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			//for loop
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
-			
+			current_table->children[current_table->no_children++] = new_table; 
+
 			type_semantics(root->children[3],new_table);
 
 		    }
@@ -1828,6 +1833,8 @@ void type_semantics(astnode* root, symbolTable* current_table)
 			//then move forward
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
+			current_table->children[current_table->no_children++] = new_table; 
+
 			type_semantics(root->children[2],new_table);
 		    }
 		    return;
@@ -1937,9 +1944,12 @@ void type_semantics(astnode* root, symbolTable* current_table)
     }
 }
 
-void check_semantics(astnode* root)
+symbolTable* check_semantics(astnode* root)
 {
-    type_semantics(root,NULL);
-    type_semantics(root,NULL);
-
+    symbolTable* symbol_table = getSymbolTable(10);
+    symbol_table = getSymbolTable(10);
+    type_semantics(root,symbol_table);
+    symbol_table = getSymbolTable(10);
+    type_semantics(root,symbol_table);
+    return symbol_table;
 }

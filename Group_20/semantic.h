@@ -8,5 +8,5 @@
 extern symbolTable* function_table;
 extern int pass_no;
 void type_semantics(astnode* root, symbolTable* curr_table);
-void check_semantics(astnode* root);
+symbolTable* check_semantics(astnode* root);
 #endif
