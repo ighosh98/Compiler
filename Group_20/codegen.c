@@ -12,11 +12,48 @@
 
 //return the next available offset
 
-int num_switch = 0;
-int num_while = 0;
-int num_for = 0;
+int no_switch = 0;
+int no_while = 0;
+int no_for = 0;
 
 
+void makeCaseJumps(astnode* root) //also assigns the switch number to case statements
+{
+    root->casehandle = no_switch;
+    if(root->children[0]->type == integer)
+    {
+	//integer switch
+	astnode* id = root->children[0];
+	astnode* casestmt = root->children[1];
+	astnode* def = root->children[2];
+
+	while(casestmt->tok!=EPS)
+	{
+	    printf("Compare %s and %d. IF equal then jmp to switch_%d_%d\n",id->lexeme->str,
+				atoi(casestmt->children[0]->lexeme->str), no_switch, 
+				atoi(casestmt->children[0]->lexeme->str));
+	    casestmt->casehandle = no_switch;
+	    casestmt = casestmt->children[2];
+	}
+	printf("Jmp to switch_default_%d\n",no_switch);
+	def->casehandle = no_switch;
+    }
+    else
+    {
+	//boolean switch
+	astnode* id = root->children[0];
+	astnode* casestmt = root->children[1];
+	while(casestmt->tok!=EPS)
+	{
+	    printf("Compare %s and %s. IF equal then jmp to switch_%d_%s\n",id->lexeme->str,
+				casestmt->children[0]->lexeme->str, no_switch, 
+				casestmt->children[0]->lexeme->str);
+	    casestmt->casehandle = no_switch;
+	    casestmt = casestmt->children[2];
+	}
+
+    }
+}
 int declareVariablesOffset(symbolTable* table, astnode* idlist, astnode* datatype, int curr_offset)
 {
     astnode* dataTypeVar = datatype;
@@ -1017,11 +1054,17 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //create a new scope(symbol table) and make the current table as the parent of the new table.
 		    symbolTable* new_table = getSymbolTable(100);
 		    new_table->parent = current_table;
-
-		    //move forward. type of ID is handled by the symbol table when it is called.
 		    
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], new_table, curr_offset);
+		    
+		    no_switch++;
+		    curr_offset = codegen(root->children[0],new_table,curr_offset); //evaluate ID
+		    makeCaseJumps(root);
+
+		    //produce code from casestmts and default
+		    curr_offset = codegen(root->children[1], new_table, curr_offset);
+		    curr_offset = codegen(root->children[2], new_table, curr_offset);
+		    
+		    printf("Label switch_exit_%d\n",root->casehandle);
 		    return curr_offset;
 		}break;
 
@@ -1030,9 +1073,13 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //code generation handled by conditional 
 		    //statement through functions
 		    
+		    printf("switch_%d_%s\n",root->casehandle,root->children[0]->lexeme->str);
 		    //move forward 
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+		    curr_offset = codegen(root->children[1], current_table, curr_offset);
+
+		    printf("Jmp to switch_exit_%d\n",root->casehandle);
+
+		    curr_offset = codegen(root->children[2],current_table, curr_offset);
 		    
 		    root->type = root->children[0]->type;
 		    return curr_offset;
@@ -1043,14 +1090,19 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //handled by casestmt
 
 		    //move forward
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
-		    
 			if(root->tok == EPS)
 			    return curr_offset;
 			else
 			{
-			    root->type = root->children[0]->type;   
+			    printf("switch_%d_%s\n",root->casehandle,root->children[0]->lexeme->str);
+			    //move forward 
+			    curr_offset = codegen(root->children[1], current_table, curr_offset);
+
+			    printf("Jmp to switch_exit_%d\n",root->casehandle);
+
+			    curr_offset = codegen(root->children[2],current_table, curr_offset);
+
+			    root->type = root->children[0]->type;
 			}
 		    return curr_offset;
 		}break;
@@ -1069,10 +1121,20 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		{
 		    //code handled by conditional statement
 		    //move forward.
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
 		    
-		    return curr_offset;
+		    if(root->tok==EPS)
+			return curr_offset;
+		    else
+		    {
+			printf("LABEL  default_switch_%d\n", root->casehandle);
+
+			for(int i =0;i<root->n;i++)
+			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+
+			printf("Jmp to switch_exit_%d\n",root->casehandle);
+
+			return curr_offset;
+		    }
 		}break;
 	    case ITERATIVESTMT:
 		{
@@ -1093,8 +1155,8 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			//Check Range
 			curr_offset = codegen(root->children[2],current_table,curr_offset);
 
-
-			printf("CODE FOR FOR LOOP\n");
+			no_for++;
+			printf("CODE FOR FOR LOOP_%d\n",no_for);
 
 			//for loop
 			symbolTable* new_table = getSymbolTable(100);
@@ -1119,12 +1181,13 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 			//while loop
 			
-			printf("WHILE LOOP CONDITION LABEL\n");
+			no_while++;
+			printf("WHILE LOOP CONDITION LABEL_%d\n",no_while);
 
 			//check that conditional expression is boolean
 			curr_offset = codegen(root->children[1],current_table,curr_offset);
 			
-			printf("IF CONDITION FALSE THEN JUMP TO EXIT_WHILE\n");
+			printf("IF CONDITION FALSE THEN JUMP TO EXIT_WHILE_%d\n",no_while);
 			
 			//create new scope(symbol table) and assign the current table as its parent
 			//then move forward
@@ -1132,8 +1195,8 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			new_table->parent = current_table;
 			curr_offset = codegen(root->children[2],new_table,curr_offset);
 		    
-			printf("JUMP WHILE LOOP CONDITION LABEL\n");
-			printf("EXIT_WHILE\n");
+			printf("JUMP WHILE LOOP CONDITION LABEL_%d\n",no_while);
+			printf("EXIT_WHILE_%d\n",no_while);
 		    }
 		    return curr_offset;
 		}break;

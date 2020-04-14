@@ -12,15 +12,16 @@ start
 	start
 		declare asdf:integer;
 		t:= index<=n;
-		switch(t)
+		switch(index)
 		start
-			case true: print(list[index]);
+			case 1: print(list[index]);
 				   sum:=sum+list[index];
 				   break;
-			case false: print(sum);
+			case 2: print(sum);
 				    print(index);
 				    **prints the values of sum and index  15-n times**
 				    break;
+			default: break;
 		end
 		** no need to increment the value of index as it will be taken care by the semantic rules associated with for construct, but an increment statement does not make its syntax incorrect**
 	end

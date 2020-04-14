@@ -21,6 +21,7 @@ astnode* make_astnode(treenode* parsenode)
     temp->children = NULL;
     temp->n = 0;
     temp->type = NONE;  //datatype assigned during type checking phase
+    temp->casehandle = 0;
     return temp;
 }
 

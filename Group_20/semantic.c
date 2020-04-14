@@ -1711,6 +1711,13 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    for(int i =0;i<root->n;i++)
 			    type_semantics(root->children[i], current_table);
 		    
+		    if(pass_no==1 && root->children[2]->type!=NONE && (root->children[0]->type!=root->children[2]->type))
+		    {
+			blue();
+			printf("Line no: %d ", root->children[0]->lexeme->line_no);
+			reset();
+			printf("Case type does not match argument type.\n"); 
+		    }
 		    root->type = root->children[0]->type;
 		    return;
 		}break;
@@ -1725,9 +1732,17 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			    return;
 			else
 			{
+			    if(pass_no==1 && root->children[2]->type!=NONE && (root->children[0]->type!=root->children[2]->type))
+			    {
+				blue();
+				printf("Line no: %d ", root->children[0]->lexeme->line_no);
+				reset();
+				printf("Case type does not match argument type.\n"); 
+			    }
+
 			    root->type = root->children[0]->type;   
 			}
-		    return;
+			return;
 		}break;
 
 	    case VALUE:

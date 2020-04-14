@@ -13,6 +13,7 @@ typedef struct astnode{
     int tok;
     struct astnode** children;
     int n;
+    int casehandle;
 } astnode;
 
 typedef struct AST{
