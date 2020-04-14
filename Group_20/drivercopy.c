@@ -52,16 +52,16 @@ int main(int argc,char **argv)
 
     while(1)
     {
-	printf("\nEnter Choice: ");
+	printf("Enter Choice: ");
 	scanf("%d",&choice);
 	
 	if(choice == 0)
 	    break;
-	else if(choice == 10)
+	else if(choice == 1)
 	{
 	    removeComments(argv[1]);
 	}
-	else if(choice == 1)
+	else if(choice == 2)
 	{
 	    openfile(argv[1]);
 	    token* a;
@@ -76,7 +76,7 @@ int main(int argc,char **argv)
 	    }
 
 	}
-	else if(choice == 2)
+	else if(choice == 3)
 	{
 	    FILE * fptr = fopen(argv[2],"w");
 	    if(!fptr)
@@ -94,30 +94,7 @@ int main(int argc,char **argv)
 	    //printTree(t.root);
 	    fclose(fptr);
 	}
-	else if(choice == 3)
-	{
-	    //print ast in inorder manner
-	}
 	else if(choice == 4)
-	{
-	    pass_no = 0; //reset the semantic analyser so that the option can be used multiple times
-	    
-	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
-	    AST a = makeAST(t.root);
-
-	    red();
-	    printf("############## Created AST ##############\n");
-	    reset();
-	    long unsigned int a1, b1;
-	    a1 = sizeof(treenode)*naryTreesize(t.root);
-	    b1 = sizeof(astnode)*ASTsize(a.root);
-	    printf("Parse Tree number of nodes: %d    Allocated Memory: %ld\n",naryTreesize(t.root),a1);
-	    printf("AST number of nodes:        %d    Allocated Memory: %ld\n",ASTsize(a.root),b1);
-
-	    printf("Compression Percentage: %lf\n", (((a1-b1)/(double)a1))*100);
-
-	}
-	else if(choice == 40)
 	{
 	    clock_t start_time, end_time;
 	    double total_cpu_time, total_cpu_time_secs;
@@ -160,57 +137,39 @@ int main(int argc,char **argv)
 		printf("could not open file %s\n",argv[2]);
 		break;
 	    }
+	    red();
+	    printf("\n##############  Parsing Input File  ##############\n");
+	    reset();
+	    //makeFirstAndFollow(p, PROGRAM);
+	    //makeParsingTable(p);
 	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
 	    AST a = makeAST(t.root);
 
+	    yellow();
+	    printf("created AST\n");
+	    printf("Size of n-ary tree: %d\n",naryTreesize(t.root));
+	    printf("Size of AST tree: %d\n",(ASTsize(a.root)));
+	    reset(); 
+	   
 	    symbolTable* symbol_table;
 	    symbol_table = check_semantics(a.root); //helper function that does 2 passes automatically
-	    
-	    red();
-	    printf("############ Printing Symbol tables ############\n");
+
+	    blue();
+	    printf("Semantics done.\n");
 	    reset();
-	    for(int i=0;i<symbol_table->no_children;i++)
-		printSymbolTables(symbol_table->children[i]);
+	    
+	   // for(int i=0;i<symbol_table->no_children;i++)
+	//	printSymbolTableDriver(symbol_table->children[i]);
+
+
+	    codegen(a.root,NULL,0);
+	    green();
+	    printf("Offsets assigned\n");
+	    reset();
+	    //printAST(a.root);
+
 	    fclose(fptr);
 	  
-	}
-	else if(choice == 6)
-	{
-	    pass_no = 0; //reset the semantic analyser so that the option can be used multiple times
-	    FILE * fptr = fopen(argv[2],"w");
-	    if(!fptr)
-	    {
-		printf("could not open file %s\n",argv[2]);
-		break;
-	    }
-	    red();
-	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
-	    AST a = makeAST(t.root);
-
-	    symbolTable* symbol_table;
-	    symbol_table = check_semantics(a.root); //helper function that does 2 passes automatically
-	    
-	    red();
-	    printf("########### Printing Function Record Sizes ############\n");
-	    reset();
-	    for(int i=0;i<function_table->size;i++)
-	    {
-		symbol_table_node * head = function_table->ar[i];
-		while(head)
-		{
-		    printf("%s  %d\n",head->name, head->stackSize);
-		    head = head->next;
-		}
-	    }
-	    
-
-	    red();
-	    printf("\nprinting code generation\n\n");
-	    reset();
-	    codegen(a.root,NULL,0);
-
-	    fclose(fptr);
-	
 	}
 	else
 	{

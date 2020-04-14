@@ -42,8 +42,8 @@ typedef struct symbolTable{
 } symbolTable;
 
 void deleteSymbolTable(symbolTable* table);
-void printSymbolNode(symbol_table_node * a);
-
+void printSymbolNode(symbol_table_node * a, symbol_table_node* curr_func);
+void printSymbolTables(symbolTable* table);
 symbol_table_node * makeSymbolNode(char* name , bool isarr,
        	int isdyn, symbol_table_node * d_range1, 
 	symbol_table_node* d_range2, int c_range1, 

@@ -21,17 +21,32 @@ void deleteSymbolTable(symbolTable* table)
     table->size = 0;
 }
 
-void printSymbolNode(symbol_table_node* a)
+
+void printSymbolNode(symbol_table_node* a, symbol_table_node* curr_func)
 {
-    printf("%s  %d  %d  ",a->name,a->isarr,a->isdynamic);
-    
-    if(a->isdynamic)
-	printf("%s  %s  ",a->drange1->name, a->drange2->name);
-    else
-	printf("%d  %d  ",a->crange1,a->crange2);
-    if(a->lexeme)
-	printf("%s  %d  ",a->lexeme->str,a->type);
-    printf("\n\n");
+    if(strcmp(a->name,"_currentfunction")==0) return;
+
+    printf("%s %s",a->name, curr_func->name);
+    printf("\n");
+}
+
+void printSymbolTables(symbolTable* table)
+{
+    if(table == NULL)return;
+    //print the current symbol table
+    for(int i=0;i<table->size;i++)
+    {
+	symbol_table_node* head = table->ar[i];
+	while(head)
+	{
+	    printSymbolNode(head,searchSymbolTable(table,"_currentfunction")->iplist);
+	    head = head->next;
+	}
+    }
+
+    //print the rest of the tables
+    for(int i=0;i<table->no_children;i++)
+	printSymbolTables(table->children[0]);
 }
 
 symbol_table_node * makeSymbolNode(char* name , bool isarr,

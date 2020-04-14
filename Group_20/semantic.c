@@ -329,7 +329,7 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 	    else
 	    {
 
-		curr_func->stackSize+=0;  //the memory is allocated on heap.
+		curr_func->stackSize+=4;  //the memory is allocated on heap. hence 4 bytes to store heap location
 		//dynamic range of array
 
 		astnode* indexVar1 = dataTypeVar->children[0]->children[0]; //index nodes
