@@ -12,11 +12,48 @@
 
 //return the next available offset
 
-int num_switch = 0;
-int num_while = 0;
-int num_for = 0;
+int no_switch = 0;
+int no_while = 0;
+int no_for = 0;
 
 
+void makeCaseJumps(astnode* root) //also assigns the switch number to case statements
+{
+    root->casehandle = no_switch;
+    if(root->children[0]->type == integer)
+    {
+	//integer switch
+	astnode* id = root->children[0];
+	astnode* casestmt = root->children[1];
+	astnode* def = root->children[2];
+
+	while(casestmt->tok!=EPS)
+	{
+	    printf("Compare %s and %d. IF equal then jmp to switch_%d_%d\n",id->lexeme->str,
+				atoi(casestmt->children[0]->lexeme->str), no_switch, 
+				atoi(casestmt->children[0]->lexeme->str));
+	    casestmt->casehandle = no_switch;
+	    casestmt = casestmt->children[2];
+	}
+	printf("Jmp to switch_default_%d\n",no_switch);
+	def->casehandle = no_switch;
+    }
+    else
+    {
+	//boolean switch
+	astnode* id = root->children[0];
+	astnode* casestmt = root->children[1];
+	while(casestmt->tok!=EPS)
+	{
+	    printf("Compare %s and %s. IF equal then jmp to switch_%d_%s\n",id->lexeme->str,
+				casestmt->children[0]->lexeme->str, no_switch, 
+				casestmt->children[0]->lexeme->str);
+	    casestmt->casehandle = no_switch;
+	    casestmt = casestmt->children[2];
+	}
+
+    }
+}
 int declareVariablesOffset(symbolTable* table, astnode* idlist, astnode* datatype, int curr_offset)
 {
     astnode* dataTypeVar = datatype;
@@ -279,7 +316,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			curr_offset = codegen(root->children[i], new_table,0);
 		    
 		    //////// produce code to finish the main procudure in asm //////////////
-		    printf("Exit from Main");
+		    printf("Exit from Main\n");
 		    return curr_offset;
 		}break;
 
@@ -405,19 +442,26 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			curr_offset = codegen(root->children[i], current_table,curr_offset);
 		    root->type = root->children[0]->type;
 		    
-		    /// code produced HOWWWW???? /////////////
+		    /// code produced by caller (var/anyterm) /////////////
 		    
 		    return curr_offset;
 		}break;
 	    case VAR:
 		{
+		    /////////////////////////////////////////////////////////////////////////
+		    /////// WILL THIS CALL VAR_ID_NUM???? //////////////////////////////////
+		    //////////////////////////////////////////////////////////////////////////
+
 		    //move forward then assign type
 		    for(int i =0;i<root->n;i++)
 			    curr_offset = codegen(root->children[i], current_table,curr_offset);
 		    
 		    root->type = root->children[0]->type;
-		    
-		    /// code produced HOWWWW???? /////////////
+		    /////////////////////////////////////////////////////////////////////////////
+		    /// code produced according to print or get value requirements /////////////
+		    ////////////////////////////////////////////////////////////////////////////
+		    //
+		    //
 		    return curr_offset;
 		}break;
 
@@ -426,37 +470,40 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //move forward
 		    for(int i =0;i<root->n;i++)
 			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+		   
+		    //place the variable value into edx for further computation
+
+		    if(root->children[0]->tok==NUM)
+		    {
+			printf("Placing integer value into edx = %s\n",root->children[0]->lexeme->str);
+		    }
+		    else if(root->children[0]->tok==RNUM)
+		    {
+			printf("Placing real value into edx = %s\n",root->children[0]->lexeme->str);
+		    }
+		    else if(root->children[0]->tok==ID)
+		    {
+			symbol_table_node* var = searchSymbolTable(current_table, root->children[0]->lexeme->str);
+			if(var->isarr==true)
+			{
+			    if(root->children[1]->tok==EPS)
+				printf("Placing array pointer from memory into edx = %s\n",root->children[0]->lexeme->str);
+			    else
+			    {
+				printf("If dynamic???: Check that index is in bounds of the array\n");
+				printf("Placing array element from memory into edx = %s\n",root->children[0]->lexeme->str);
+			    }
+			}
+			else
+			{
+			    printf("Placing value from memory into edx = %s\n",root->children[0]->lexeme->str);
+
+			}
+		    }
 		    
 		    //assign type
 		    root->type = root->children[0]->type;
 		    
-		    //if array statement then check bounds. WhichId is handled here.
-		    if(root->children[0]->tok==ID)
-		    {
-			if(root->children[1]->tok==EPS)
-			    return curr_offset;
-			else
-			{
-			    //search the entry for the array
-			    symbol_table_node* arr = searchSymbolTable(current_table, root->children[0]->lexeme->str);
-			    
-			    // temp = INDEX
-			    astnode* temp = root->children[1]->children[0];
-			    if(arr->isdynamic)
-			    {
-				////code for bound check in dynamic array.
-			    }
-			    else
-			    {
-				if(temp->children[0]->tok!=NUM)
-				{
-				    ////////code for bound check in static array but dynamic index.
-				}	
-			    }
-			}
-		    }
-
-		    /// code produced HOWWWW???? /////////////
 		    return curr_offset;
 		}break;
 	    
@@ -494,11 +541,28 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    {
 			//////// code for assigning result of expression to ID
 			//////// if ID is an array then array assignment is required
+			symbol_table_node* var = searchSymbolTable(current_table, root->children[0]->lexeme->str);
+			if(var->isarr==true)
+			{
+			    if(root->children[1]->tok==EPS)
+			    {
+				printf("assign array pointer %s = edx\n",root->children[0]->lexeme->str);
+			    }
+			    else
+			    {
+				printf("assign array value to %s = edx\n",root->children[0]->lexeme->str);
+			    }
+			}
+			else
+			{
+			   printf("assign ans %s = edx\n",root->children[0]->lexeme->str);
+		    
+			}
 		    }
 		    else
 		    {
 			//code for assigning result of expression to Array
-
+			
 			// temp = INDEX
 			astnode* temp = lvalue->children[0];
 
@@ -514,6 +578,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			    }	
 			}
 			////// now assign the result
+			printf("assign ans %s = edx\n",root->children[0]->lexeme->str);
 		    }
 		    return curr_offset;
 		}break;
@@ -568,6 +633,13 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //////// produce code to call the function ////////////
 		    // allocate space of the stack. save the base pointer then store the input and output parameters.
 		    // then change base pointer
+		    
+		    printf("Calling function %s\n"
+			    "push base pointer\n"
+			    "push input and output variables\n"
+			    "assign base pointer as stack pointer\n"
+			    "increase stack pointer size by new function size\n", root->children[1]->lexeme->str);
+			    
 		    return curr_offset;	
 		}break;
 
@@ -609,6 +681,11 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    root->type = root->children[1]->type;  //type of NEW_NT
 		    
 		    /////// produce code to negate the answer if necessary //////////
+		    if(root->children[0]->children[0]->tok==MINUS)
+			printf("edx = -edx\n");
+		    else
+			printf("edx = edx\n");
+
 		    return curr_offset;
 		}break;
 	    case NEW_NT:
@@ -641,9 +718,23 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 
 		    //move forward
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
+		    curr_offset = codegen(root->children[0], current_table,curr_offset); //evaluate anyterm
+
+		    if(root->children[1]->tok==EPS)
+		    {
+			curr_offset = codegen(root->children[1], current_table,curr_offset); //evaluate N7
+			//do nothing as answer is already in edx
+		    }
+		    else
+		    {
+			printf("arithmeticboolexpr push edx \n");
+
+			//evaluate N7
+			curr_offset = codegen(root->children[1], current_table,curr_offset); //evaluate N7
 		    
+			printf("arithmeticboolexpr pop eax\n");
+			printf("%s  edx , eax\n", symbol_map[root->children[1]->children[0]->children[0]->tok]);
+		    }
 		    //then check 
 		    if(root->children[1]->tok!=EPS)
 		    {
@@ -661,14 +752,31 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		{
 		    // use procedure for expression
 		    //move forward 
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
-		   
 		    //then check 
 		    if(root->tok==EPS)
 			return curr_offset;
 		    else
 		    {
+			curr_offset = codegen(root->children[0], current_table,curr_offset);
+			curr_offset = codegen(root->children[1], current_table,curr_offset);
+
+			if(root->children[2]->tok==EPS)
+			{
+			    curr_offset = codegen(root->children[2], current_table,curr_offset); //evaluate N7 empty
+			    //do nothing as answer is already in edx
+			}
+			else
+			{
+			    printf("N7 push edx \n");
+
+			    //evaluate N7
+			    curr_offset = codegen(root->children[2], current_table,curr_offset); //evaluate N7
+
+			    printf("N7 pop eax\n");
+			    printf("%s  edx , eax\n", symbol_map[root->children[2]->children[0]->children[0]->tok]);
+			}
+
+
 			root->type = boolean;
 		    }
 		    return curr_offset;
@@ -679,14 +787,37 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    
 		    // use procedure for expression
 		    //move forward then check
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
-		    
+     
 		    //then check
 		   if(root->children[0]->tok == BOOLCONSTT)
+		   {
+		      curr_offset = codegen(root->children[0], current_table,curr_offset); //evaluate boolconst
+		      
+		      ////////// code for bool constant
+		      printf("anyterm edx = %s\n",root->children[0]->children[0]->lexeme->str);
+		      
 		      root->type = root->children[0]->type;
+		   }
 		   else
 		   {
+		       curr_offset = codegen(root->children[0], current_table,curr_offset); //evaluate arithmetic expr
+
+		       if(root->children[1]->tok==EPS)
+		       {
+			   curr_offset = codegen(root->children[1], current_table,curr_offset); //evaluate N8 emtpy
+			   //do nothing as answer is already in edx
+		       }
+		       else
+		       {
+			   printf("anyterm push edx \n");
+
+			   //evaluate N8
+			   curr_offset = codegen(root->children[1], current_table,curr_offset); //evaluate N8
+
+			   printf("anyterm pop eax\n");
+			   printf("%s  edx , eax\n", symbol_map[root->children[1]->children[0]->children[0]->tok]);
+		       }
+
 		       if(root->children[1]->tok!=EPS)
 		       {
 			   root->type = boolean;
@@ -698,18 +829,35 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		   }
 		   return curr_offset;
 		}break;
-	    
+
 	    case N8:
 		{
 		    // use procedure for expression
 		    //move forward then check
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
-		    
 		    if(root->tok==EPS)
 			return curr_offset;
 		    else
 		    {
+			curr_offset = codegen(root->children[0], current_table,curr_offset);
+			curr_offset = codegen(root->children[1], current_table,curr_offset);
+
+			if(root->children[2]->tok==EPS)
+			{
+			    curr_offset = codegen(root->children[2], current_table,curr_offset); //evaluate N8 empty
+			    //do nothing as answer is already in edx
+			}
+			else
+			{
+			    printf("N8 push edx \n");
+
+			    //evaluate N8
+			    curr_offset = codegen(root->children[2], current_table,curr_offset); //evaluate N8
+
+			    printf("N8 pop eax\n");
+			    printf("%s  edx , eax\n", symbol_map[root->children[2]->children[0]->children[0]->tok]);
+			}
+
+
 			root->type = boolean;
 		    }
 		    return curr_offset;
@@ -719,9 +867,25 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		{
 		    // use procedure for expression
 		    //move forward then check
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
 		    
+		    curr_offset = codegen(root->children[0], current_table,curr_offset); //evaluate term
+
+		    if(root->children[1]->tok==EPS)
+		    {
+			curr_offset = codegen(root->children[1], current_table,curr_offset); //evaluate N4 empty
+			//do nothing as answer is already in edx
+		    }
+		    else
+		    {
+			printf("arithmeticexpr push edx \n");
+
+			//evaluate N4
+			curr_offset = codegen(root->children[1], current_table,curr_offset); //evaluate N4
+		    
+			printf("arithmeticxpr pop eax\n");
+			printf("%s  edx , eax\n", symbol_map[root->children[1]->children[0]->children[0]->tok]);
+		    }
+
 		    if(root->children[1]->tok!=EPS)
 		    {
 			root->type = root->children[0]->type;
@@ -737,13 +901,29 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		{
 		    // use procedure for expression
 		    //move forward then check
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table,curr_offset);
-		    
-		    if(root->children[0]->tok == EPS)
+		    if(root->tok==EPS)
 			return curr_offset;
 		    else
 		    {
+			curr_offset = codegen(root->children[0], current_table,curr_offset);
+			curr_offset = codegen(root->children[1], current_table,curr_offset);
+
+			if(root->children[2]->tok==EPS)
+			{
+			    curr_offset = codegen(root->children[2], current_table,curr_offset); //evaluate N4 empty
+			    //do nothing as answer is already in edx
+			}
+			else
+			{
+			    printf("N4 push edx \n");
+
+			    //evaluate N4
+			    curr_offset = codegen(root->children[2], current_table,curr_offset); //evaluate N4
+
+			    printf("N4 pop eax\n");
+			    printf("%s  edx , eax\n", symbol_map[root->children[2]->children[0]->children[0]->tok]);
+			}
+
 			root->type = root->children[1]->type;
 		    }
 		    return curr_offset;
@@ -751,10 +931,26 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 	    case TERM:
 		{
-		    // use procedure for expression
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+		    // use procedure for expression   
+		    curr_offset = codegen(root->children[0], current_table,curr_offset); //evaluate factor
+
+		    if(root->children[1]->tok==EPS)
+		    {
+			curr_offset = codegen(root->children[1], current_table,curr_offset); //evaluate N5 empty
+			//do nothing as answer is already in edx
+		    }
+		    else
+		    {
+			printf("Term push edx \n");
+
+			//evaluate N5
+			curr_offset = codegen(root->children[1], current_table,curr_offset); //evaluate N5
 		    
+			printf("Term pop eax\n");
+			printf("%s  edx , eax\n", symbol_map[root->children[1]->children[0]->children[0]->tok]);
+		    }
+
+  
 		    if(root->children[1]->tok!=EPS)
 		    {
 			root->type = root->children[0]->type;
@@ -771,13 +967,29 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		{  
 		    // use procedure for expression
 		    //move forward then check
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
-		    
-		    if(root->children[0]->tok == EPS)
+		    if(root->tok==EPS)
 			return curr_offset;
 		    else
 		    {
+			curr_offset = codegen(root->children[0], current_table,curr_offset);
+			curr_offset = codegen(root->children[1], current_table,curr_offset);
+
+			if(root->children[2]->tok==EPS)
+			{
+			    curr_offset = codegen(root->children[2], current_table,curr_offset); //evaluate N4 empty
+			    //do nothing as answer is already in edx
+			}
+			else
+			{
+			    printf("N5 push edx \n");
+
+			    //evaluate N5
+			    curr_offset = codegen(root->children[2], current_table,curr_offset); //evaluate N5
+
+			    printf("N5 pop eax\n");
+			    printf("%s  edx , eax\n", symbol_map[root->children[2]->children[0]->children[0]->tok]);
+			}
+
 			root->type = root->children[1]->type;
 		    }
 		    return curr_offset;
@@ -790,12 +1002,22 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		     */
 
 		    //move forward then assign type
-		   for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
-		    
+		    for(int i =0;i<root->n;i++)
+			curr_offset = codegen(root->children[i], current_table, curr_offset);
+
+		    if(root->children[0]->tok==VAR_ID_NUM)
+		    {
+			//var id num is handled in call above
+			//return the result	
+		    }
+		    else
+		    {
+			//evaluate arithmeticboolexpr and return result in edx.
+			//already done in above for loop
+		    }
 		    //assign type
 		    root->type = root->children[0]->type;
-		    
+
 		    return curr_offset;
 		}break;
 	    case OP1:
@@ -832,11 +1054,17 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //create a new scope(symbol table) and make the current table as the parent of the new table.
 		    symbolTable* new_table = getSymbolTable(100);
 		    new_table->parent = current_table;
-
-		    //move forward. type of ID is handled by the symbol table when it is called.
 		    
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], new_table, curr_offset);
+		    
+		    no_switch++;
+		    curr_offset = codegen(root->children[0],new_table,curr_offset); //evaluate ID
+		    makeCaseJumps(root);
+
+		    //produce code from casestmts and default
+		    curr_offset = codegen(root->children[1], new_table, curr_offset);
+		    curr_offset = codegen(root->children[2], new_table, curr_offset);
+		    
+		    printf("Label switch_exit_%d\n",root->casehandle);
 		    return curr_offset;
 		}break;
 
@@ -845,9 +1073,13 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //code generation handled by conditional 
 		    //statement through functions
 		    
+		    printf("switch_%d_%s\n",root->casehandle,root->children[0]->lexeme->str);
 		    //move forward 
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+		    curr_offset = codegen(root->children[1], current_table, curr_offset);
+
+		    printf("Jmp to switch_exit_%d\n",root->casehandle);
+
+		    curr_offset = codegen(root->children[2],current_table, curr_offset);
 		    
 		    root->type = root->children[0]->type;
 		    return curr_offset;
@@ -858,14 +1090,19 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //handled by casestmt
 
 		    //move forward
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
-		    
 			if(root->tok == EPS)
 			    return curr_offset;
 			else
 			{
-			    root->type = root->children[0]->type;   
+			    printf("switch_%d_%s\n",root->casehandle,root->children[0]->lexeme->str);
+			    //move forward 
+			    curr_offset = codegen(root->children[1], current_table, curr_offset);
+
+			    printf("Jmp to switch_exit_%d\n",root->casehandle);
+
+			    curr_offset = codegen(root->children[2],current_table, curr_offset);
+
+			    root->type = root->children[0]->type;
 			}
 		    return curr_offset;
 		}break;
@@ -884,10 +1121,20 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		{
 		    //code handled by conditional statement
 		    //move forward.
-		    for(int i =0;i<root->n;i++)
-			    curr_offset = codegen(root->children[i], current_table, curr_offset);
 		    
-		    return curr_offset;
+		    if(root->tok==EPS)
+			return curr_offset;
+		    else
+		    {
+			printf("LABEL  default_switch_%d\n", root->casehandle);
+
+			for(int i =0;i<root->n;i++)
+			    curr_offset = codegen(root->children[i], current_table, curr_offset);
+
+			printf("Jmp to switch_exit_%d\n",root->casehandle);
+
+			return curr_offset;
+		    }
 		}break;
 	    case ITERATIVESTMT:
 		{
@@ -908,10 +1155,16 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			//Check Range
 			curr_offset = codegen(root->children[2],current_table,curr_offset);
 
+			no_for++;
+			root->casehandle= no_for;
+			printf("CODE FOR FOR LOOP_%d\n",root->casehandle);
+
 			//for loop
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
 			curr_offset = codegen(root->children[3],new_table,curr_offset);
+
+			printf("CHECK CONDITION AND JUMP TO START OF FOR LOOP_%d\n",root->casehandle);
 
 		    }
 		    else
@@ -929,14 +1182,23 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 			//while loop
 			
+			no_while++;
+			root->casehandle = no_while;
+			printf("WHILE LOOP CONDITION LABEL_%d\n",root->casehandle);
+
 			//check that conditional expression is boolean
 			curr_offset = codegen(root->children[1],current_table,curr_offset);
-
+			
+			printf("IF CONDITION FALSE THEN JUMP TO EXIT_WHILE_%d\n",root->casehandle);
+			
 			//create new scope(symbol table) and assign the current table as its parent
 			//then move forward
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
 			curr_offset = codegen(root->children[2],new_table,curr_offset);
+		    
+			printf("JUMP WHILE LOOP CONDITION LABEL_%d\n",root->casehandle);
+			printf("EXIT_WHILE_%d\n",root->casehandle);
 		    }
 		    return curr_offset;
 		}break;

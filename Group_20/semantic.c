@@ -1423,6 +1423,14 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			       printf("Relational operations can only have integer/real operands\n"); 
 			       //ERROR: Relational ops expect integer operands
 			   }
+			   else if(pass_no==1 && root->children[0]->type!=root->children[1]->type)
+			   {
+				blue();
+			       printf("Line no: %d ", root->lexeme->line_no);
+			       reset();
+			       printf("Type mismatch in relational expression\n"); 
+			       
+			   }
 			   root->type = boolean;
 		       }
 		       else
@@ -1448,7 +1456,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			    blue();
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
-			    printf("Relational operations can only have integer operands\n"); 
+			    printf("Relational operations can only have integer/real operands\n"); 
 
 			    //ERROR: relational Operation can only have integer type.
 			}
@@ -1459,7 +1467,8 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			    reset();
 			    printf("Cannot chain relational operations. Cannot compare boolean operands\n"); 
 			}//ERROR: cannot compare boolean operands.
-			root->type = boolean;
+			
+			root->type = root->children[1]->type;
 		    }
 		    return;
 		}break;
@@ -1639,9 +1648,21 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    for(int i =0;i<root->n;i++)
 			    type_semantics(root->children[i], new_table);
 		    
+		    symbol_table_node* var= searchSymbolTable(current_table, root->children[0]->lexeme->str);
 
 		    //check if the type of the switch statemt matches.
-		    if(pass_no==1 && root->children[0]->type==integer)
+		    
+		    if(var->isarr == true)
+		    {
+			if(pass_no==1){
+			    blue();
+			    printf("Line no: %d ", root->children[1]->lexeme->line_no);
+			    reset();
+			    printf("Cannot have array as argument to switch\n"); 
+			}
+
+		    }
+		    else if(pass_no==1 && root->children[0]->type==integer)
 		    {
 			if(root->children[0]->type != root->children[1]->type)
 			{

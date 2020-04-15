@@ -1156,14 +1156,15 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			curr_offset = codegen(root->children[2],current_table,curr_offset);
 
 			no_for++;
-			printf("CODE FOR FOR LOOP_%d\n",no_for);
+			root->casehandle= no_for;
+			printf("CODE FOR FOR LOOP_%d\n",root->casehandle);
 
 			//for loop
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
 			curr_offset = codegen(root->children[3],new_table,curr_offset);
 
-			printf("CHECK CONDITION AND JUMP TO START OF FOR LOOP\n");
+			printf("CHECK CONDITION AND JUMP TO START OF FOR LOOP_%d\n",root->casehandle);
 
 		    }
 		    else
@@ -1182,12 +1183,13 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			//while loop
 			
 			no_while++;
-			printf("WHILE LOOP CONDITION LABEL_%d\n",no_while);
+			root->casehandle = no_while;
+			printf("WHILE LOOP CONDITION LABEL_%d\n",root->casehandle);
 
 			//check that conditional expression is boolean
 			curr_offset = codegen(root->children[1],current_table,curr_offset);
 			
-			printf("IF CONDITION FALSE THEN JUMP TO EXIT_WHILE_%d\n",no_while);
+			printf("IF CONDITION FALSE THEN JUMP TO EXIT_WHILE_%d\n",root->casehandle);
 			
 			//create new scope(symbol table) and assign the current table as its parent
 			//then move forward
@@ -1195,8 +1197,8 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			new_table->parent = current_table;
 			curr_offset = codegen(root->children[2],new_table,curr_offset);
 		    
-			printf("JUMP WHILE LOOP CONDITION LABEL_%d\n",no_while);
-			printf("EXIT_WHILE_%d\n",no_while);
+			printf("JUMP WHILE LOOP CONDITION LABEL_%d\n",root->casehandle);
+			printf("EXIT_WHILE_%d\n",root->casehandle);
 		    }
 		    return curr_offset;
 		}break;
