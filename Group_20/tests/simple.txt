@@ -1,7 +1,16 @@
 <<<driver program>>>
 start
     declare a: integer;
-    a:=10-5;
+    a:=10*90+5-2;
+    print(true);
+    print(false);
+    print(123);
+    print(a);
+    declare b: boolean;
+    b:=false;
+    print(b);
+    b:=true;
+    print(b);
 end
 
 

@@ -459,16 +459,20 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			{
 			    if(var_id_num->children[0]->tok==FALSE1)
 			    {
-				fprintf(code_file,  "\tpush dword false_output\n"
+				fprintf(code_file,  "\tpushad\n"
+						    "\tpush dword false_output\n"
 						    "\tcall printf\n"
-						    "\tpop eax\n");
+						    "\tpop eax\n"
+						    "\tpopad\n");
 			    }
 			    else
 			    {
 				//print output: true
-				fprintf(code_file,  "\tpush dword true_output\n"
+				fprintf(code_file,  "\tpushad\n"
+						    "\tpush dword true_output\n"
 						    "\tcall printf\n"
-						    "\tpop eax\n");
+						    "\tpop eax\n"
+						    "\tpopad\n");
 
 			    }
 			}
@@ -476,10 +480,12 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			{
 			    if(var_id_num->children[0]->tok == NUM)
 			    {
-				fprintf(code_file,  "\tpush edx\n"
+				fprintf(code_file,  "\tpushad\n"
+						    "\tpush edx\n"
 						    "\tpush dword integer_output\n"
 						    "\tcall printf\n"
-						    "\tadd esp, 8\n");
+						    "\tadd esp, 8\n"
+						    "\tpopad\n");
 			    }
 			    else if(var_id_num->children[0]->tok==RNUM)
 			    {
@@ -502,10 +508,12 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 					if(var->type == integer)
 					{
 					    //printing an integer variable, value in edx
-					    fprintf(code_file,  "\tpush edx\n"
+					    fprintf(code_file,  "\tpushad\n"
+								"\tpush edx\n"
 								"\tpush dword integer_output\n"
 								"\tcall printf\n"
-								"\tadd esp, 8\n");
+								"\tadd esp, 8\n"
+								"\tpopad\n");
 					}
 					else if(var->type== real)
 					    fprintf(code_file,"OUTPUT FLOAT NUMBER\n");
@@ -513,20 +521,28 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 					{
 					    //printing a boolean variable. value in edx
 
-					    fprintf(code_file,	"\tpush dword output_str\n"
+					    fprintf(code_file,	"\tpushad\n"
+								"\tpush dword output_str\n"
 								"\tcall printf\n"
-								"\tpop eax\n");
+								"\tpop eax\n"
+								"\tpopad\n");
 
-					    fprintf(code_file,"\tcmp edx,0\n"
-						    "\tcmove eax, single_false\n"
-						    "\tcmovne eax, single_true\n"
+					    fprintf(code_file,"\tpushad\n"
+						    "\tcmp edx,0\n"
+						    "\tmov edx, single_false\n"
+						    "\tcmove eax, edx\n"
+						    "\tmov edx, single_true\n"
+						    "\tcmovne eax, edx\n"
 						    "\tpush eax\n"
 						    "\tcall printf\n"
-						    "\tpop eax\n"); 
+						    "\tpop eax\n"
+						    "\tpopad\n"); 
 					    
-					    fprintf(code_file,	"\tpush dword nextline\n"
+					    fprintf(code_file,	"\tpushad\n"
+								"\tpush dword nextline\n"
 								"\tcall printf\n"
-								"\tpop eax\n");
+								"\tpop eax\n"
+								"\tpopad\n");
 					}
 				    }
 				}
@@ -536,31 +552,40 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 					if(var->type == integer)
 					{
 					    //printing an integer variable, value in edx
-					    fprintf(code_file,  "\tpush edx\n"
+					    fprintf(code_file,  "\tpushad\n"
+								"\tpush edx\n"
 								"\tpush dword integer_output\n"
 								"\tcall printf\n"
-								"\tadd esp, 8\n");
+								"\tadd esp, 8\n"
+								"\tpopad\n");
 					}
 					else if(var->type== real)
 					    fprintf(code_file,"OUTPUT FLOAT NUMBER\n");
 					else
 					{
 					    //printing a boolean variable. value in edx
-
-					    fprintf(code_file,	"\tpush dword output_str\n"
+					    fprintf(code_file,	"\tpushad\n"
+								"\tpush dword output_str\n"
 								"\tcall printf\n"
-								"\tpop eax\n");
-
-					    fprintf(code_file,"\tcmp edx,0\n"
-						    "\tcmove eax, single_false\n"
-						    "\tcmovne eax, single_true\n"
+								"\tpop eax\n"
+								"\tpopad\n");
+					    
+					    fprintf(code_file,"\tpushad\n"
+						    "\tcmp edx,0\n"
+						    "\tmov edx, single_false\n"
+						    "\tcmove eax, edx\n"
+						    "\tmov edx, single_true\n"
+						    "\tcmovne eax, edx\n"
 						    "\tpush eax\n"
 						    "\tcall printf\n"
-						    "\tpop eax\n"); 
+						    "\tpop eax\n"
+						    "\tpopad\n"); 
 					    
-					    fprintf(code_file,	"\tpush dword nextline\n"
+					    fprintf(code_file,	"\tpushad\n"
+								"\tpush dword nextline\n"
 								"\tcall printf\n"
-								"\tpop eax\n");
+								"\tpop eax\n"
+								"\tpopad\n");
 					}
 				}
 			    }
@@ -997,19 +1022,21 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			   fprintf(code_file,"	pop eax\n");
 			   fprintf(code_file,"	cmp eax,edx\n");  //compare eax and edx. Performas eax - edx
 
-			    fprintf(code_file,"	mov edx,0	;assign false initially in comparing\n");
+			    fprintf(code_file,"	mov edx,0   ;assign false initially in comparing\n"
+					    "\tmov eax, 1   ;cmov requires register, therefore place true in eax\n");
+			    
 			   if(root->children[1]->children[0]->children[0]->tok==LT)
-			       fprintf(code_file,"	cmovl  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovl  edx , eax	;place true if condition met\n");
 			   else if(root->children[1]->children[0]->children[0]->tok==LE)
-			       fprintf(code_file,"	cmovle  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovle  edx , eax	;place true if condition met\n");
 			   else if(root->children[1]->children[0]->children[0]->tok==GT)
-			       fprintf(code_file,"	cmovg  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovg  edx , eax	;place true if condition met\n");
 			   else if(root->children[1]->children[0]->children[0]->tok==GE)
-			       fprintf(code_file,"	cmovge  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovge  edx , eax	;place true if condition met\n");
 			   else if(root->children[1]->children[0]->children[0]->tok==EQ)
-			       fprintf(code_file,"	cmove  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmove  edx , eax	;place true if condition met\n");
 			   else if(root->children[1]->children[0]->children[0]->tok==NE)
-			       fprintf(code_file,"	cmovne  edx , 1\n");
+			       fprintf(code_file,"	cmovne  edx , eax\n");
 
 		       }
 
@@ -1050,19 +1077,24 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 			   fprintf(code_file,"	pop eax\n");
 			   fprintf(code_file,"	cmp eax,edx\n");  //compare eax and edx. Performas eax - edx
-			    fprintf(code_file,"	mov edx,0	;assign false initially in comparing\n");
-			   if(root->children[2]->children[0]->children[0]->tok==LT)
-			       fprintf(code_file,"	cmovl  edx , 1	;place true if condition met\n");
-			   else if(root->children[2]->children[0]->children[0]->tok==LE)
-			       fprintf(code_file,"	cmovle  edx , 1	;place true if condition met\n");
-			   else if(root->children[2]->children[0]->children[0]->tok==GT)
-			       fprintf(code_file,"	cmovg  edx , 1	;place true if condition met\n");
-			   else if(root->children[2]->children[0]->children[0]->tok==GE)
-			       fprintf(code_file,"	cmovge  edx , 1	;place true if condition met\n");
-			   else if(root->children[2]->children[0]->children[0]->tok==EQ)
-			       fprintf(code_file,"	cmove  edx , 1	;place true if condition met\n");
-			   else if(root->children[2]->children[0]->children[0]->tok==NE)
-			       fprintf(code_file,"	cmovne  edx , 1	;place true if condition met\n");
+
+			    fprintf(code_file,"	mov edx,0   ;assign false initially in comparing\n"
+					    "\tmov eax, 1   ;cmov requires register, therefore place true in eax\n");
+			    
+			   if(root->children[1]->children[0]->children[0]->tok==LT)
+			       fprintf(code_file,"	cmovl  edx , eax	;place true if condition met\n");
+			   else if(root->children[1]->children[0]->children[0]->tok==LE)
+			       fprintf(code_file,"	cmovle  edx , eax	;place true if condition met\n");
+			   else if(root->children[1]->children[0]->children[0]->tok==GT)
+			       fprintf(code_file,"	cmovg  edx , eax	;place true if condition met\n");
+			   else if(root->children[1]->children[0]->children[0]->tok==GE)
+			       fprintf(code_file,"	cmovge  edx , eax	;place true if condition met\n");
+			   else if(root->children[1]->children[0]->children[0]->tok==EQ)
+			       fprintf(code_file,"	cmove  edx , eax	;place true if condition met\n");
+			   else if(root->children[1]->children[0]->children[0]->tok==NE)
+			       fprintf(code_file,"	cmovne  edx , eax\n");
+
+
 			}
 
 
