@@ -183,10 +183,21 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 	{   
 	    case PROGRAM:
 		{
-		    fprintf(code_file,"bits 32\n"
-			    "global main\n"
-			    "extern printf\n"
-			    "extern scanf\n\n");
+		    fprintf(code_file,"extern printf\n"
+			    "extern scanf\n"
+			    "extern exit\n"
+			    "\nSECTION .data\n"
+			    "true_output: db 'Output: true',10,0\n"
+			    "false_output: db 'Output: false',10,0\n"
+			    "integer_output: db 'Output: %%d',10,0\n"
+			    "output_str: db 'Output: ',0\n"
+			    "single_int: db '%%d ',0\n"
+			    "single_false: db 'false ',0\n"
+			    "single_true: db 'true ',0\n"
+			    "nextline: db 10,0\n"
+			    "\nSECTION .text\n"
+			    "bits 32\n"
+			    "global main\n\n");
 		    //move forward
 		    for(int i =0;i<root->n;i++)
 			curr_offset = codegen(root->children[i], current_table,0); //the program 
@@ -334,7 +345,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			curr_offset = codegen(root->children[i], new_table,0);
 		    
 		    //////// produce code to finish the main procudure in asm //////////////
-		    fprintf(code_file,"exit_main:\n\n");
+		    fprintf(code_file,"exit_main:  call exit\n\n");
 		    return curr_offset;
 		}break;
 
@@ -438,9 +449,123 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			curr_offset = codegen(root->children[i], current_table,curr_offset); 
 		    
 
-		    //produce code based on input/ output and type of variable and if variable is array////////////////
+
+		    //edx has the value of var_id_num depending on if array or whatever
 		    if(root->children[0]->tok==PRINT)
-			fprintf(code_file,"	Printing variable: %s\n",root->children[1]->lexeme->str);
+		    {
+			astnode* var_id_num = root->children[1]->children[0];
+			
+			if(var_id_num->tok == BOOLCONSTT)
+			{
+			    if(var_id_num->children[0]->tok==FALSE1)
+			    {
+				fprintf(code_file,  "\tpush dword false_output\n"
+						    "\tcall printf\n"
+						    "\tpop eax\n");
+			    }
+			    else
+			    {
+				//print output: true
+				fprintf(code_file,  "\tpush dword true_output\n"
+						    "\tcall printf\n"
+						    "\tpop eax\n");
+
+			    }
+			}
+			else
+			{
+			    if(var_id_num->children[0]->tok == NUM)
+			    {
+				fprintf(code_file,  "\tpush edx\n"
+						    "\tpush dword integer_output\n"
+						    "\tcall printf\n"
+						    "\tadd esp, 8\n");
+			    }
+			    else if(var_id_num->children[0]->tok==RNUM)
+			    {
+				fprintf(code_file,"OUTPUT FLOATING POINT NUMBER\n");
+			    }
+			    else
+			    {
+				symbol_table_node* var = searchSymbolTable(current_table,
+							    var_id_num->children[0]->lexeme->str);
+				if(var_id_num->children[1]->tok == EPS)
+				{
+				    //variable or whole array. pointer in edx
+				    if(var->isarr)
+				    {
+					//print the whole array somehow
+				    
+				    }
+				    else
+				    {
+					if(var->type == integer)
+					{
+					    //printing an integer variable, value in edx
+					    fprintf(code_file,  "\tpush edx\n"
+								"\tpush dword integer_output\n"
+								"\tcall printf\n"
+								"\tadd esp, 8\n");
+					}
+					else if(var->type== real)
+					    fprintf(code_file,"OUTPUT FLOAT NUMBER\n");
+					else
+					{
+					    //printing a boolean variable. value in edx
+
+					    fprintf(code_file,	"\tpush dword output_str\n"
+								"\tcall printf\n"
+								"\tpop eax\n");
+
+					    fprintf(code_file,"\tcmp edx,0\n"
+						    "\tcmove eax, single_false\n"
+						    "\tcmovne eax, single_true\n"
+						    "\tpush eax\n"
+						    "\tcall printf\n"
+						    "\tpop eax\n"); 
+					    
+					    fprintf(code_file,	"\tpush dword nextline\n"
+								"\tcall printf\n"
+								"\tpop eax\n");
+					}
+				    }
+				}
+				else 
+				{
+				    //print array element value in edx
+					if(var->type == integer)
+					{
+					    //printing an integer variable, value in edx
+					    fprintf(code_file,  "\tpush edx\n"
+								"\tpush dword integer_output\n"
+								"\tcall printf\n"
+								"\tadd esp, 8\n");
+					}
+					else if(var->type== real)
+					    fprintf(code_file,"OUTPUT FLOAT NUMBER\n");
+					else
+					{
+					    //printing a boolean variable. value in edx
+
+					    fprintf(code_file,	"\tpush dword output_str\n"
+								"\tcall printf\n"
+								"\tpop eax\n");
+
+					    fprintf(code_file,"\tcmp edx,0\n"
+						    "\tcmove eax, single_false\n"
+						    "\tcmovne eax, single_true\n"
+						    "\tpush eax\n"
+						    "\tcall printf\n"
+						    "\tpop eax\n"); 
+					    
+					    fprintf(code_file,	"\tpush dword nextline\n"
+								"\tcall printf\n"
+								"\tpop eax\n");
+					}
+				}
+			    }
+			}
+		    }
 		    else
 			fprintf(code_file,"	Getting value of variable: %s\n",root->children[1]->lexeme->str);
 		    

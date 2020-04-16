@@ -1,9 +1,10 @@
 declare module readArr;
 **the following function computes the sum of first n elements of the array**
 <<module arraySum>>
-takes input[list:array[1..15] of    real, n:integer];
+takes input[list:array[1..15] of    integer, n:integer];
 returns  [sum:real];
 start
+	declare t1: array[1..232] of boolean;
 	declare index:integer;
 	declare t:boolean;
     	declare n:real;	
