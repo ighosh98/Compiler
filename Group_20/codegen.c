@@ -15,7 +15,7 @@
 int no_switch = 0;
 int no_while = 0;
 int no_for = 0;
-
+FILE* code_file;
 
 void makeCaseJumps(astnode* root,symbolTable* current_table) //also assigns the switch number to case statements
 {
@@ -31,14 +31,14 @@ void makeCaseJumps(astnode* root,symbolTable* current_table) //also assigns the 
 	{
 	    symbol_table_node* var = searchSymbolTable(current_table,id->lexeme->str);
 	    //get value of id into edx
-	    printf("mov edx, [ebp+%d]\n",var->offset);
-	    printf("cmp edx, %d\n", atoi(casestmt->children[0]->lexeme->str));
-	    printf("je switch_%d_%d\n", no_switch, atoi(casestmt->children[0]->lexeme->str));
+	    fprintf(code_file,"	mov edx, [ebp+%d]\n",var->offset);
+	    fprintf(code_file,"	cmp edx, %d\n", atoi(casestmt->children[0]->lexeme->str));
+	    fprintf(code_file,"	je switch_%d_%d\n", no_switch, atoi(casestmt->children[0]->lexeme->str));
 	    
 	    casestmt->casehandle = no_switch;
 	    casestmt = casestmt->children[2];
 	}
-	printf("jmp switch_default_%d\n",no_switch);
+	fprintf(code_file,"	jmp switch_default_%d\n",no_switch);
 	def->casehandle = no_switch;
     }
     else
@@ -50,15 +50,15 @@ void makeCaseJumps(astnode* root,symbolTable* current_table) //also assigns the 
 	{
 	    symbol_table_node* var = searchSymbolTable(current_table,id->lexeme->str);
 	    //get value of id into edx
-	    printf("mov edx, [ebp+%d]\n",var->offset);
+	    fprintf(code_file,"	mov edx, [ebp+%d]\n",var->offset);
 
 	    if(casestmt->children[0]->tok==FALSE1){
-	    printf("cmp edx,0\n");
-	    printf("je switch_%d_false\n", no_switch);
+	    fprintf(code_file,"	cmp edx,0\n");
+	    fprintf(code_file,"	je switch_%d_false\n", no_switch);
 	    }
 	    else{
-	    printf("cmp edx,1\n");
-	    printf("je switch_%d_true\n",no_switch);
+	    fprintf(code_file,"	cmp edx,1\n");
+	    fprintf(code_file,"	je switch_%d_true\n",no_switch);
 	    }
 	    casestmt->casehandle = no_switch;
 	    casestmt = casestmt->children[2];
@@ -183,6 +183,10 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 	{   
 	    case PROGRAM:
 		{
+		    fprintf(code_file,"bits 32\n"
+			    "global main\n"
+			    "extern printf\n"
+			    "extern scanf\n\n");
 		    //move forward
 		    for(int i =0;i<root->n;i++)
 			curr_offset = codegen(root->children[i], current_table,0); //the program 
@@ -300,7 +304,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    
 		    ///////// produce code for procedure in asm /////////////////////
 		    ////////////////////////////////////////////////////////////////
-		    printf("Procedure: %s\n",temp->name);
+		    fprintf(code_file,"%s proc\n",temp->name);
 		    
 		    
 		    //call moduledef to produce content of the procedure
@@ -309,7 +313,8 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 		    /////////// code for end of the procedure //////////////////
 		    ////////////////////////////////////////////////////////////
-		    printf("Return from procedure: %s\n",temp->name);
+		    fprintf(code_file,"ret\n");
+		    fprintf(code_file,"%s endp\n\n",temp->name);
 		    return curr_offset; /////////// ################### this is changed after testing for offsets ####################
 					//				therefore it may lead to errors.
 		}break;
@@ -321,14 +326,15 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    new_table->parent = NULL;
 		    
 		    ///// produce code to define the main procedure in asm//////////////
-		    printf("Procedure Main\n");
-
+		    fprintf(code_file,"main:\n");
+		    fprintf(code_file,"	sub esp,%d  ;allocating space on the stack\n",searchSymbolTable(function_table,"driver")->stackSize);
+		    fprintf(code_file,"\tmov ebp, esp	;ebp accesses upwards, while stack grows downwards\n");
 		    //call moduledef
 		    for(int i =0;i<root->n;i++)
 			curr_offset = codegen(root->children[i], new_table,0);
 		    
 		    //////// produce code to finish the main procudure in asm //////////////
-		    printf("Exit from Main\n");
+		    fprintf(code_file,"exit_main:\n\n");
 		    return curr_offset;
 		}break;
 
@@ -434,9 +440,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 		    //produce code based on input/ output and type of variable and if variable is array////////////////
 		    if(root->children[0]->tok==PRINT)
-			printf("Printing variable: %s\n",root->children[1]->lexeme->str);
+			fprintf(code_file,"	Printing variable: %s\n",root->children[1]->lexeme->str);
 		    else
-			printf("Getting value of variable: %s\n",root->children[1]->lexeme->str);
+			fprintf(code_file,"	Getting value of variable: %s\n",root->children[1]->lexeme->str);
 		    
 		    return curr_offset;
 		}break;
@@ -487,11 +493,11 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 		    if(root->children[0]->tok==NUM)
 		    {
-			printf("mov edx, %s\n",root->children[0]->lexeme->str);
+			fprintf(code_file,"	mov edx, %s\n",root->children[0]->lexeme->str);
 		    }
 		    else if(root->children[0]->tok==RNUM)
 		    {
-			printf("mov edx, %s\n",root->children[0]->lexeme->str);
+			fprintf(code_file,"	mov edx, %s\n",root->children[0]->lexeme->str);
 		    }
 		    else if(root->children[0]->tok==ID)
 		    {
@@ -501,32 +507,34 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			    if(var->isdynamic || !var->isdynamic) //common code if good implementation
 			    {
 				if(root->children[1]->tok==EPS)
-				    printf("mov edx, [ebp+%d]\n",var->offset);  //pointer copy
+				    fprintf(code_file,"	mov edx, [ebp+%d]\n",var->offset);  //pointer copy
 				else
 				{
 				    ///////////////////////////// need to complete and modify //////////////////////////////
 				    /////////////////////////////////////////////////////////////////////////////////////////
-				    printf("VERIFY THAT INDEX IS WITHIN BOUNDS\n");
+				    fprintf(code_file,"	VERIFY THAT INDEX IS WITHIN BOUNDS\n");
 				    astnode* index = root->children[1]->children[0];
 				    if(index->children[0]->tok == NUM)
 				    {
 					//move base of array into edi
-				    	printf("mov edi, [ebp+%d]\n",var->offset); //moving data from array element
+				    	fprintf(code_file,"	mov edi, [ebp+%d]\n",var->offset); //moving data from array element
 					//move index into esi
-					printf("mov esi, %d\n", atoi(index->children[0]->lexeme->str));
+					fprintf(code_file,"	mov esi, %d\n", atoi(index->children[0]->lexeme->str));
+					fprintf(code_file,"\tsub esi, [edi]	;subtract the base index\n");
 					//move element from array to edx. 2*4 included as first 2 elements store range
-					printf("mov edx, [edi+esi*4+2*4]\n");
+					fprintf(code_file,"	mov edx, [edi+esi*4+2*4]\n");
 				    }
 				    else
 				    {
 					symbol_table_node* temp_index = searchSymbolTable(current_table,
 									index->children[0]->lexeme->str);
 					//move base of array into edi
-				    	printf("mov edi, [ebp+%d]\n",var->offset); //moving data from array element
+				    	fprintf(code_file,"	mov edi, [ebp+%d]\n",var->offset); //moving data from array element
 					//move index into esi
-					printf("mov esi, [ebp+%d]\n", temp_index->offset);
+					fprintf(code_file,"	mov esi, [ebp+%d]\n", temp_index->offset);
+					fprintf(code_file,"\tsub esi, [edi]	;subtract the base index\n");
 					//move element from array to edx. 2*4 included as first 2 elements store range
-					printf("mov edx, [edi+esi*4+2*4]\n");
+					fprintf(code_file,"	mov edx, [edi+esi*4+2*4]\n");
 				    }
 				}
 			    }
@@ -537,7 +545,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			}
 			else
 			{
-			    printf("mov edx, [ebp+%d]\n",var->offset); // copy data from offset of variable
+			    fprintf(code_file,"	mov edx, [ebp+%d]\n",var->offset); // copy data from offset of variable
 			}
 		    }
 		    
@@ -584,41 +592,39 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			symbol_table_node* var = searchSymbolTable(current_table, root->children[0]->lexeme->str);
 			if(var->isarr==true)
 			{
-			    if(root->children[1]->tok==EPS)
-			    {
-				printf("assign array pointer %s = edx\n",root->children[0]->lexeme->str);
-			    }
-			    else
-			    {
-				printf("assign array value to %s = edx\n",root->children[0]->lexeme->str);
-			    }
+			    //assign array pointer. i.e copy the address of the array
+			    fprintf(code_file,"\tmov [ebp+%d],edx   ;assign pointer of the array\n",var->offset);
 			}
 			else
 			{
-			   printf("assign ans %s = edx\n",root->children[0]->lexeme->str);
-		    
+			   fprintf(code_file,"\tmov [ebp+%d], edx   ;assign value to a variable\n",var->offset);
 			}
 		    }
 		    else
 		    {
-			//code for assigning result of expression to Array
-			
+			//code for assigning result of expression to Array element
+			symbol_table_node* var = searchSymbolTable(current_table, root->children[0]->lexeme->str);
 			// temp = INDEX
-			astnode* temp = lvalue->children[0];
+			astnode* index = lvalue->children[0];
 
-			if(a->isdynamic)
+			if(index->children[0]->tok == NUM)
 			{
-			    //////code for bound check in dynamic array.
+			    fprintf(code_file,"\tCHECK ARRAY BOUNDS\n");
+			    fprintf(code_file,"\tmov edi,[ebp+%d]   ;edi has base address of array\n",var->offset);
+			    fprintf(code_file,"\tmov esi,%d\n",atoi(index->children[0]->lexeme->str));
+			    fprintf(code_file,"\tsub esi, [edi]  ;subtract base index of the array\n");
+			    fprintf(code_file,"\tmov [edi+2*esi+2*4],edx	;first 2 bytes store the bounds\n");
 			}
 			else
 			{
-			    if(temp->children[0]->tok!=NUM)
-			    {
-				////////code for bound check in static array but dynamic index.
-			    }	
+			    symbol_table_node* index_var = searchSymbolTable(current_table,index->children[0]->lexeme->str);
+			    fprintf(code_file,"\tmov esi, [ebp+%d]  ;place value of index var\n",index_var->offset);
+			    fprintf(code_file,"\tCHECK ARRAY BOUNDS\n");
+			    fprintf(code_file,"\tmov edi,[ebp+%d]   ;edi has base address of array\n",var->offset);
+			    fprintf(code_file,"\tsub esi, [edi]  ;subtract base index of the array\n");
+			    fprintf(code_file,"\tmov [edi+2*esi+2*4],edx    ;first 2 bytes store the bounds\n");
+
 			}
-			////// now assign the result
-			printf("assign ans %s = edx\n",root->children[0]->lexeme->str);
 		    }
 		    return curr_offset;
 		}break;
@@ -674,11 +680,11 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    // allocate space of the stack. save the base pointer then store the input and output parameters.
 		    // then change base pointer
 		    
-		    printf("Calling function %s\n"
-			    "push base pointer\n"
-			    "push input and output variables\n"
-			    "assign base pointer as stack pointer\n"
-			    "increase stack pointer size by new function size\n", root->children[1]->lexeme->str);
+		    fprintf(code_file,"	Calling function %s\n"
+			    "	    push base pointer\n"
+			    "	    push input and output variables\n"
+			    "	    assign base pointer as stack pointer\n"
+			    "	    increase stack pointer size by new function size\n", root->children[1]->lexeme->str);
 			    
 		    return curr_offset;	
 		}break;
@@ -722,9 +728,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    
 		    /////// produce code to negate the answer if necessary //////////
 		    if(root->children[0]->children[0]->tok==MINUS)
-			printf("edx = -edx\n");
+			fprintf(code_file,"	edx = -edx\n");
 		    else
-			printf("edx = edx\n");
+			fprintf(code_file,"	edx = edx\n");
 
 		    return curr_offset;
 		}break;
@@ -767,16 +773,16 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    }
 		    else
 		    {
-			printf("push edx\n");
+			fprintf(code_file,"	push edx\n");
 
 			//evaluate N7
 			curr_offset = codegen(root->children[1], current_table,curr_offset); //evaluate N7
 		    
-			printf("pop eax\n");
+			fprintf(code_file,"	pop eax\n");
 			if(root->children[1]->children[0]->children[0]->tok==AND)
-			    printf("and edx, eax\n");
+			    fprintf(code_file,"	and edx, eax\n");
 			else
-			    printf("or edx, eax\n");
+			    fprintf(code_file,"	or edx, eax\n");
 		    }
 		    //then check 
 		    if(root->children[1]->tok!=EPS)
@@ -810,16 +816,16 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			}
 			else
 			{
-			    printf("push edx \n");
+			    fprintf(code_file,"	push edx \n");
 
 			    //evaluate N7
 			    curr_offset = codegen(root->children[2], current_table,curr_offset); //evaluate N7
 
-			    printf("pop eax\n");
+			    fprintf(code_file,"	pop eax\n");
 			    if(root->children[2]->children[0]->children[0]->tok==AND)
-				printf("and edx, eax\n");
+				fprintf(code_file,"	and edx, eax\n");
 			    else
-				printf("or edx, eax\n");
+				fprintf(code_file,"	or edx, eax\n");
 
 			}
 
@@ -842,9 +848,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		      
 		      ////////// code for bool constant
 		      if(root->children[0]->children[0]->tok==FALSE1)
-			  printf("mov edx, 0   ; assigning false\n");
+			  fprintf(code_file,"	mov edx, 0   ; assigning false\n");
 		      else
-			  printf("mov edx, 1   ; assigning true\n");
+			  fprintf(code_file,"	mov edx, 1   ; assigning true\n");
 		      root->type = root->children[0]->type;
 		   }
 		   else
@@ -858,27 +864,27 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		       }
 		       else
 		       {
-			   printf("push edx \n");
+			   fprintf(code_file,"	push edx \n");
 
 			   //evaluate N8
 			   curr_offset = codegen(root->children[1], current_table,curr_offset); //evaluate N8
 
-			   printf("pop eax\n");
-			   printf("cmp eax,edx\n");  //compare eax and edx. Performas eax - edx
+			   fprintf(code_file,"	pop eax\n");
+			   fprintf(code_file,"	cmp eax,edx\n");  //compare eax and edx. Performas eax - edx
 
-			    printf("mov edx,0	;assign false initially in comparing\n");
+			    fprintf(code_file,"	mov edx,0	;assign false initially in comparing\n");
 			   if(root->children[1]->children[0]->children[0]->tok==LT)
-			       printf("cmovl  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovl  edx , 1	;place true if condition met\n");
 			   else if(root->children[1]->children[0]->children[0]->tok==LE)
-			       printf("cmovle  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovle  edx , 1	;place true if condition met\n");
 			   else if(root->children[1]->children[0]->children[0]->tok==GT)
-			       printf("cmovg  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovg  edx , 1	;place true if condition met\n");
 			   else if(root->children[1]->children[0]->children[0]->tok==GE)
-			       printf("cmovge  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovge  edx , 1	;place true if condition met\n");
 			   else if(root->children[1]->children[0]->children[0]->tok==EQ)
-			       printf("cmove  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmove  edx , 1	;place true if condition met\n");
 			   else if(root->children[1]->children[0]->children[0]->tok==NE)
-			       printf("cmovne  edx , 1\n");
+			       fprintf(code_file,"	cmovne  edx , 1\n");
 
 		       }
 
@@ -912,26 +918,26 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			}
 			else
 			{
-			    printf("push edx \n");
+			    fprintf(code_file,"	push edx \n");
 
 			   //evaluate N8
 			   curr_offset = codegen(root->children[2], current_table,curr_offset); //evaluate N8
 
-			   printf("pop eax\n");
-			   printf("cmp eax,edx\n");  //compare eax and edx. Performas eax - edx
-			    printf("mov edx,0	;assign false initially in comparing\n");
+			   fprintf(code_file,"	pop eax\n");
+			   fprintf(code_file,"	cmp eax,edx\n");  //compare eax and edx. Performas eax - edx
+			    fprintf(code_file,"	mov edx,0	;assign false initially in comparing\n");
 			   if(root->children[2]->children[0]->children[0]->tok==LT)
-			       printf("cmovl  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovl  edx , 1	;place true if condition met\n");
 			   else if(root->children[2]->children[0]->children[0]->tok==LE)
-			       printf("cmovle  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovle  edx , 1	;place true if condition met\n");
 			   else if(root->children[2]->children[0]->children[0]->tok==GT)
-			       printf("cmovg  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovg  edx , 1	;place true if condition met\n");
 			   else if(root->children[2]->children[0]->children[0]->tok==GE)
-			       printf("cmovge  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovge  edx , 1	;place true if condition met\n");
 			   else if(root->children[2]->children[0]->children[0]->tok==EQ)
-			       printf("cmove  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmove  edx , 1	;place true if condition met\n");
 			   else if(root->children[2]->children[0]->children[0]->tok==NE)
-			       printf("cmovne  edx , 1	;place true if condition met\n");
+			       fprintf(code_file,"	cmovne  edx , 1	;place true if condition met\n");
 			}
 
 
@@ -954,19 +960,19 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    }
 		    else
 		    {
-			printf("push edx \n");
+			fprintf(code_file,"	push edx \n");
 
 			//evaluate N4
 			curr_offset = codegen(root->children[1], current_table,curr_offset); //evaluate N4
 		    
-			printf("pop eax\n"); //eax stores the left side result
+			fprintf(code_file,"	pop eax\n"); //eax stores the left side result
 
 			if(root->children[1]->children[0]->children[0]->tok==PLUS)
-			    printf("add edx, eax\n");
+			    fprintf(code_file,"\tadd edx, eax\n");
 			else
 			{
-			    printf("sub eax, edx    ;perform (eax - edx) subtraction\n");
-			    printf("mov edx, eax    ;store result of subtraction in edx\n");
+			    fprintf(code_file,"	sub eax, edx    ;perform (eax - edx) subtraction\n");
+			    fprintf(code_file,"	mov edx, eax    ;store result of subtraction in edx\n");
 		    
 			}
 		    }
@@ -999,19 +1005,19 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			}
 			else
 			{
-			    printf("push edx \n");
+			    fprintf(code_file,"	push edx \n");
 
 			    //evaluate N4
 			    curr_offset = codegen(root->children[2], current_table,curr_offset); //evaluate N4
 
-			    printf("pop eax\n"); //eax stores the left side result
+			    fprintf(code_file,"	pop eax\n"); //eax stores the left side result
 
 			    if(root->children[2]->children[0]->children[0]->tok==PLUS)
-				printf("add edx, eax\n");
+				fprintf(code_file,"	add edx, eax\n");
 			    else
 			    {
-				printf("sub eax, edx    ;perform (eax - edx) subtraction\n");
-				printf("mov edx, eax    ;store result of subtraction in edx\n");
+				fprintf(code_file,"	sub eax, edx    ;perform (eax - edx) subtraction\n");
+				fprintf(code_file,"	mov edx, eax    ;store result of subtraction in edx\n");
 
 			    }
 
@@ -1034,25 +1040,25 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    }
 		    else
 		    {
-			printf("push edx \n");
+			fprintf(code_file,"	push edx \n");
 
 			//evaluate N5
 			curr_offset = codegen(root->children[1], current_table,curr_offset); //evaluate N5
 		    
-			printf("pop eax\n");
+			fprintf(code_file,"	pop eax\n");
 			if(root->children[1]->children[0]->children[0]->tok==MUL)
 			{
-			    printf("imul edx	;eax*edx stored in edx:eax \n");
-			    printf("mov edx, eax    ;truncated result moved to edx \n");
+			    fprintf(code_file,"	imul edx	;eax*edx stored in edx:eax \n");
+			    fprintf(code_file,"	mov edx, eax    ;truncated result moved to edx \n");
 			}
 			else
 			{
-			    printf("push ebx\n"); //save ebx for temp use
-			    printf("mov ebx,edx\n");
-			    printf("mov edx, 0\n");
-			    printf("idiv ebx	;edx:eax divided by ebx result stored in eax\n");
-			    printf("mov edx, eax    ;move the quotient into edx\n");
-			    printf("pop ebx\n"); //restore ebx
+			    fprintf(code_file,"	push ebx\n"); //save ebx for temp use
+			    fprintf(code_file,"	mov ebx,edx\n");
+			    fprintf(code_file,"	mov edx, 0\n");
+			    fprintf(code_file,"	idiv ebx	;edx:eax divided by ebx result stored in eax\n");
+			    fprintf(code_file,"	mov edx, eax    ;move the quotient into edx\n");
+			    fprintf(code_file,"	pop ebx\n"); //restore ebx
 			}
 		    }
 
@@ -1087,25 +1093,25 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			}
 			else
 			{
-			    printf("push edx \n");
+			    fprintf(code_file,"	push edx \n");
 
 			    //evaluate N5
 			    curr_offset = codegen(root->children[2], current_table,curr_offset); //evaluate N5
 
-			    printf("pop eax\n");
+			    fprintf(code_file,"	pop eax\n");
 			    if(root->children[2]->children[0]->children[0]->tok==MUL)
 			    {
-				printf("imul edx	;eax*edx stored in edx:eax \n");
-				printf("mov edx, eax    ;truncated result moved to edx \n");
+				fprintf(code_file,"	imul edx	;eax*edx stored in edx:eax \n");
+				fprintf(code_file,"	mov edx, eax    ;truncated result moved to edx \n");
 			    }
 			    else
 			    {
-				printf("push ebx\n"); //save ebx for temp use
-				printf("mov ebx,edx\n");
-				printf("mov edx, 0\n");
-				printf("idiv ebx	;edx:eax divided by ebx result stored in eax\n");
-				printf("mov edx, eax    ;move the quotient into edx\n");
-				printf("pop ebx\n"); //restore ebx
+				fprintf(code_file,"	push ebx\n"); //save ebx for temp use
+				fprintf(code_file,"	mov ebx,edx\n");
+				fprintf(code_file,"	mov edx, 0\n");
+				fprintf(code_file,"	idiv ebx	;edx:eax divided by ebx result stored in eax\n");
+				fprintf(code_file,"	mov edx, eax    ;move the quotient into edx\n");
+				fprintf(code_file,"	pop ebx\n"); //restore ebx
 			    }
 
 			}
@@ -1174,7 +1180,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    curr_offset = codegen(root->children[1], new_table, curr_offset);
 		    curr_offset = codegen(root->children[2], new_table, curr_offset);
 		    
-		    printf("switch_exit_%d:\n",root->casehandle);
+		    fprintf(code_file,"	switch_exit_%d:\n",root->casehandle);
 		    return curr_offset;
 		}break;
 
@@ -1183,11 +1189,11 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //code generation handled by conditional 
 		    //statement through functions
 		    
-		    printf("switch_%d_%s\n",root->casehandle,root->children[0]->lexeme->str);
+		    fprintf(code_file,"switch_%d_%s:\n",root->casehandle,root->children[0]->lexeme->str);
 		    //move forward 
 		    curr_offset = codegen(root->children[1], current_table, curr_offset);
 
-		    printf("Jmp to switch_exit_%d\n",root->casehandle);
+		    fprintf(code_file,"	jmp switch_exit_%d\n",root->casehandle);
 
 		    curr_offset = codegen(root->children[2],current_table, curr_offset);
 		    
@@ -1204,11 +1210,11 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			    return curr_offset;
 			else
 			{
-			    printf("switch_%d_%s\n",root->casehandle,root->children[0]->lexeme->str);
+			    fprintf(code_file,"switch_%d_%s:\n",root->casehandle,root->children[0]->lexeme->str);
 			    //move forward 
 			    curr_offset = codegen(root->children[1], current_table, curr_offset);
 
-			    printf("Jmp to switch_exit_%d\n",root->casehandle);
+			    fprintf(code_file,"	jmp switch_exit_%d\n",root->casehandle);
 
 			    curr_offset = codegen(root->children[2],current_table, curr_offset);
 
@@ -1236,12 +1242,12 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			return curr_offset;
 		    else
 		    {
-			printf("switch_default_%d:\n", root->casehandle);
+			fprintf(code_file,"switch_default_%d:\n", root->casehandle);
 
 			for(int i =0;i<root->n;i++)
 			    curr_offset = codegen(root->children[i], current_table, curr_offset);
 
-			printf("jmp switch_exit_%d\n",root->casehandle);
+			fprintf(code_file,"	jmp switch_exit_%d\n",root->casehandle);
 
 			return curr_offset;
 		    }
@@ -1267,14 +1273,51 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 			no_for++;
 			root->casehandle= no_for;
-			printf("FOR_LOOP_%d:\n",root->casehandle);
+
+			//assign to ecx the lower bound of range
+			astnode* range = root->children[2];
+			astnode* index1 = range->children[0];
+			astnode* index2 = range->children[1];
+
+
+			fprintf(code_file,"	push ecx    ;save ecx before loop start\n");
+			if(index1->children[0]->tok == NUM)
+			{
+			    //const 1st range
+			    fprintf(code_file,"	mov ecx,%d\n",atoi(index1->children[0]->lexeme->str));
+			}
+			else
+			{
+			    // variable 2nd range
+			    symbol_table_node* var = searchSymbolTable(current_table, index1->children[0]->lexeme->str);
+			    fprintf(code_file,"	mov ecx,[ebp+%d]\n",var->offset);
+			}
+
+			fprintf(code_file,"FOR_LOOP_%d:\n",root->casehandle);
 
 			//for loop
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
 			curr_offset = codegen(root->children[3],new_table,curr_offset);
 
-			printf("CHECK CONDITION AND JUMP TO START OF FOR LOOP_%d\n",root->casehandle);
+			fprintf(code_file,"	push edx\n");
+			if(index2->children[0]->tok == NUM)
+			{
+			    //const 1st range
+			    fprintf(code_file,"	mov edx,%d\n",atoi(index2->children[0]->lexeme->str));
+			}
+			else
+			{
+			    // variable 2nd range
+			    symbol_table_node* var = searchSymbolTable(current_table, index2->children[0]->lexeme->str);
+			    fprintf(code_file,"	mov edx,[ebp+%d]\n",var->offset);
+			}
+
+			fprintf(code_file,"	add ecx, 1\n");
+			fprintf(code_file,"	cmp ecx,edx\n");
+			fprintf(code_file,"	pop edx\n");
+			fprintf(code_file,"	jle FOR_LOOP_%d\n",root->casehandle);
+			fprintf(code_file,"	pop ecx	;restore ecx after the loop\n");
 
 		    }
 		    else
@@ -1294,14 +1337,14 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			
 			no_while++;
 			root->casehandle = no_while;
-			printf("WHILE_LABEL_%d:\n",root->casehandle);
+			fprintf(code_file,"WHILE_LABEL_%d:\n",root->casehandle);
 
 			//check that conditional expression is boolean
 			curr_offset = codegen(root->children[1],current_table,curr_offset);
 			
 			//resut of expression stored in edx
-			printf("cmp edx, 0\n");
-			printf("je EXIT_WHILE_%d\n",root->casehandle);
+			fprintf(code_file,"	cmp edx, 0\n");
+			fprintf(code_file,"	je EXIT_WHILE_%d\n",root->casehandle);
 			
 			//create new scope(symbol table) and assign the current table as its parent
 			//then move forward
@@ -1309,8 +1352,8 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			new_table->parent = current_table;
 			curr_offset = codegen(root->children[2],new_table,curr_offset);
 		    
-			printf("jmp WHILE LABEL_%d\n",root->casehandle);
-			printf("EXIT_WHILE_%d:\n",root->casehandle);
+			fprintf(code_file,"	jmp WHILE LABEL_%d\n",root->casehandle);
+			fprintf(code_file,"EXIT_WHILE_%d:\n",root->casehandle);
 		    }
 		    return curr_offset;
 		}break;
@@ -1366,7 +1409,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    symbol_table_node* temp = searchSymbolTable(current_table,root->lexeme->str);
 		    if(temp==NULL)
 		    {
-			printf("Undeclared variable '%s'",root->lexeme->str);
+			fprintf(code_file,"Undeclared variable '%s'",root->lexeme->str);
 			exit(1);
 		    }
 		    else

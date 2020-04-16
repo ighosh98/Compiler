@@ -1,0 +1,7 @@
+<<<driver program>>>
+start
+    declare a: integer;
+    a:=10-5;
+end
+
+

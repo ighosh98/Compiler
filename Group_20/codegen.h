@@ -8,7 +8,7 @@
 #include "symboltable.h"
 #include "semantic.h"
 #include "color.h"
-
+extern FILE* code_file;
 int codegen(astnode*, symbolTable*, int);
 
 #endif

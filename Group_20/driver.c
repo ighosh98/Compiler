@@ -205,10 +205,12 @@ int main(int argc,char **argv)
 	    
 
 	    red();
-	    printf("\nprinting code generation\n\n");
+	    printf("\nWriting code to file\n");
 	    reset();
+	    
+	    code_file = fopen("test.asm","w");
 	    codegen(a.root,NULL,0);
-
+	    fclose(code_file);
 	    fclose(fptr);
 	
 	}
