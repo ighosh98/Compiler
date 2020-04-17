@@ -4,11 +4,7 @@ declare a,b:integer;
 a:=0;
 b:=1;
 declare A: array[0..10] of boolean;
-declare i: integer;
-for(i in 0..10)
-start
-A[i]:=i;
-end
+get_value(A);
 print(A);
 end
 

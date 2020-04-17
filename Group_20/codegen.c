@@ -15,7 +15,8 @@
 int no_switch = 0;
 int no_while = 0;
 int no_for = 0;
-int output_no=0;
+int output_no = 0;
+int input_no = 0;
 FILE* code_file;
 
 void makeCaseJumps(astnode* root,symbolTable* current_table) //also assigns the switch number to case statements
@@ -298,6 +299,8 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			    "extern scanf\n"
 			    "extern exit\n"
 			    "\nSECTION .data\n"
+			    "input_arr_int: db 'Input: Enter %%d array elemts of integer type for range %%d to %%d',10,0\n"
+			    "input_arr_boolean: db 'Input: Enter %%d array elemts of boolean type for range %%d to %%d',10,0\n"
 			    "input_str_int: db 'Input: Enter an integer value',10,0\n"
 			    "input_str_boolean: db 'Input: Enter a boolean value',10,0\n"
 			    "input_format_int: db '%%d',0\n"
@@ -789,7 +792,84 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			if(var->isarr)
 			{
 			    //get input for the whole array
-			    			}
+			    input_no++;
+			    //print the whole array somehow
+			    if(var->type==integer)
+			    {
+				fprintf(code_file,"\tpushad\n"
+					"\tmov edi, [ebp+%d]\n"
+					"\tpush dword [edi+4]\n"
+					"\tpush dword [edi]\n"
+					"\tmov eax, [edi+4]\n"
+					"\tsub eax, [edi]\n"
+					"\tadd eax, 1\n"
+					"\tpush eax\n"
+					"\tpush dword input_arr_int\n"
+					"\tcall printf\n"
+					"\tadd esp, 16\n"
+					"\tpopad\n" , var->offset);
+
+				fprintf(code_file,"\tpushad\n"
+					"\tmov edi, [ebp+%d]\n"
+					"\tmov ebx, [edi]\n"
+					"\tmov eax, [edi+4]\n"
+					"\tsub eax, ebx\n"
+					"\tmov ecx, 0\n"
+					"\tadd edi, 4\n"
+					"INPUT_LABEL_%d:\n"
+					"\tadd edi, 4\n"
+					"\tpushad\n"
+					"\tpush edi\n"
+					"\tpush dword input_format_int\n"
+					"\tcall scanf\n"
+					"\tadd esp, 8\n"
+					"\tpopad\n"
+					"\tadd ecx,1\n"
+					"\tcmp ecx,eax\n"
+					"\tjle INPUT_LABEL_%d\n"
+					"\tpopad\n", var->offset,input_no,input_no); 
+
+			    }
+			    else if(var->type==boolean)
+			    {
+				    fprintf(code_file,"\tpushad\n"
+					"\tmov edi, [ebp+%d]\n"
+					"\tpush dword [edi+4]\n"
+					"\tpush dword [edi]\n"
+					"\tmov eax, [edi+4]\n"
+					"\tsub eax, [edi]\n"
+					"\tadd eax, 1\n"
+					"\tpush eax\n"
+					"\tpush dword input_arr_boolean\n"
+					"\tcall printf\n"
+					"\tadd esp, 16\n"
+					"\tpopad\n" , var->offset);
+
+
+				fprintf(code_file,"\tpushad\n"
+					"\tmov edi, [ebp+%d]\n"
+					"\tmov ebx, [edi]\n"
+					"\tmov eax, [edi+4]\n"
+					"\tsub eax, ebx\n"
+					"\tmov ecx, 0\n"
+					"\tadd edi, 4\n"
+					"INPUT_LABEL_%d:\n"
+					"\tadd edi, 4\n"
+					"\tpushad\n"
+					"\tpush edi\n"
+					"\tpush dword input_format_int\n"
+					"\tcall scanf\n"
+					"\tadd esp, 8\n"
+					"\tpopad\n"
+					"\tadd ecx,1\n"
+					"\tcmp ecx,eax\n"
+					"\tjle INPUT_LABEL_%d\n"
+					"\tpopad\n", var->offset,input_no,input_no); 
+
+			    }
+
+
+			}
 			else
 			{
 			    //get input for single variable
@@ -800,7 +880,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 					"\tcall printf\n"
 					"\tpop eax\n"
 					"\tpopad\n");
-				
+
 				fprintf(code_file,"\tpushad\n"
 					"\tmov eax, ebp\n"
 					"\tadd eax, %d\n"    //offset of the variable to be read

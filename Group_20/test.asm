@@ -4,6 +4,8 @@ extern scanf
 extern exit
 
 SECTION .data
+input_arr_int: db 'Input: Enter %d array elemts of integer type for range %d to %d',10,0
+input_arr_boolean: db 'Input: Enter %d array elemts of boolean type for range %d to %d',10,0
 input_str_int: db 'Input: Enter an integer value',10,0
 input_str_boolean: db 'Input: Enter a boolean value',10,0
 input_format_int: db '%d',0
@@ -21,7 +23,7 @@ bits 32
 global main
 
 main:
-	sub esp,16  ;allocating space on the stack
+	sub esp,12  ;allocating space on the stack
 	mov ebp, esp	;ebp accesses upwards, while stack grows downwards
 	mov edx, 0
 	mov [ebp+0], edx   ;assign value to a variable
@@ -36,24 +38,37 @@ main:
 	mov [edi], dword 0
 	mov [edi+4], dword 10
 	popad
-	push ecx    ;save ecx before loop start
-	mov ecx,0
-	mov [ebp+12],ecx   ;mov first index into loop var
-FOR_LOOP_1:
-	mov edx, [ebp+12]
-	mov esi, [ebp+12]  ;place value of index var
-	mov edi,[ebp+8]   ;edi has base address of array
-	sub esi, [edi]  ;subtract base index of the array
-	mov [edi+4*esi+2*4],edx    ;first 2 bytes store the bounds
-	push edx
-	mov edx,10
-	mov ecx, [ebp+12]
+	pushad
+	mov edi, [ebp+8]
+	push dword [edi+4]
+	push dword [edi]
+	mov eax, [edi+4]
+	sub eax, [edi]
+	add eax, 1
+	push eax
+	push dword input_arr_boolean
+	call printf
+	add esp, 16
+	popad
+	pushad
+	mov edi, [ebp+8]
+	mov ebx, [edi]
+	mov eax, [edi+4]
+	sub eax, ebx
+	mov ecx, 0
+	add edi, 4
+INPUT_LABEL_1:
+	add edi, 4
+	pushad
+	push edi
+	push dword input_format_int
+	call scanf
+	add esp, 8
+	popad
 	add ecx,1
-	mov [ebp+12],ecx	;add 1 to loop variable
-	cmp ecx,edx
-	pop edx
-	jle FOR_LOOP_1
-	pop ecx	;restore ecx after the loop
+	cmp ecx,eax
+	jle INPUT_LABEL_1
+	popad
 	mov edx, [ebp+8]
 	pushad
 	push dword output_str
