@@ -432,8 +432,8 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    
 		    ///////// produce code for procedure in asm /////////////////////
 		    ////////////////////////////////////////////////////////////////
-		    fprintf(code_file,"%s proc\n",temp->name);
-		    
+		    fprintf(code_file,"%s:\n",temp->name);
+		    fprintf(code_file,"\tpushad\n");
 		    
 		    //call moduledef to produce content of the procedure
 		    curr_offset = codegen(root->children[3],new_table, curr_offset);
@@ -441,8 +441,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 		    /////////// code for end of the procedure //////////////////
 		    ////////////////////////////////////////////////////////////
+		    fprintf(code_file,"\tpopad\n");
 		    fprintf(code_file,"ret\n");
-		    fprintf(code_file,"%s endp\n\n",temp->name);
+		    //fprintf(code_file,"%s endp\n\n",temp->name);
 		    return curr_offset; /////////// ################### this is changed after testing for offsets ####################
 					//				therefore it may lead to errors.
 		}break;
@@ -1156,12 +1157,71 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    // allocate space of the stack. save the base pointer then store the input and output parameters.
 		    // then change base pointer
 		    
-		    fprintf(code_file,"	Calling function %s\n"
-			    "	    push base pointer\n"
-			    "	    push input and output variables\n"
-			    "	    assign base pointer as stack pointer\n"
-			    "	    increase stack pointer size by new function size\n", root->children[1]->lexeme->str);
-			    
+		    astnode* input_list = root->children[2];
+		    symbol_table_node* func_node = searchSymbolTable(function_table,root->children[1]->lexeme->str);
+		    
+		    fprintf(code_file,"\tsub esp, %d\n", func_node->stackSize);
+
+		    int offset = 0;
+		    while(input_list->tok!=EPS)
+		    {
+			//copy all the input parameters
+			symbol_table_node* temp = searchSymbolTable(current_table,input_list->children[0]->lexeme->str);
+			fprintf(code_file,  "\tmov edx, [ebp+%d]\n"
+					    "\tmov  [esp+%d], edx\n", temp->offset, offset);	
+			if(temp->isarr || temp->type==integer || temp->type == boolean)
+			    offset+=4;
+			else
+			    offset+=8;
+
+			input_list = input_list->children[1];
+		    }
+		    
+		    int output_offset = offset;
+		    if(root->children[0]->tok!=EPS)
+		    {	astnode* output_list = root->children[0]->children[0];
+			while(output_list->tok!=EPS)
+			{
+			    //copy all the output parameters into the call stack
+			    symbol_table_node* temp = searchSymbolTable(current_table,output_list->children[0]->lexeme->str);
+			    fprintf(code_file,  "\tmov edx, [ebp+%d]\n"
+				    "\tmov  [esp+%d], edx\n", temp->offset, offset);	
+			    if(temp->isarr || temp->type==integer || temp->type == boolean)
+				offset+=4;
+			    else
+				offset+=8;
+
+			    output_list = output_list->children[1];
+			}
+		    }
+
+		    fprintf(code_file, "\tpush ebp\n"
+					"\tmov ebp, esp\n"
+					"\tadd ebp, 4\n"
+					"\tcall %s\n"
+				       "\tpop ebp\n",	func_node->name);
+
+		    
+		    //return the values of the function
+		    if(root->children[0]->tok!=EPS)
+		    {
+			astnode* output_list = root->children[0]->children[0];
+			while(output_list->tok!=EPS)
+			{
+			    symbol_table_node* temp = searchSymbolTable(current_table,output_list->children[0]->lexeme->str);
+			    fprintf(code_file,  "\tmov edx, [esp+%d]\n"
+				    "\tmov  [ebp+%d], edx\n", output_offset, temp->offset);	
+			    if(temp->isarr || temp->type==integer || temp->type == boolean)
+				output_offset+=4;
+			    else
+				output_offset+=8;
+
+			    output_list = output_list->children[1];
+
+			}	
+
+		    }
+		    fprintf(code_file, "\tadd esp, %d\n", func_node->stackSize);
 		    return curr_offset;	
 		}break;
 

@@ -22,52 +22,100 @@ SECTION .text
 bits 32
 global main
 
-main:
-	sub esp,12  ;allocating space on the stack
-	mov ebp, esp	;ebp accesses upwards, while stack grows downwards
-	mov edx, 0
-	mov [ebp+0], edx   ;assign value to a variable
-	mov edx, 1
-	mov [ebp+4], edx   ;assign value to a variable
+compute_expr:
 	pushad
-	push dword 52
-	call malloc
-	mov [ebp+8],eax	;store the allocated memory pointer
-	pop eax
-	mov edi,[ebp+8]	;base pointer to the array
-	mov [edi], dword 0
-	mov [edi+4], dword 10
-	popad
 	pushad
-	mov edi, [ebp+8]
-	push dword [edi+4]
-	push dword [edi]
-	mov eax, [edi+4]
-	sub eax, [edi]
-	add eax, 1
-	push eax
-	push dword input_arr_boolean
+	push dword input_str_int
 	call printf
-	add esp, 16
+	pop eax
 	popad
 	pushad
-	mov edi, [ebp+8]
-	mov ebx, [edi]
-	mov eax, [edi+4]
-	sub eax, ebx
-	mov ecx, 0
-	add edi, 4
-INPUT_LABEL_1:
-	add edi, 4
-	pushad
-	push edi
+	mov eax, ebp
+	add eax, 28
+	push eax
 	push dword input_format_int
 	call scanf
 	add esp, 8
 	popad
-	add ecx,1
-	cmp ecx,eax
-	jle INPUT_LABEL_1
+	pushad
+	push dword input_str_int
+	call printf
+	pop eax
+	popad
+	pushad
+	mov eax, ebp
+	add eax, 24
+	push eax
+	push dword input_format_int
+	call scanf
+	add esp, 8
+	popad
+	mov edx, [ebp+0]
+	push edx 
+	mov edx, [ebp+4]
+	pop eax
+	imul edx	;eax*edx stored in edx:eax 
+	mov edx, eax    ;truncated result moved to edx 
+	push edx 
+	mov edx, [ebp+28]
+	push edx 
+	mov edx, 2
+	pop eax
+	imul edx	;eax*edx stored in edx:eax 
+	mov edx, eax    ;truncated result moved to edx 
+	push edx 
+	mov edx, 3
+	pop eax
+	sub eax, edx    ;perform (eax - edx) subtraction
+	mov edx, eax    ;store result of subtraction in edx
+	pop eax
+	add edx, eax
+	mov [ebp+20], edx   ;assign value to a variable
+	mov edx, [ebp+8]
+	push edx
+	mov edx, [ebp+0]
+	push edx 
+	mov edx, [ebp+4]
+	pop eax
+	cmp eax,edx
+	mov edx,0   ;assign false initially in comparing
+	mov eax, 1   ;cmov requires register, therefore place true in eax
+	cmovle  edx , eax	;place true if condition met
+	pop eax
+	and edx, eax
+	mov [ebp+32], edx   ;assign value to a variable
+	mov edx, [ebp+20]
+	push edx 
+	mov edx, [ebp+24]
+	pop eax
+	add edx, eax
+	mov [ebp+12], edx   ;assign value to a variable
+	mov edx, [ebp+32]
+	push edx
+	mov edx, [ebp+20]
+	push edx 
+	mov edx, [ebp+24]
+	pop eax
+	cmp eax,edx
+	mov edx,0   ;assign false initially in comparing
+	mov eax, 1   ;cmov requires register, therefore place true in eax
+	cmovle  edx , eax	;place true if condition met
+	pop eax
+	or edx, eax
+	mov [ebp+16], edx   ;assign value to a variable
+	mov edx, [ebp+0]
+	pushad
+	push edx
+	push dword integer_output
+	call printf
+	add esp, 8
+	popad
+	mov edx, [ebp+4]
+	pushad
+	push edx
+	push dword integer_output
+	call printf
+	add esp, 8
 	popad
 	mov edx, [ebp+8]
 	pushad
@@ -76,26 +124,159 @@ INPUT_LABEL_1:
 	pop eax
 	popad
 	pushad
-	mov edi, [ebp+8]
-	mov ebx, [edi]
-	mov eax, [edi+4]
-	sub eax, ebx
-	mov ecx, 0
-OUTPUT_LABEL_1:
-	mov ebx, [edi+ecx*4+2*4]
-	pushad
-	cmp ebx, 0
-	mov eax, dword single_false
+	cmp edx,0
+	mov edx, single_false
+	cmove eax, edx
 	mov edx, single_true
-	cmove ebx, eax
-	cmovne ebx, edx
-	push ebx
+	cmovne eax, edx
+	push eax
 	call printf
-	pop ebx
+	pop eax
 	popad
-	add ecx,1
-	cmp ecx,eax
-	jle OUTPUT_LABEL_1
+	pushad
+	push dword nextline
+	call printf
+	pop eax
+	popad
+	mov edx, [ebp+28]
+	pushad
+	push edx
+	push dword integer_output
+	call printf
+	add esp, 8
+	popad
+	mov edx, [ebp+20]
+	pushad
+	push edx
+	push dword integer_output
+	call printf
+	add esp, 8
+	popad
+	mov edx, [ebp+24]
+	pushad
+	push edx
+	push dword integer_output
+	call printf
+	add esp, 8
+	popad
+	mov edx, [ebp+12]
+	pushad
+	push edx
+	push dword integer_output
+	call printf
+	add esp, 8
+	popad
+	mov edx, [ebp+16]
+	pushad
+	push dword output_str
+	call printf
+	pop eax
+	popad
+	pushad
+	cmp edx,0
+	mov edx, single_false
+	cmove eax, edx
+	mov edx, single_true
+	cmovne eax, edx
+	push eax
+	call printf
+	pop eax
+	popad
+	pushad
+	push dword nextline
+	call printf
+	pop eax
+	popad
+	popad
+ret
+main:
+	sub esp,20  ;allocating space on the stack
+	mov ebp, esp	;ebp accesses upwards, while stack grows downwards
+	pushad
+	push dword input_str_int
+	call printf
+	pop eax
+	popad
+	pushad
+	mov eax, ebp
+	add eax, 0
+	push eax
+	push dword input_format_int
+	call scanf
+	add esp, 8
+	popad
+	pushad
+	push dword input_str_int
+	call printf
+	pop eax
+	popad
+	pushad
+	mov eax, ebp
+	add eax, 4
+	push eax
+	push dword input_format_int
+	call scanf
+	add esp, 8
+	popad
+	mov edx, 0   ; assigning false
+	mov [ebp+16], edx   ;assign value to a variable
+	sub esp, 36
+	mov edx, [ebp+0]
+	mov  [esp+0], edx
+	mov edx, [ebp+4]
+	mov  [esp+4], edx
+	mov edx, [ebp+16]
+	mov  [esp+8], edx
+	mov edx, [ebp+8]
+	mov  [esp+12], edx
+	mov edx, [ebp+12]
+	mov  [esp+16], edx
+	push ebp
+	mov ebp, esp
+	add ebp, 4
+	call compute_expr
+	pop ebp
+	mov edx, [esp+12]
+	mov  [ebp+8], edx
+	mov edx, [esp+16]
+	mov  [ebp+12], edx
+	add esp, 36
+	mov edx, [ebp+0]
+	pushad
+	push edx
+	push dword integer_output
+	call printf
+	add esp, 8
+	popad
+	mov edx, [ebp+4]
+	pushad
+	push edx
+	push dword integer_output
+	call printf
+	add esp, 8
+	popad
+	mov edx, [ebp+8]
+	pushad
+	push edx
+	push dword integer_output
+	call printf
+	add esp, 8
+	popad
+	mov edx, [ebp+12]
+	pushad
+	push dword output_str
+	call printf
+	pop eax
+	popad
+	pushad
+	cmp edx,0
+	mov edx, single_false
+	cmove eax, edx
+	mov edx, single_true
+	cmovne eax, edx
+	push eax
+	call printf
+	pop eax
 	popad
 	pushad
 	push dword nextline
