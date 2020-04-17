@@ -21,82 +21,71 @@ bits 32
 global main
 
 main:
-	sub esp,20  ;allocating space on the stack
+	sub esp,16  ;allocating space on the stack
 	mov ebp, esp	;ebp accesses upwards, while stack grows downwards
 	mov edx, 0
 	mov [ebp+0], edx   ;assign value to a variable
 	mov edx, 1
 	mov [ebp+4], edx   ;assign value to a variable
 	pushad
-	push dword 48
+	push dword 52
 	call malloc
 	mov [ebp+8],eax	;store the allocated memory pointer
 	pop eax
 	mov edi,[ebp+8]	;base pointer to the array
-	mov [edi], dword 1
+	mov [edi], dword 0
 	mov [edi+4], dword 10
 	popad
-	pushad
-	mov eax,[ebp+4]	    ;value of index 2
-	sub eax,[ebp+0]	    ;subtract value of index1
-	add eax, 1
-	push edx
-	mov edx,4
-	imul edx ;eax has the result of 4*eax the multiplication
-	pop edx
-	add eax, 8   ;space for index values
-	push eax
-	call malloc
-	mov [ebp+12],eax	;store the allocated memory pointer
-	pop eax
-	mov edi,[ebp+12]	;base pointer to the array
-	mov eax, [ebp+0]
-	mov [edi], eax
-	mov eax, [ebp+4]
-	mov [edi+4], eax
-	popad
 	push ecx    ;save ecx before loop start
-	mov ecx,1
-	mov [ebp+16],ecx   ;mov first index into loop var
+	mov ecx,0
+	mov [ebp+12],ecx   ;mov first index into loop var
 FOR_LOOP_1:
-	mov edx, [ebp+16]
-	mov esi, [ebp+16]  ;place value of index var
+	mov edx, [ebp+12]
+	mov esi, [ebp+12]  ;place value of index var
 	mov edi,[ebp+8]   ;edi has base address of array
 	sub esi, [edi]  ;subtract base index of the array
 	mov [edi+4*esi+2*4],edx    ;first 2 bytes store the bounds
 	push edx
 	mov edx,10
-	mov ecx, [ebp+16]
+	mov ecx, [ebp+12]
 	add ecx,1
-	mov [ebp+16],ecx	;add 1 to loop variable
+	mov [ebp+12],ecx	;add 1 to loop variable
 	cmp ecx,edx
 	pop edx
 	jle FOR_LOOP_1
 	pop ecx	;restore ecx after the loop
 	mov edx, [ebp+8]
-	mov [ebp+12],edx   ;assign pointer of the array
-	push ecx    ;save ecx before loop start
-	mov ecx,1
-	mov [ebp+16],ecx   ;mov first index into loop var
-FOR_LOOP_2:
-	mov edi, [ebp+12]
-	mov esi, [ebp+16]
-	sub esi, [edi]	;subtract the base index
-	mov edx, [edi+esi*4+2*4]
 	pushad
-	push edx
-	push dword integer_output
+	push dword output_str
 	call printf
-	add esp, 8
+	pop eax
 	popad
-	push edx
-	mov edx,10
-	mov ecx, [ebp+16]
+	pushad
+	mov edi, [ebp+8]
+	mov ebx, [edi]
+	mov eax, [edi+4]
+	sub eax, ebx
+	mov ecx, 0
+OUTPUT_LABEL_1:
+	mov ebx, [edi+ecx*4+2*4]
+	pushad
+	cmp ebx, 0
+	mov eax, dword single_false
+	mov edx, single_true
+	cmove ebx, eax
+	cmovne ebx, edx
+	push ebx
+	call printf
+	pop ebx
+	popad
 	add ecx,1
-	mov [ebp+16],ecx	;add 1 to loop variable
-	cmp ecx,edx
-	pop edx
-	jle FOR_LOOP_2
-	pop ecx	;restore ecx after the loop
+	cmp ecx,eax
+	jle OUTPUT_LABEL_1
+	popad
+	pushad
+	push dword nextline
+	call printf
+	pop eax
+	popad
 exit_main:  call exit
 

@@ -15,6 +15,7 @@
 int no_switch = 0;
 int no_while = 0;
 int no_for = 0;
+int output_no=0;
 FILE* code_file;
 
 void makeCaseJumps(astnode* root,symbolTable* current_table) //also assigns the switch number to case statements
@@ -613,8 +614,84 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 				    //variable or whole array. pointer in edx
 				    if(var->isarr)
 				    {
+					output_no++;
 					//print the whole array somehow
-				    
+					if(var->type==integer)
+					{
+					    fprintf(code_file,"\tpushad\n"
+						    "\tpush dword output_str\n"
+						    "\tcall printf\n"
+						    "\tpop eax\n"
+						    "\tpopad\n");
+
+					    fprintf(code_file,"\tpushad\n"
+						    "\tmov edi, [ebp+%d]\n"
+						    "\tmov ebx, [edi]\n"
+						    "\tmov eax, [edi+4]\n"
+						    "\tsub eax, ebx\n"
+						    "\tmov ecx, 0\n"
+						    "OUTPUT_LABEL_%d:\n"
+						    "\tmov ebx, [edi+ecx*4+2*4]\n"
+						    "\tpushad\n"
+						    "\tpush ebx\n"
+						    "\tpush dword single_int\n"
+						    "\tcall printf\n"
+						    "\tadd esp, 8\n"
+						    "\tpopad\n"
+						    "\tadd ecx,1\n"
+						    "\tcmp ecx,eax\n"
+						    "\tjle OUTPUT_LABEL_%d\n"
+						    "\tpopad\n", var->offset,output_no,output_no); 
+
+					    fprintf(code_file,	"\tpushad\n"
+						    "\tpush dword nextline\n"
+						    "\tcall printf\n"
+						    "\tpop eax\n"
+						    "\tpopad\n");
+					}
+					else if(var->type == boolean)
+					{
+					     fprintf(code_file,"\tpushad\n"
+						    "\tpush dword output_str\n"
+						    "\tcall printf\n"
+						    "\tpop eax\n"
+						    "\tpopad\n");
+
+					    fprintf(code_file,"\tpushad\n"
+						    "\tmov edi, [ebp+%d]\n"
+						    "\tmov ebx, [edi]\n"
+						    "\tmov eax, [edi+4]\n"
+						    "\tsub eax, ebx\n"
+						    "\tmov ecx, 0\n"
+						    "OUTPUT_LABEL_%d:\n"
+						    "\tmov ebx, [edi+ecx*4+2*4]\n"
+						    "\tpushad\n"
+						    "\tcmp ebx, 0\n"
+						    "\tmov eax, dword single_false\n"
+						    "\tmov edx, single_true\n"
+						    "\tcmove ebx, eax\n"
+						    "\tcmovne ebx, edx\n"
+						    "\tpush ebx\n"
+						    "\tcall printf\n"
+						    "\tpop ebx\n"
+						    "\tpopad\n"
+						    "\tadd ecx,1\n"
+						    "\tcmp ecx,eax\n"
+						    "\tjle OUTPUT_LABEL_%d\n"
+						    "\tpopad\n", var->offset,output_no,output_no); 
+
+					    fprintf(code_file,	"\tpushad\n"
+						    "\tpush dword nextline\n"
+						    "\tcall printf\n"
+						    "\tpop eax\n"
+						    "\tpopad\n");
+   
+					}
+					else
+					{
+					    fprintf(code_file,"OUTPUT REAL ARRAY\n");
+					}
+
 				    }
 				    else
 				    {
@@ -622,9 +699,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 					{
 					    //printing an integer variable, value in edx
 					    fprintf(code_file,  "\tpushad\n"
-								"\tpush edx\n"
-								"\tpush dword integer_output\n"
-								"\tcall printf\n"
+						    "\tpush edx\n"
+						    "\tpush dword integer_output\n"
+						    "\tcall printf\n"
 								"\tadd esp, 8\n"
 								"\tpopad\n");
 					}
@@ -708,11 +785,11 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    {
 			//get the variable from table
 			symbol_table_node* var = searchSymbolTable(current_table, root->children[1]->lexeme->str);
-			
+
 			if(var->isarr)
 			{
 			    //get input for the whole array
-			}
+			    			}
 			else
 			{
 			    //get input for single variable
