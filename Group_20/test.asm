@@ -3,6 +3,9 @@ extern scanf
 extern exit
 
 SECTION .data
+input_str_int: db 'Input: Enter an integer value',10,0
+input_str_boolean: db 'Input: Enter a boolean value',10,0
+input_format_int: db '%d',0
 true_output: db 'Output: true',10,0
 false_output: db 'Output: false',10,0
 integer_output: db 'Output: %d',10,0
@@ -17,18 +20,21 @@ bits 32
 global main
 
 main:
-	sub esp,4  ;allocating space on the stack
+	sub esp,8  ;allocating space on the stack
 	mov ebp, esp	;ebp accesses upwards, while stack grows downwards
-	push ecx    ;save ecx before loop start
-	mov ecx,1
-	mov [ebp+0],ecx   ;mov first index into loop var
-FOR_LOOP_1:
-	mov edx, [ebp+0]
-	push edx 
-	mov edx, 1
+	pushad
+	push dword input_str_int
+	call printf
 	pop eax
-	add edx, eax
-	mov [ebp+0], edx   ;assign value to a variable
+	popad
+	pushad
+	mov eax, ebp
+	add eax, 0
+	push eax
+	push dword input_format_int
+	call scanf
+	add esp, 8
+	popad
 	mov edx, [ebp+0]
 	pushad
 	push edx
@@ -36,14 +42,39 @@ FOR_LOOP_1:
 	call printf
 	add esp, 8
 	popad
-	push edx
-	mov edx,9
-	mov ecx, [ebp+0]
-	add ecx,1
-	mov [ebp+0],ecx	;add 1 to loop variable
-	cmp ecx,edx
-	pop edx
-	jle FOR_LOOP_1
-	pop ecx	;restore ecx after the loop
+	pushad
+	push dword input_str_boolean
+	call printf
+	pop eax
+	popad
+	pushad
+	mov eax, ebp
+	add eax, 4
+	push eax
+	push dword input_format_int
+	call scanf
+	add esp, 8
+	popad
+	mov edx, [ebp+4]
+	pushad
+	push dword output_str
+	call printf
+	pop eax
+	popad
+	pushad
+	cmp edx,0
+	mov edx, single_false
+	cmove eax, edx
+	mov edx, single_true
+	cmovne eax, edx
+	push eax
+	call printf
+	pop eax
+	popad
+	pushad
+	push dword nextline
+	call printf
+	pop eax
+	popad
 exit_main:  call exit
 

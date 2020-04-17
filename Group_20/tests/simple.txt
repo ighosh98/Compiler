@@ -1,11 +1,10 @@
 <<<driver program>>>
 start
-    declare i: integer;
-    for(i in 1..9)
-    start
-	i:=i+1;
-	print(i);
-    end
+declare i: integer;
+get_value(i);
+print(i);
+declare f: boolean;
+get_value(f);
+print(f);
 end
-
 

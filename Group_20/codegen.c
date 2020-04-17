@@ -187,6 +187,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			    "extern scanf\n"
 			    "extern exit\n"
 			    "\nSECTION .data\n"
+			    "input_str_int: db 'Input: Enter an integer value',10,0\n"
+			    "input_str_boolean: db 'Input: Enter a boolean value',10,0\n"
+			    "input_format_int: db '%%d',0\n"
 			    "true_output: db 'Output: true',10,0\n"
 			    "false_output: db 'Output: false',10,0\n"
 			    "integer_output: db 'Output: %%d',10,0\n"
@@ -592,8 +595,58 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			}
 		    }
 		    else
-			fprintf(code_file,"	Getting value of variable: %s\n",root->children[1]->lexeme->str);
-		    
+		    {
+			//get the variable from table
+			symbol_table_node* var = searchSymbolTable(current_table, root->children[1]->lexeme->str);
+			
+			if(var->isarr)
+			{
+			    //get input for the whole array
+			}
+			else
+			{
+			    //get input for single variable
+			    if(var->type==integer)
+			    {
+				fprintf(code_file,"\tpushad\n"
+					"\tpush dword input_str_int\n"
+					"\tcall printf\n"
+					"\tpop eax\n"
+					"\tpopad\n");
+				
+				fprintf(code_file,"\tpushad\n"
+					"\tmov eax, ebp\n"
+					"\tadd eax, %d\n"    //offset of the variable to be read
+					"\tpush eax\n"
+					"\tpush dword input_format_int\n"
+					"\tcall scanf\n"
+					"\tadd esp, 8\n"
+					"\tpopad\n", var->offset);
+			    }
+			    else if(var->type==real)
+			    {
+				fprintf(code_file,"TAKE INPUT FOR REAL VARIABLE\n");
+			    }
+			    else if(var->type == boolean)
+			    {
+				fprintf(code_file,"\tpushad\n"
+					"\tpush dword input_str_boolean\n"
+					"\tcall printf\n"
+					"\tpop eax\n"
+					"\tpopad\n");
+				
+				fprintf(code_file,"\tpushad\n"
+					"\tmov eax, ebp\n"
+					"\tadd eax, %d\n"    //offset of the variable to be read
+					"\tpush eax\n"
+					"\tpush dword input_format_int\n"
+					"\tcall scanf\n"
+					"\tadd esp, 8\n"
+					"\tpopad\n",var->offset);
+
+			    }
+			}
+		    }
 		    return curr_offset;
 		}break;
 	    case GET_VALUE: case PRINT:
@@ -662,7 +715,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 				{
 				    ///////////////////////////// need to complete and modify //////////////////////////////
 				    /////////////////////////////////////////////////////////////////////////////////////////
-				    fprintf(code_file,"	VERIFY THAT INDEX IS WITHIN BOUNDS\n");
+/////////				    fprintf(code_file,"	VERIFY THAT INDEX IS WITHIN BOUNDS\n");
 				    astnode* index = root->children[1]->children[0];
 				    if(index->children[0]->tok == NUM)
 				    {
@@ -759,20 +812,20 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 			if(index->children[0]->tok == NUM)
 			{
-			    fprintf(code_file,"\tCHECK ARRAY BOUNDS\n");
+/////			    fprintf(code_file,"\tCHECK ARRAY BOUNDS\n");
 			    fprintf(code_file,"\tmov edi,[ebp+%d]   ;edi has base address of array\n",var->offset);
 			    fprintf(code_file,"\tmov esi,%d\n",atoi(index->children[0]->lexeme->str));
 			    fprintf(code_file,"\tsub esi, [edi]  ;subtract base index of the array\n");
-			    fprintf(code_file,"\tmov [edi+2*esi+2*4],edx	;first 2 bytes store the bounds\n");
+			    fprintf(code_file,"\tmov [edi+4*esi+2*4],edx	;first 2 bytes store the bounds\n");
 			}
 			else
 			{
 			    symbol_table_node* index_var = searchSymbolTable(current_table,index->children[0]->lexeme->str);
 			    fprintf(code_file,"\tmov esi, [ebp+%d]  ;place value of index var\n",index_var->offset);
-			    fprintf(code_file,"\tCHECK ARRAY BOUNDS\n");
+/////			    fprintf(code_file,"\tCHECK ARRAY BOUNDS\n");
 			    fprintf(code_file,"\tmov edi,[ebp+%d]   ;edi has base address of array\n",var->offset);
 			    fprintf(code_file,"\tsub esi, [edi]  ;subtract base index of the array\n");
-			    fprintf(code_file,"\tmov [edi+2*esi+2*4],edx    ;first 2 bytes store the bounds\n");
+			    fprintf(code_file,"\tmov [edi+4*esi+2*4],edx    ;first 2 bytes store the bounds\n");
 
 			}
 		    }
@@ -1513,7 +1566,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			new_table->parent = current_table;
 			curr_offset = codegen(root->children[2],new_table,curr_offset);
 		    
-			fprintf(code_file,"	jmp WHILE LABEL_%d\n",root->casehandle);
+			fprintf(code_file,"	jmp WHILE_LABEL_%d\n",root->casehandle);
 			fprintf(code_file,"EXIT_WHILE_%d:\n",root->casehandle);
 		    }
 		    return curr_offset;
