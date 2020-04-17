@@ -1,16 +1,11 @@
 <<<driver program>>>
 start
-    declare a: integer;
-    a:=10*90+5-2;
-    print(true);
-    print(false);
-    print(123);
-    print(a);
-    declare b: boolean;
-    b:=false;
-    print(b);
-    b:=true;
-    print(b);
+    declare i: integer;
+    for(i in 1..9)
+    start
+	i:=i+1;
+	print(i);
+    end
 end
 
 

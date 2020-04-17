@@ -1442,12 +1442,14 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			{
 			    //const 1st range
 			    fprintf(code_file,"	mov ecx,%d\n",atoi(index1->children[0]->lexeme->str));
+			    fprintf(code_file,"\tmov [ebp+%d],ecx   ;mov first index into loop var\n",a->offset);
 			}
 			else
 			{
-			    // variable 2nd range
+			    // variable 1st range
 			    symbol_table_node* var = searchSymbolTable(current_table, index1->children[0]->lexeme->str);
 			    fprintf(code_file,"	mov ecx,[ebp+%d]\n",var->offset);
+			    fprintf(code_file,"\tmov [ebp+%d],ecx   ;mov first index into loop var\n",a->offset);
 			}
 
 			fprintf(code_file,"FOR_LOOP_%d:\n",root->casehandle);
@@ -1470,7 +1472,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			    fprintf(code_file,"	mov edx,[ebp+%d]\n",var->offset);
 			}
 
-			fprintf(code_file,"	add ecx, 1\n");
+			fprintf(code_file,"	mov ecx, [ebp+%d]\n",a->offset);
+			fprintf(code_file,"\tadd ecx,1\n");
+			fprintf(code_file,"\tmov [ebp+%d],ecx	;add 1 to loop variable\n",a->offset);
 			fprintf(code_file,"	cmp ecx,edx\n");
 			fprintf(code_file,"	pop edx\n");
 			fprintf(code_file,"	jle FOR_LOOP_%d\n",root->casehandle);

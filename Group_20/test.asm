@@ -17,41 +17,18 @@ bits 32
 global main
 
 main:
-	sub esp,8  ;allocating space on the stack
+	sub esp,4  ;allocating space on the stack
 	mov ebp, esp	;ebp accesses upwards, while stack grows downwards
-	mov edx, 10
+	push ecx    ;save ecx before loop start
+	mov ecx,1
+	mov [ebp+0],ecx   ;mov first index into loop var
+FOR_LOOP_1:
+	mov edx, [ebp+0]
 	push edx 
-	mov edx, 90
-	pop eax
-	imul edx	;eax*edx stored in edx:eax 
-	mov edx, eax    ;truncated result moved to edx 
-	push edx 
-	mov edx, 5
-	push edx 
-	mov edx, 2
-	pop eax
-	sub eax, edx    ;perform (eax - edx) subtraction
-	mov edx, eax    ;store result of subtraction in edx
+	mov edx, 1
 	pop eax
 	add edx, eax
 	mov [ebp+0], edx   ;assign value to a variable
-	pushad
-	push dword true_output
-	call printf
-	pop eax
-	popad
-	pushad
-	push dword false_output
-	call printf
-	pop eax
-	popad
-	mov edx, 123
-	pushad
-	push edx
-	push dword integer_output
-	call printf
-	add esp, 8
-	popad
 	mov edx, [ebp+0]
 	pushad
 	push edx
@@ -59,51 +36,14 @@ main:
 	call printf
 	add esp, 8
 	popad
-	mov edx, 0   ; assigning false
-	mov [ebp+4], edx   ;assign value to a variable
-	mov edx, [ebp+4]
-	pushad
-	push dword output_str
-	call printf
-	pop eax
-	popad
-	pushad
-	cmp edx,0
-	mov edx, single_false
-	cmove eax, edx
-	mov edx, single_true
-	cmovne eax, edx
-	push eax
-	call printf
-	pop eax
-	popad
-	pushad
-	push dword nextline
-	call printf
-	pop eax
-	popad
-	mov edx, 1   ; assigning true
-	mov [ebp+4], edx   ;assign value to a variable
-	mov edx, [ebp+4]
-	pushad
-	push dword output_str
-	call printf
-	pop eax
-	popad
-	pushad
-	cmp edx,0
-	mov edx, single_false
-	cmove eax, edx
-	mov edx, single_true
-	cmovne eax, edx
-	push eax
-	call printf
-	pop eax
-	popad
-	pushad
-	push dword nextline
-	call printf
-	pop eax
-	popad
+	push edx
+	mov edx,9
+	mov ecx, [ebp+0]
+	add ecx,1
+	mov [ebp+0],ecx	;add 1 to loop variable
+	cmp ecx,edx
+	pop edx
+	jle FOR_LOOP_1
+	pop ecx	;restore ecx after the loop
 exit_main:  call exit
 
