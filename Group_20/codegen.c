@@ -121,16 +121,33 @@ int declareVariablesOffset(symbolTable* table, astnode* idlist, astnode* datatyp
 		a->crange1 = atoi(dataTypeVar->children[0]->children[0]->children[0]->lexeme->str); //first index
 		a->crange2 = atoi(dataTypeVar->children[0]->children[1]->children[0]->lexeme->str); //second index
 		
+
 		//array size in memory
 		if(a->type==integer || a->type == boolean)
 		{
 		    a->offset = curr_offset;
-		    curr_offset +=  4*(a->crange2 - a->crange1 + 1);
+		    curr_offset +=  4; //arrays only store pointer
+		    fprintf(code_file,"\tpushad\n"
+				    "\tpush dword %d\n"
+				    "\tcall malloc\n"
+				    "\tmov [ebp+%d],eax	;store the allocated memory pointer\n"
+				    "\tpop eax\n"
+				    "\tmov edi,[ebp+%d]	;base pointer to the array\n"
+				    "\tmov [edi], dword %d\n"
+				    "\tmov [edi+4], dword %d\n"
+				    "\tpopad\n",
+				    ((a->crange2 - a->crange1 + 1)*4 + 2*4),
+				    a->offset,a->offset,
+				    a->crange1,a->crange2);
+
+
 		}
 		else if(a->type==real)
 		{
+		    ////////// allocate the array space using malloc///////////////
+		    fprintf(code_file,"ALLOCATING SPACE FOR REAL ARRAY\n");
 		    a->offset = curr_offset;
-		    curr_offset += 8*(a->crange2 - a->crange1 + 1);
+		    curr_offset += 4;   //arrays only store pointer
 		}
 		
 	    }
@@ -150,6 +167,38 @@ int declareVariablesOffset(symbolTable* table, astnode* idlist, astnode* datatyp
 		    a->isdynamic = 3;
 		    a->drange1 = searchSymbolTable(table,indexVar1->children[0]->lexeme->str);
 		    a->drange2 = searchSymbolTable(table,indexVar2->children[0]->lexeme->str);
+		    
+		    //both index are variables
+		    if(a->type==integer || a->type == boolean)
+		    {
+			fprintf(code_file,"\tpushad\n"
+				    "\tmov eax,[ebp+%d]	    ;value of index 2\n"
+				    "\tsub eax,[ebp+%d]	    ;subtract value of index1\n"
+				    "\tadd eax, 1\n"
+				    "\tpush edx\n"
+				    "\tmov edx,4\n"
+				    "\timul edx ;eax has the result of 4*eax the multiplication\n"
+				    "\tpop edx\n"
+				    "\tadd eax, 8   ;space for index values\n"
+				    "\tpush eax\n" 
+				    "\tcall malloc\n"
+				    "\tmov [ebp+%d],eax	;store the allocated memory pointer\n"
+				    "\tpop eax\n"
+				    "\tmov edi,[ebp+%d]	;base pointer to the array\n"
+				    "\tmov eax, [ebp+%d]\n"
+				    "\tmov [edi], eax\n"
+				    "\tmov eax, [ebp+%d]\n"
+				    "\tmov [edi+4], eax\n"
+				    "\tpopad\n",
+				    a->drange2->offset, a->drange1->offset,
+				    a->offset,a->offset,
+				    a->drange1->offset,a->drange2->offset);
+		    }
+		    else
+		    {
+			////// for real array allocate space
+		    }
+
 		}
 		else if(indexVar1->children[0]->tok==ID && indexVar2->children[0]->tok==NUM)
 		{
@@ -157,6 +206,34 @@ int declareVariablesOffset(symbolTable* table, astnode* idlist, astnode* datatyp
 		    a->isdynamic = 2;
 		    a->drange1 = searchSymbolTable(table,indexVar1->children[0]->lexeme->str); 
 		    a->crange2 = atoi(indexVar2->children[0]->lexeme->str);
+		    if(a->type==integer || a->type == boolean)
+		    {fprintf(code_file,"\tpushad\n"
+				    "\tmov eax, dword %d    ;value of index 2\n"
+				    "\tsub eax, [ebp,%d]    ;subtract value of index1\n"
+				    "\tadd eax, 1\n"
+				    "\tpush edx\n"
+				    "\tmov edx,4\n"
+				    "\timul edx ;eax has the result of 4*eax the multiplication\n"
+				    "\tpop edx\n"
+				    "\tadd eax, 8   ;space to store indexes\n"
+				    "\tpush eax\n" 
+				    "\tcall malloc\n"
+				    "\tmov [ebp+%d],eax	;store the allocated memory pointer\n"
+				    "\tpop eax\n"
+				    "\tmov edi,[ebp+%d]	;base pointer to the array\n"
+				    "\tmov eax, [ebp+%d]\n"
+				    "\tmov [edi], eax\n"
+				    "\tmov [edi+4], dword %d\n"
+				    "\tpopad\n",
+				    a->crange2, a->drange1->offset,
+				    a->offset,a->offset,
+				    a->drange1->offset,a->crange2);
+
+		    }
+		    else
+		    {
+			//allocate space for real array
+		    }
 		}
 		else if(indexVar1->children[0]->tok==NUM && indexVar2->children[0]->tok==ID)
 		{
@@ -164,6 +241,38 @@ int declareVariablesOffset(symbolTable* table, astnode* idlist, astnode* datatyp
 		    a->isdynamic = 1;
 		    a->crange1 = atoi(indexVar1->children[0]->lexeme->str); 
 		    a->drange2 = searchSymbolTable(table,indexVar2->children[0]->lexeme->str); 
+		    if(a->type==integer || a->type == boolean)
+		    {
+
+
+			fprintf(code_file,"\tpushad\n"
+				    "\tmov eax,[ebp+%d]	;value of index 2\n"
+				    "\tsub eax, dword %d    ;subtract value of index1\n"
+				    "\tadd eax, 1\n"
+				    "\tpush edx\n"
+				    "\tmov edx,4\n"
+				    "\timul edx ;eax has the result of 4*eax the multiplication\n"
+				    "\tpop edx\n"
+				    "\tadd eax, 8   ;space to store indexes\n"
+				    "\tpush eax\n" 
+				    "\tcall malloc\n"
+				    "\tmov [ebp+%d],eax	    ;store the allocated memory pointer\n"
+				    "\tpop eax\n"
+				    "\tmov edi,[ebp+%d]	    ;base pointer to the array\n"
+				    "\tmov [edi], dword %d\n"
+				    "\tmov eax, [ebp+%d]\n"
+				    "\tmov [edi+4], eax\n"
+				    "\tpopad\n",
+				    a->drange2->offset, a->crange1,
+				    a->offset,a->offset,
+				    a->crange1,a->drange2->offset);
+
+
+		    }
+		    else
+		    {
+			//allocate space for real array
+		    }
 		}
 	    }
 
@@ -183,7 +292,8 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 	{   
 	    case PROGRAM:
 		{
-		    fprintf(code_file,"extern printf\n"
+		    fprintf(code_file,"extern malloc\n"
+			    "extern printf\n"
 			    "extern scanf\n"
 			    "extern exit\n"
 			    "\nSECTION .data\n"
@@ -707,20 +817,22 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			symbol_table_node* var = searchSymbolTable(current_table, root->children[0]->lexeme->str);
 			if(var->isarr==true)
 			{
-			    if(var->isdynamic || !var->isdynamic) //common code if good implementation
+
+			    /////////// ONLY HANDLES INTEGER TYPE //////////////
+			    /////////// SEPERATE CODE FOR REAL NEEDED /////////
+
+			    if(root->children[1]->tok==EPS)
+				fprintf(code_file,"	mov edx, [ebp+%d]\n",var->offset);  //pointer copy
+			    else
 			    {
-				if(root->children[1]->tok==EPS)
-				    fprintf(code_file,"	mov edx, [ebp+%d]\n",var->offset);  //pointer copy
-				else
+				if(var->type == integer || var->type==boolean)
 				{
-				    ///////////////////////////// need to complete and modify //////////////////////////////
-				    /////////////////////////////////////////////////////////////////////////////////////////
-/////////				    fprintf(code_file,"	VERIFY THAT INDEX IS WITHIN BOUNDS\n");
+				    /////////   fprintf(code_file,"	VERIFY THAT INDEX IS WITHIN BOUNDS\n");
 				    astnode* index = root->children[1]->children[0];
 				    if(index->children[0]->tok == NUM)
 				    {
 					//move base of array into edi
-				    	fprintf(code_file,"	mov edi, [ebp+%d]\n",var->offset); //moving data from array element
+					fprintf(code_file,"	mov edi, [ebp+%d]\n",var->offset); //moving data from array element
 					//move index into esi
 					fprintf(code_file,"	mov esi, %d\n", atoi(index->children[0]->lexeme->str));
 					fprintf(code_file,"\tsub esi, [edi]	;subtract the base index\n");
@@ -730,9 +842,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 				    else
 				    {
 					symbol_table_node* temp_index = searchSymbolTable(current_table,
-									index->children[0]->lexeme->str);
+						index->children[0]->lexeme->str);
 					//move base of array into edi
-				    	fprintf(code_file,"	mov edi, [ebp+%d]\n",var->offset); //moving data from array element
+					fprintf(code_file,"	mov edi, [ebp+%d]\n",var->offset); //moving data from array element
 					//move index into esi
 					fprintf(code_file,"	mov esi, [ebp+%d]\n", temp_index->offset);
 					fprintf(code_file,"\tsub esi, [edi]	;subtract the base index\n");
@@ -740,10 +852,10 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 					fprintf(code_file,"	mov edx, [edi+esi*4+2*4]\n");
 				    }
 				}
-			    }
-			    else
-			    {
-				//are static and dynamic arrays different>??????????????????????????????????????????
+				else
+				{
+				    /////// code required for real array access
+				}
 			    }
 			}
 			else
@@ -751,7 +863,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			    fprintf(code_file,"	mov edx, [ebp+%d]\n",var->offset); // copy data from offset of variable
 			}
 		    }
-		    
+
 		    //assign type
 		    root->type = root->children[0]->type;
 		    
@@ -809,6 +921,10 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			symbol_table_node* var = searchSymbolTable(current_table, root->children[0]->lexeme->str);
 			// temp = INDEX
 			astnode* index = lvalue->children[0];
+
+
+			//////////// CODE ONLY FOR INTEGER TYPE /////////////
+			//////////// NEED CODE FOR REAL TYPE ///////////
 
 			if(index->children[0]->tok == NUM)
 			{
@@ -931,9 +1047,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    
 		    /////// produce code to negate the answer if necessary //////////
 		    if(root->children[0]->children[0]->tok==MINUS)
-			fprintf(code_file,"	edx = -edx\n");
+			fprintf(code_file,"	neg edx\n");
 		    else
-			fprintf(code_file,"	edx = edx\n");
+			fprintf(code_file,"	mov edx,edx\n");
 
 		    return curr_offset;
 		}break;

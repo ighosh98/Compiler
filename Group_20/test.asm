@@ -1,3 +1,4 @@
+extern malloc
 extern printf
 extern scanf
 extern exit
@@ -20,61 +21,82 @@ bits 32
 global main
 
 main:
-	sub esp,8  ;allocating space on the stack
+	sub esp,20  ;allocating space on the stack
 	mov ebp, esp	;ebp accesses upwards, while stack grows downwards
+	mov edx, 0
+	mov [ebp+0], edx   ;assign value to a variable
+	mov edx, 1
+	mov [ebp+4], edx   ;assign value to a variable
 	pushad
-	push dword input_str_int
-	call printf
+	push dword 48
+	call malloc
+	mov [ebp+8],eax	;store the allocated memory pointer
 	pop eax
+	mov edi,[ebp+8]	;base pointer to the array
+	mov [edi], dword 1
+	mov [edi+4], dword 10
 	popad
 	pushad
-	mov eax, ebp
-	add eax, 0
+	mov eax,[ebp+4]	    ;value of index 2
+	sub eax,[ebp+0]	    ;subtract value of index1
+	add eax, 1
+	push edx
+	mov edx,4
+	imul edx ;eax has the result of 4*eax the multiplication
+	pop edx
+	add eax, 8   ;space for index values
 	push eax
-	push dword input_format_int
-	call scanf
-	add esp, 8
+	call malloc
+	mov [ebp+12],eax	;store the allocated memory pointer
+	pop eax
+	mov edi,[ebp+12]	;base pointer to the array
+	mov eax, [ebp+0]
+	mov [edi], eax
+	mov eax, [ebp+4]
+	mov [edi+4], eax
 	popad
-	mov edx, [ebp+0]
+	push ecx    ;save ecx before loop start
+	mov ecx,1
+	mov [ebp+16],ecx   ;mov first index into loop var
+FOR_LOOP_1:
+	mov edx, [ebp+16]
+	mov esi, [ebp+16]  ;place value of index var
+	mov edi,[ebp+8]   ;edi has base address of array
+	sub esi, [edi]  ;subtract base index of the array
+	mov [edi+4*esi+2*4],edx    ;first 2 bytes store the bounds
+	push edx
+	mov edx,10
+	mov ecx, [ebp+16]
+	add ecx,1
+	mov [ebp+16],ecx	;add 1 to loop variable
+	cmp ecx,edx
+	pop edx
+	jle FOR_LOOP_1
+	pop ecx	;restore ecx after the loop
+	mov edx, [ebp+8]
+	mov [ebp+12],edx   ;assign pointer of the array
+	push ecx    ;save ecx before loop start
+	mov ecx,1
+	mov [ebp+16],ecx   ;mov first index into loop var
+FOR_LOOP_2:
+	mov edi, [ebp+12]
+	mov esi, [ebp+16]
+	sub esi, [edi]	;subtract the base index
+	mov edx, [edi+esi*4+2*4]
 	pushad
 	push edx
 	push dword integer_output
 	call printf
 	add esp, 8
 	popad
-	pushad
-	push dword input_str_boolean
-	call printf
-	pop eax
-	popad
-	pushad
-	mov eax, ebp
-	add eax, 4
-	push eax
-	push dword input_format_int
-	call scanf
-	add esp, 8
-	popad
-	mov edx, [ebp+4]
-	pushad
-	push dword output_str
-	call printf
-	pop eax
-	popad
-	pushad
-	cmp edx,0
-	mov edx, single_false
-	cmove eax, edx
-	mov edx, single_true
-	cmovne eax, edx
-	push eax
-	call printf
-	pop eax
-	popad
-	pushad
-	push dword nextline
-	call printf
-	pop eax
-	popad
+	push edx
+	mov edx,10
+	mov ecx, [ebp+16]
+	add ecx,1
+	mov [ebp+16],ecx	;add 1 to loop variable
+	cmp ecx,edx
+	pop edx
+	jle FOR_LOOP_2
+	pop ecx	;restore ecx after the loop
 exit_main:  call exit
 

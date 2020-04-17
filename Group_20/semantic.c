@@ -319,17 +319,17 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 		
 		//array size in memory
 		if(a->type==integer)
-		    pass_no==1? curr_func->stackSize +=  4*(a->crange2 - a->crange1 + 1) : pass_no;
+		    pass_no==1? curr_func->stackSize +=  4 : pass_no;   //all arrays have size 4bytes as they only store pointer
 		else if(a->type==real)
-		    pass_no==1? curr_func->stackSize +=  8*(a->crange2 - a->crange1 + 1) : pass_no;
+		    pass_no==1? curr_func->stackSize +=  4 : pass_no;
 		else if(a->type == boolean)
-		    pass_no==1?curr_func->stackSize +=  4*(a->crange2 - a->crange1 + 1) : pass_no;
+		    pass_no==1?curr_func->stackSize +=  4 : pass_no;
 
 	    }
 	    else
 	    {
 
-		curr_func->stackSize+=4;  //the memory is allocated on heap. hence 4 bytes to store heap location
+		pass_no==1? curr_func->stackSize+=4 : pass_no;  //the memory is allocated on heap. hence 4 bytes to store heap location
 		//dynamic range of array
 
 		astnode* indexVar1 = dataTypeVar->children[0]->children[0]; //index nodes
@@ -385,7 +385,7 @@ symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
     }
     else if(dataTypeVar->children[0]->tok==REAL)
     {
-	pass_no==1? curr_func->stackSize+=4: pass_no;
+	pass_no==1? curr_func->stackSize+=8: pass_no;
 	nextinput->type = real;
     }
     else if(dataTypeVar->children[0]->tok==BOOLEAN)
@@ -412,19 +412,17 @@ symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
 	    
 	    //array size in memory
 		if(nextinput->type==integer)
-		    pass_no==1? curr_func->stackSize +=  4*(nextinput->crange2 - nextinput->crange1 + 1) : pass_no;
+		    pass_no==1? curr_func->stackSize +=  4 : pass_no;
 		else if(nextinput->type==real)
-		    pass_no==1? curr_func->stackSize +=  8*(nextinput->crange2 - nextinput->crange1 + 1) : pass_no;
+		    pass_no==1? curr_func->stackSize +=  4 : pass_no;
 		else if(nextinput->type == boolean)
-		    pass_no==1?curr_func->stackSize +=  4*(nextinput->crange2 - nextinput->crange1 + 1) : pass_no;
-
-
+		    pass_no==1?curr_func->stackSize +=  4 : pass_no;
 	}
 	else
 	{
 	    //dynamic range of array
 	    
-	    curr_func->stackSize+=0;
+	    pass_no==1? curr_func->stackSize+=4: pass_no;
 	    astnode* indexVar1 = dataTypeVar->children[0]->children[0];
 	    astnode* indexVar2 = dataTypeVar->children[0]->children[1];
 
