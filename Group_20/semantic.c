@@ -94,7 +94,7 @@ bool checkCallInput(symbolTable* table, astnode* input_list, symbol_table_node* 
 		printf("Argument '%s' is incompatible with the function arguments(Array Expected)\n",input_list->children[0]->lexeme->str);
 		return false; //Array type argument expected for function.
 	    }
-	    if(temp->isdynamic==false)
+	    /*if(temp->isdynamic==false)
 	    {
 		if(temp->crange1!=iplist->crange1 || temp->crange2!=iplist->crange2)
 		{
@@ -109,7 +109,7 @@ bool checkCallInput(symbolTable* table, astnode* input_list, symbol_table_node* 
 	    {
 		return true;
 		//code for verifying range if dynamic array passed.
-	    }
+	    }*/
 	}
 
 	iplist = iplist->iplist;
@@ -377,19 +377,22 @@ symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
 
     //update the datatype of the variable
     astnode* dataTypeVar = inputTree->children[1];
-    type_semantics(dataTypeVar,table);
+
     if(dataTypeVar->children[0]->tok==INTEGER)
     {
+    type_semantics(dataTypeVar,table);
 	pass_no==1? curr_func->stackSize+=4: pass_no;
 	nextinput->type = integer;
     }
     else if(dataTypeVar->children[0]->tok==REAL)
     {
+    type_semantics(dataTypeVar,table);
 	pass_no==1? curr_func->stackSize+=8: pass_no;
 	nextinput->type = real;
     }
     else if(dataTypeVar->children[0]->tok==BOOLEAN)
     {	
+    type_semantics(dataTypeVar,table);
 	pass_no==1? curr_func->stackSize+=4: pass_no;
 	nextinput->type = boolean;
     }
@@ -397,7 +400,6 @@ symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
     {
 	//input is of type array.
 	 
-	nextinput->type = dataTypeVar->children[1]->type; //what isthe type of the array
 	nextinput->isarr = true;
 	
 	//static or dynamic range of array??
@@ -405,6 +407,8 @@ symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
 	if(dataTypeVar->children[0]->children[0]->children[0]->tok==NUM 
 		&& dataTypeVar->children[0]->children[1]->children[0]->tok==NUM)
 	{
+	    type_semantics(dataTypeVar,table);
+	    nextinput->type = dataTypeVar->children[1]->type; //what isthe type of the array
 	    //static range of array
 	    nextinput->isdynamic = false;
 	    nextinput->crange1 = atoi(dataTypeVar->children[0]->children[0]->children[0]->lexeme->str); //first index
@@ -421,8 +425,18 @@ symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
 	else
 	{
 	    //dynamic range of array
-	    
+	    nextinput->isdynamic = true;
 	    pass_no==1? curr_func->stackSize+=4: pass_no;
+
+
+	    if(dataTypeVar->children[1]->children[0]->tok==INTEGER)
+		nextinput->type = integer;
+	    else if(dataTypeVar->children[1]->children[0]->tok==REAL)
+		nextinput->type = real;
+	    else
+		nextinput->type = boolean;
+
+	    /*
 	    astnode* indexVar1 = dataTypeVar->children[0]->children[0];
 	    astnode* indexVar2 = dataTypeVar->children[0]->children[1];
 
@@ -449,6 +463,7 @@ symbol_table_node* makeInputList(astnode* inputTree, symbolTable* table)
 		a->drange1 = searchSymbolTable(table,indexVar1->children[0]->lexeme->str);
 		a->crange2 = atoi(indexVar2->children[0]->lexeme->str); 
 	    }
+	    */
 
 	}
     }
@@ -1088,6 +1103,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 					    printf("Line no: %d ", root->lexeme->line_no);
 					    reset();
 					    printf("Array type mismatch\n"); 
+					    printf("%s: %d....%s:%d\n",rightvar->lexeme->str,rightvar->type,a->lexeme->str,a->type);
 				
 					}
 					else if(rightvar->crange1!=a->crange1 || rightvar->crange2!=a->crange2)
