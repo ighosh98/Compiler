@@ -129,6 +129,7 @@ int declareVariablesOffset(symbolTable* table, astnode* idlist, astnode* datatyp
 		{
 		    a->offset = curr_offset;
 		    curr_offset +=  4; //arrays only store pointer
+
 		    fprintf(code_file,"\tpushad\n"
 				    "\tpush dword %d\n"
 				    "\tcall malloc\n"
@@ -384,9 +385,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			{
 			    //if array input variable
 			    if(input_var->type==integer || input_var->type==boolean)
-				curr_offset += 4*(input_var->crange2 - input_var->crange1 + 1);
+				curr_offset += 4;
 			    else if(input_var->type==real)
-				curr_offset += 8*(input_var->crange2 - input_var->crange1 + 1 );
+				curr_offset += 4;
 			}
 			else
 			{
@@ -413,9 +414,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			{
 			    //if array input variable
 			    if(output_var->type==integer || output_var->type==boolean)
-				curr_offset += 4*(output_var->crange2 - output_var->crange1 + 1);
+				curr_offset += 4;
 			    else if(output_var->type==real)
-				curr_offset += 8*(output_var->crange2 - output_var->crange1 + 1 );
+				curr_offset += 4;
 			}
 			else
 			{
@@ -1956,7 +1957,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    symbol_table_node* temp = searchSymbolTable(current_table,root->lexeme->str);
 		    if(temp==NULL)
 		    {
-			fprintf(code_file,"Undeclared variable '%s'",root->lexeme->str);
+			printf("Undeclared variable '%s'",root->lexeme->str);
 			exit(1);
 		    }
 		    else
