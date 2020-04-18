@@ -1970,5 +1970,3 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 	return curr_offset; 
     }
 }
-
-
