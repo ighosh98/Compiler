@@ -300,6 +300,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			    "extern scanf\n"
 			    "extern exit\n"
 			    "\nSECTION .data\n"
+			    "bound_error_str: db 'RUNTIME ERROR: Array Index Out of Bounds',10,0\n"
 			    "input_arr_int: db 'Input: Enter %%d array elemts of integer type for range %%d to %%d',10,0\n"
 			    "input_arr_boolean: db 'Input: Enter %%d array elemts of boolean type for range %%d to %%d',10,0\n"
 			    "input_str_int: db 'Input: Enter an integer value',10,0\n"
@@ -319,7 +320,15 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    //move forward
 		    for(int i =0;i<root->n;i++)
 			curr_offset = codegen(root->children[i], current_table,0); //the program 
-		    
+		  
+
+		    fprintf(code_file, "\tBOUND_ERROR:\n"
+					"\tpushad\n"  
+					"\tpush dword bound_error_str\n"  
+					"\tcall printf\n"  
+					"\tpop eax\n"  
+					"\tpopad\n"  
+					"\tcall exit\n");  
 		    //no code generation
 		    return curr_offset;
 		}break;
@@ -986,7 +995,6 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			    {
 				if(var->type == integer || var->type==boolean)
 				{
-				    /////////   fprintf(code_file,"	VERIFY THAT INDEX IS WITHIN BOUNDS\n");
 				    astnode* index = root->children[1]->children[0];
 				    if(index->children[0]->tok == NUM)
 				    {
@@ -994,6 +1002,13 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 					fprintf(code_file,"	mov edi, [ebp+%d]\n",var->offset); //moving data from array element
 					//move index into esi
 					fprintf(code_file,"	mov esi, %d\n", atoi(index->children[0]->lexeme->str));
+					
+					//check bounds
+					fprintf(code_file, "\tcmp esi,[edi]\n"
+							    "\tjl BOUND_ERROR\n"
+							    "\tcmp esi,[edi+4]\n"
+							    "\tjg BOUND_ERROR\n");
+
 					fprintf(code_file,"\tsub esi, [edi]	;subtract the base index\n");
 					//move element from array to edx. 2*4 included as first 2 elements store range
 					fprintf(code_file,"	mov edx, [edi+esi*4+2*4]\n");
@@ -1006,6 +1021,13 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 					fprintf(code_file,"	mov edi, [ebp+%d]\n",var->offset); //moving data from array element
 					//move index into esi
 					fprintf(code_file,"	mov esi, [ebp+%d]\n", temp_index->offset);
+					
+					//check bounds
+					fprintf(code_file, "\tcmp esi,[edi]\n"
+							    "\tjl BOUND_ERROR\n"
+							    "\tcmp esi,[edi+4]\n"
+							    "\tjg BOUND_ERROR\n");
+
 					fprintf(code_file,"\tsub esi, [edi]	;subtract the base index\n");
 					//move element from array to edx. 2*4 included as first 2 elements store range
 					fprintf(code_file,"	mov edx, [edi+esi*4+2*4]\n");
@@ -1087,9 +1109,15 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 			if(index->children[0]->tok == NUM)
 			{
-/////			    fprintf(code_file,"\tCHECK ARRAY BOUNDS\n");
 			    fprintf(code_file,"\tmov edi,[ebp+%d]   ;edi has base address of array\n",var->offset);
 			    fprintf(code_file,"\tmov esi,%d\n",atoi(index->children[0]->lexeme->str));
+			    
+			    //check bounds
+			    fprintf(code_file, "\tcmp esi,[edi]\n"
+				    "\tjl BOUND_ERROR\n"
+				    "\tcmp esi,[edi+4]\n"
+				    "\tjg BOUND_ERROR\n");
+
 			    fprintf(code_file,"\tsub esi, [edi]  ;subtract base index of the array\n");
 			    fprintf(code_file,"\tmov [edi+4*esi+2*4],edx	;first 2 bytes store the bounds\n");
 			}
@@ -1097,8 +1125,14 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			{
 			    symbol_table_node* index_var = searchSymbolTable(current_table,index->children[0]->lexeme->str);
 			    fprintf(code_file,"\tmov esi, [ebp+%d]  ;place value of index var\n",index_var->offset);
-/////			    fprintf(code_file,"\tCHECK ARRAY BOUNDS\n");
 			    fprintf(code_file,"\tmov edi,[ebp+%d]   ;edi has base address of array\n",var->offset);
+			    
+			    //check bounds
+			    fprintf(code_file, "\tcmp esi,[edi]\n"
+				    "\tjl BOUND_ERROR\n"
+				    "\tcmp esi,[edi+4]\n"
+				    "\tjg BOUND_ERROR\n");
+
 			    fprintf(code_file,"\tsub esi, [edi]  ;subtract base index of the array\n");
 			    fprintf(code_file,"\tmov [edi+4*esi+2*4],edx    ;first 2 bytes store the bounds\n");
 
