@@ -1,0 +1,20 @@
+declare module mod1;
+<<driver Program>>
+start
+	declare v, w, r :integer;
+	get_value(v);
+	w:=5;
+	declare m:integer;
+	[r,m] := use mod1 with parameters v, w;
+	print(r);
+	print(m);
+end
+<<module mod1>>
+takes input [a: integer, b: integer];
+returns [x: integer, abc: integer];
+start
+	declare c: integer;
+	c:=10;
+	x:=a+b-10;
+	abc:=b/5+c;
+end

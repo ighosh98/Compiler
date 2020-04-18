@@ -1,0 +1,11 @@
+<<<driver program>>>
+start
+** Simple testcase **
+declare a,b:integer;
+a:=0;
+b:=1;
+declare A: array[0..10] of boolean;
+get_value(A);
+print(A);
+end
+
