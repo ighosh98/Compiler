@@ -24,9 +24,11 @@ set* First_Set;
 set* nonterminal_FollowSet;
 prodn parsing_table[$][ENUM_END-$+1];
 
+bool parsing_error = false;
+
 void printTerminalError(treenode * X, token* a)
 {
-    blue();
+    blue(); parsing_error= true;
     printf("Line %d: ",a->line_no);
     reset();
     printf("Error Parsing: Expected ");
@@ -47,7 +49,7 @@ void printTerminalError(treenode * X, token* a)
 }
 void printNonTerminalError(treenode * X, token* a)
 {
-    blue();
+    blue(); parsing_error= true;
     printf("Line %d: ",a->line_no);
     reset();
     printf("Error Parsing: Expected one of ");
@@ -193,7 +195,7 @@ void getFirstSet(productions grammar)
 	reset();
 	for(int i=ENUM_START+1;i<$;i++)
 	{
-	    blue();
+	    blue(); 
 	    printf("%s ---> ",symbol_map[i]);
 	    reset();
 	    printSet(nonterminal_FirstSet[i]);

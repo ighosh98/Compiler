@@ -22,15 +22,15 @@ void deleteSymbolTable(symbolTable* table)
 }
 
 
-void printSymbolNode(symbol_table_node* a, symbol_table_node* curr_func)
+void printSymbolNode(symbol_table_node* a, symbol_table_node* curr_func, int nesting)
 {
     if(strcmp(a->name,"_currentfunction")==0) return;
 
-    printf("%s %s",a->name, curr_func->name);
+    printf("%s %s %d %s %d",a->name, curr_func->name,nesting, datatype_map[a->type],a->offset);
     printf("\n");
 }
 
-void printSymbolTables(symbolTable* table)
+void printSymbolTables(symbolTable* table,int nesting)
 {
     if(table == NULL)return;
     //print the current symbol table
@@ -39,14 +39,14 @@ void printSymbolTables(symbolTable* table)
 	symbol_table_node* head = table->ar[i];
 	while(head)
 	{
-	    printSymbolNode(head,searchSymbolTable(table,"_currentfunction")->iplist);
+	    printSymbolNode(head,searchSymbolTable(table,"_currentfunction")->iplist,nesting);
 	    head = head->next;
 	}
     }
 
     //print the rest of the tables
     for(int i=0;i<table->no_children;i++)
-	printSymbolTables(table->children[0]);
+	printSymbolTables(table->children[0],nesting+1);
 }
 
 symbol_table_node * makeSymbolNode(char* name , bool isarr,

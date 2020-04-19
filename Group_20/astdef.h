@@ -6,7 +6,7 @@
 #include"lexerDef.h"
 #include "color.h"
 typedef enum {integer, real, boolean, function,array, NONE} datatype;
-typedef enum {for_loop, while_loop, switch_stmt, add, subtract, multiply, divide, NO_ACTION} action;
+extern char* datatype_map[];
 typedef struct astnode{
     token* lexeme;
     datatype type;

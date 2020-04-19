@@ -11,6 +11,8 @@
 #include "color.h"
 #include "astdef.h"
 #include "ast.h"
+
+char * datatype_map[] = {"integer", "real", "boolean", "function","array", "NONE"};
 astnode* make_astnode(treenode* parsenode)
 {
     if(parsenode == NULL)return NULL;
@@ -30,16 +32,17 @@ void printAST(astnode* root)
     if(root==NULL)return;
 
     if(root->children){
-	printf("%s --> ",symbol_map[root->tok]);
-	for(int i=0;i<root->n;i++)
-	    printf("%s  ", symbol_map[root->children[i]->tok]);
-	printf("    %d\n\n", root->type);
+	printf("%s\n",symbol_map[root->tok]);
+	//printf("%s --> ",symbol_map[root->tok]);
+	//for(int i=0;i<root->n;i++)
+	  //  printf("%s  ", symbol_map[root->children[i]->tok]);
+	//printf("    %d\n\n", root->type);
 	for(int i=0;i<root->n;i++)
 	    printAST(root->children[i]);
     }
     else
     {
-	printf("%s\n\n",symbol_map[root->tok]);
+	printf("%s\n",symbol_map[root->tok]);
 
     }
 }

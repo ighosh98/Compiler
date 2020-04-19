@@ -48,7 +48,7 @@ main:
 	push ecx    ;save ecx before loop start
 	mov ecx,[ebp+16]
 	mov [ebp+8],ecx   ;mov first index into loop var
-FOR_LOOP_1:
+FOR_LOOP_5:
 	mov edx, [ebp+8]
 	push edx 
 	mov edx, 2
@@ -80,7 +80,7 @@ FOR_LOOP_1:
 	push ecx    ;save ecx before loop start
 	mov ecx,3
 	mov [ebp+36],ecx   ;mov first index into loop var
-FOR_LOOP_2:
+FOR_LOOP_6:
 	mov edx, 2
 	push edx 
 	mov edx, [ebp+36]
@@ -98,7 +98,7 @@ FOR_LOOP_2:
 	push ecx    ;save ecx before loop start
 	mov ecx,0
 	mov [ebp+12],ecx   ;mov first index into loop var
-FOR_LOOP_3:
+FOR_LOOP_7:
 	mov edx, [ebp+12]
 	pushad
 	push edx
@@ -113,7 +113,7 @@ FOR_LOOP_3:
 	mov [ebp+12],ecx	;add 1 to loop variable
 	cmp ecx,edx
 	pop edx
-	jle FOR_LOOP_3
+	jle FOR_LOOP_7
 	pop ecx	;restore ecx after the loop
 	push edx
 	mov edx,5
@@ -122,11 +122,11 @@ FOR_LOOP_3:
 	mov [ebp+36],ecx	;add 1 to loop variable
 	cmp ecx,edx
 	pop edx
-	jle FOR_LOOP_2
+	jle FOR_LOOP_6
 	pop ecx	;restore ecx after the loop
 	mov edx, [ebp+16]
 	mov [ebp+20], edx   ;assign value to a variable
-WHILE_LABEL_1:
+WHILE_LABEL_3:
 	mov edx, [ebp+20]
 	push edx 
 	mov edx, [ebp+8]
@@ -136,7 +136,7 @@ WHILE_LABEL_1:
 	mov eax, 1   ;cmov requires register, therefore place true in eax
 	cmovle  edx , eax	;place true if condition met
 	cmp edx, 0
-	je EXIT_WHILE_1
+	je EXIT_WHILE_3
 	mov edx, [ebp+20]
 	pushad
 	push edx
@@ -146,7 +146,7 @@ WHILE_LABEL_1:
 	popad
 	mov edx, [ebp+16]
 	mov [ebp+28], edx   ;assign value to a variable
-WHILE_LABEL_2:
+WHILE_LABEL_4:
 	mov edx, [ebp+28]
 	push edx 
 	mov edx, 10
@@ -156,7 +156,7 @@ WHILE_LABEL_2:
 	mov eax, 1   ;cmov requires register, therefore place true in eax
 	cmovl  edx , eax	;place true if condition met
 	cmp edx, 0
-	je EXIT_WHILE_2
+	je EXIT_WHILE_4
 	mov edx, [ebp+0]
 	pushad
 	push edx
@@ -170,12 +170,12 @@ WHILE_LABEL_2:
 	pop eax
 	add edx, eax
 	mov [ebp+28], edx   ;assign value to a variable
-	jmp WHILE_LABEL_2
-EXIT_WHILE_2:
+	jmp WHILE_LABEL_4
+EXIT_WHILE_4:
 	push ecx    ;save ecx before loop start
 	mov ecx,4
 	mov [ebp+32],ecx   ;mov first index into loop var
-FOR_LOOP_4:
+FOR_LOOP_8:
 	mov edx, [ebp+32]
 	pushad
 	push edx
@@ -190,7 +190,7 @@ FOR_LOOP_4:
 	mov [ebp+32],ecx	;add 1 to loop variable
 	cmp ecx,edx
 	pop edx
-	jle FOR_LOOP_4
+	jle FOR_LOOP_8
 	pop ecx	;restore ecx after the loop
 	mov edx, [ebp+20]
 	push edx 
@@ -198,8 +198,8 @@ FOR_LOOP_4:
 	pop eax
 	add edx, eax
 	mov [ebp+20], edx   ;assign value to a variable
-	jmp WHILE_LABEL_1
-EXIT_WHILE_1:
+	jmp WHILE_LABEL_3
+EXIT_WHILE_3:
 	push edx
 	mov edx,8
 	mov ecx, [ebp+8]
@@ -207,7 +207,7 @@ EXIT_WHILE_1:
 	mov [ebp+8],ecx	;add 1 to loop variable
 	cmp ecx,edx
 	pop edx
-	jle FOR_LOOP_1
+	jle FOR_LOOP_5
 	pop ecx	;restore ecx after the loop
 exit_main:  call exit
 

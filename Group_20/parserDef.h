@@ -9,6 +9,8 @@ G Adityan	 2016B1A70929P
 #include <stdio.h>
 #include "lexerDef.h"
 
+extern bool parsing_error;
+
 typedef  struct prodn{
     tokentype* rule;
     tokentype non_terminal;

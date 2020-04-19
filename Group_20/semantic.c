@@ -12,6 +12,8 @@
 
 symbolTable * function_table;
 int pass_no = 0;
+bool semantic_error = false;
+
 bool checkCases(astnode* root, datatype type)
 {
     astnode* head = root;
@@ -22,7 +24,7 @@ bool checkCases(astnode* root, datatype type)
 	symbol_table_node* a = searchSymbolTable(table, root->children[0]->lexeme->str);
 	if(a!=NULL)
 	{
-	    blue();
+	    blue(); semantic_error = true;
 	    printf("Line No %d: ",root->lexeme->line_no);
 	    reset();
 	    printf("Cases must be unique\n");
@@ -42,7 +44,7 @@ bool checkCases(astnode* root, datatype type)
 	symbol_table_node* b = searchSymbolTable(table,"true");
 	if(a==NULL || b== NULL)
 	{
-	    blue();
+	    blue(); semantic_error = true; semantic_error = true;
 	    printf("Line no %d: ",head->lexeme->line_no);
 	    reset();
 	    printf("Boolean cases must include true and false\n");
@@ -60,7 +62,7 @@ bool checkCallInput(symbolTable* table, astnode* input_list, symbol_table_node* 
     {
 	if((input_list->tok==EPS && iplist!=NULL))
 	{
-	    blue();
+	    blue(); semantic_error = true; semantic_error = true;
 	    printf("Line no %d: ",head->lexeme->line_no);
 	    reset();
 	    printf("Incorrect number of arguments in Input\n");
@@ -68,7 +70,7 @@ bool checkCallInput(symbolTable* table, astnode* input_list, symbol_table_node* 
 	} 
 	if((iplist==NULL&&input_list->tok!=EPS))
 	{
-	    blue();
+	    blue(); semantic_error = true; semantic_error = true;
 	    printf("Line no %d: ",head->lexeme->line_no);
 	    reset();
 	    printf("Incorrect number of arguments in Input\n");
@@ -77,7 +79,7 @@ bool checkCallInput(symbolTable* table, astnode* input_list, symbol_table_node* 
     
 	if(input_list->children[0]->type != iplist->type)
 	{
-	    blue();
+	    blue(); semantic_error = true; semantic_error = true;
 	    printf("Line no %d: ",input_list->lexeme->line_no);
 	    reset();
 	    printf("Argument '%s' is incompatible with the function arguments\n",input_list->children[0]->lexeme->str);
@@ -88,7 +90,7 @@ bool checkCallInput(symbolTable* table, astnode* input_list, symbol_table_node* 
 	    symbol_table_node* temp = searchSymbolTable(table,input_list->children[0]->lexeme->str);
 	    if(temp->isarr==false)
 	    {
-		blue();
+		blue(); semantic_error = true; semantic_error = true;
 		printf("Line no %d: ",input_list->lexeme->line_no);
 		reset();
 		printf("Argument '%s' is incompatible with the function arguments(Array Expected)\n",input_list->children[0]->lexeme->str);
@@ -98,7 +100,7 @@ bool checkCallInput(symbolTable* table, astnode* input_list, symbol_table_node* 
 	    {
 		if(temp->crange1!=iplist->crange1 || temp->crange2!=iplist->crange2)
 		{
-		    blue();
+		    blue(); semantic_error = true;
 		    printf("Line no %d: ",input_list->lexeme->line_no);
 		    reset();
 		    printf("Argument '%s' is incompatible with the function arguments(Range Mismatch)\n",input_list->children[0]->lexeme->str);
@@ -128,7 +130,7 @@ bool checkCallOutput(symbolTable* table, astnode* output_list, symbol_table_node
     {
 	if((output_list->tok==EPS && oplist!=NULL))
 	{
-	    blue();
+	    blue(); semantic_error = true;
 	    printf("Line no %d: ",head->lexeme->line_no);
 	    reset();
 	    printf("Incorrect number variable in function Output\n");
@@ -136,7 +138,7 @@ bool checkCallOutput(symbolTable* table, astnode* output_list, symbol_table_node
 	} 
 	if((oplist==NULL && output_list->tok!=EPS))
 	{
-	    blue();
+	    blue(); semantic_error = true;
 	    printf("Line no %d: ",head->lexeme->line_no);
 	    reset();
 	    printf("Incorrect number of variable in function Output\n");
@@ -145,7 +147,7 @@ bool checkCallOutput(symbolTable* table, astnode* output_list, symbol_table_node
     
 	if(output_list->children[0]->type != oplist->type)
 	{
-	    blue();
+	    blue(); semantic_error = true;
 	    printf("Line no %d: ",output_list->lexeme->line_no);
 	    reset();
 	    printf("Argument '%s' is Incompatible with function output (Type Mismatch)\n",output_list->children[0]->lexeme->str);
@@ -264,7 +266,7 @@ void declareVariables(symbolTable* table, astnode* idlist, astnode* datatype)
 	{
 	    //ERROR: Redeclaration of variable that already exists
 	    if(pass_no==1){
-	    blue();
+	    blue(); semantic_error = true;
 	    printf("Line no %d: ",idlist->children[0]->lexeme->line_no);
 	    reset();
 	    printf("Redeclaration of '%s' not allowed.\n",idlist->children[0]->lexeme->str);
@@ -502,7 +504,7 @@ symbol_table_node* makeOutputList(astnode* outputTree, symbolTable* table)
     }
     else
     {
-	blue();
+	blue(); semantic_error = true;
 	printf("Line no: %d ", TypeVar->children[0]->lexeme->line_no);
 	reset();
 	printf("Array cannot be returned from function.\n");
@@ -704,14 +706,14 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			    //function has already been declared
 			    if(pass_no==1 && temp->isUsed==false)
 			    {
-				blue();
+				blue(); semantic_error = true;
 				printf("Line no: %d ", root->lexeme->line_no);
 				reset();
 				printf("Redundant Declaration and Definition of function\n");
 			    } //Error: function not used after declaration
 			    else if(pass_no==1 && temp->isDefined==true)
 			    {
-				blue();
+				blue(); semantic_error = true;
 				printf("Line no: %d ", root->lexeme->line_no);
 				reset();
 				printf("Redefinition of Module '%s'\n", root->children[0]->lexeme->str);
@@ -765,7 +767,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    {
 			if(pass_no == 1 && searchSymbolTable(input_table,a->name))
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Reused variable '%s' in function Input\n",a->name);
@@ -779,7 +781,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    
 		    if(pass_no==1 && checkModuleOutput(a,root->children[3])==false)  //outputlist , moduledef
 		    {
-			blue();
+			blue(); semantic_error = true;
 			printf("Line no: %d ", root->lexeme->line_no);
 			reset();
 			printf("All output variables not assigned\n");
@@ -789,7 +791,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    {
 			if(pass_no==1 && searchSymbolTable(input_table, a->name))
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Reused variable '%s' in function Output\n",a->name);
@@ -866,7 +868,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    //           INDEX1!=integer                                    INDEX2!=integer
 		    if(pass_no==1&&(root->children[0]->children[0]->type!=integer || root->children[1]->children[0]->type!=integer))
 		    {
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
 			    reset();
 			    printf("Arguments of range must be integers\n"); 
@@ -879,7 +881,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			    (atoi(root->children[0]->children[0]->lexeme->str)>atoi(root->children[1]->children[0]->lexeme->str))))
 		    {
 		    
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
 			    reset();
 			  printf("Invalid range, %d is greater than %d\n",
@@ -995,7 +997,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			    
 			    if(pass_no==1 && temp->children[0]->type!=integer) 
 				{
-				    blue();
+				    blue(); semantic_error = true;
 				    printf("Line no: %d ",root->lexeme->line_no);
 				    reset();
 				    printf("Array index must be an integer\n");
@@ -1015,7 +1017,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 				    
 				    if(pass_no==1 && (value<arr->crange1 || value>arr->crange2))
 				    {
-					blue();
+					blue(); semantic_error = true;
 					printf("Line no: %d ",root->lexeme->line_no);
 					reset();
 					printf("Index out of bound\n");
@@ -1071,7 +1073,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			    {
 				if(pass_no==1)
 				{
-				    blue();
+				    blue(); semantic_error = true;
 				    printf("Line no: %d ", root->lexeme->line_no);
 				    reset();
 				    printf("Cannot assign to array type. Index not provided\n"); 
@@ -1082,7 +1084,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 				//variable is found now check if it is correct array type
 				if(rightvar->isarr==false)
 				{
-				    blue();
+				    blue(); semantic_error = true;
 				    printf("Line no: %d ", root->lexeme->line_no);
 				    reset();
 				    printf("Cannot assign to array type. Index not provided\n"); 
@@ -1099,7 +1101,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 				   {
 					if(rightvar->type!=a->type)
 					{
-					    blue();
+					    blue(); semantic_error = true;
 					    printf("Line no: %d ", root->lexeme->line_no);
 					    reset();
 					    printf("Array type mismatch\n"); 
@@ -1108,7 +1110,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 					}
 					else if(rightvar->crange1!=a->crange1 || rightvar->crange2!=a->crange2)
 					{
-					    blue();
+					    blue(); semantic_error = true;
 					    printf("Line no: %d ", root->lexeme->line_no);
 					    reset();
 					    printf("Array Range Mismatch\n"); 
@@ -1120,14 +1122,14 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			}
 			else if(pass_no==1 && hasInvalidArray(lvalue->children[0],current_table))
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Array cannot be used without index\n"); 
 			}
 			else if(pass_no==1 && lvalue->children[0]->type != a->type)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Incompatible types in assignment\n"); 
@@ -1141,7 +1143,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 
 			if(pass_no==1 && a->isarr==false)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("The variable is not an array. Cannot be indexed\n"); 
@@ -1149,7 +1151,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			}//ERROR: The variable is not an array. Cannot be Indexed.
 			if(pass_no==1 && lvalue->children[1]->type != a->type)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Incompatible types in assignment\n"); 
@@ -1162,7 +1164,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			    
 			    if(pass_no==1 && temp->children[0]->type!=integer) 
 			    {
-				blue();
+				blue(); semantic_error = true;
 				printf("Line no: %d ", root->lexeme->line_no);
 				reset();
 				printf("Index of array must be integer\n"); 
@@ -1183,7 +1185,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 				    
 				    if(pass_no==1 && (value<a->crange1 || value>a->crange2))
 				    {
-					blue();
+					blue(); semantic_error = true;
 					printf("Line no: %d ", root->lexeme->line_no);
 					reset();
 					printf("Index out of bounds\n"); 
@@ -1252,7 +1254,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			{
 			    if(pass_no==1)
 			    {
-				blue();
+				blue(); semantic_error = true;
 				printf("Line no: %d ", root->lexeme->line_no);
 				reset();
 				printf("'%s' is not a function\n",root->children[1]->lexeme->str); 
@@ -1263,7 +1265,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			{
 			    if(pass_no==2 && a->isDefined==false)
 			    {
-			    	blue();
+			    	blue(); semantic_error = true;
 				printf("Line no: %d ", root->lexeme->line_no);
 				reset();
 				printf("'%s' function definition missing\n",root->children[1]->lexeme->str); 
@@ -1279,7 +1281,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
     
 			if(pass_no==1 && strcmp(a->name,tempstr)==0)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("The functin '%s' cannot call itself. Recursion id not allowed\n", 
@@ -1376,7 +1378,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    {
 			if(pass_no==1 && root->children[0]->type!=boolean)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Logical operations can only have boolean operands\n"); 
@@ -1404,7 +1406,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    {
 			if(pass_no==1 && root->children[1]->type!=boolean)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Logical operations can only have boolean operands\n"); 
@@ -1431,7 +1433,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		       {
 			   if(pass_no==1 && (root->children[0]->type!=integer && root->children[0]->type!=real))  //only integer/real can be used in relational op
 			   {
-			       blue();
+			       blue(); semantic_error = true;
 			       printf("Line no: %d ", root->lexeme->line_no);
 			       reset();
 			       printf("Relational operations can only have integer/real operands\n"); 
@@ -1439,7 +1441,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			   }
 			   else if(pass_no==1 && root->children[0]->type!=root->children[1]->type)
 			   {
-				blue();
+				blue(); semantic_error = true;
 			       printf("Line no: %d ", root->lexeme->line_no);
 			       reset();
 			       printf("Type mismatch in relational expression\n"); 
@@ -1467,7 +1469,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    {
 			if(pass_no==1 && (root->children[1]->type!=integer && root->children[1]->type!=real)) //Only integer comparison allowed
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Relational operations can only have integer/real operands\n"); 
@@ -1476,7 +1478,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			}
 			if(pass_no==1 && root->children[2]->tok!=EPS)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Cannot chain relational operations. Cannot compare boolean operands\n"); 
@@ -1497,7 +1499,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    {
 			if(pass_no==1 && root->children[0]->type==boolean)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Arithmetic operations cannot boolean operands\n"); 
@@ -1506,7 +1508,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			if(pass_no==1 && root->children[1]->type!=NONE &&
 				(root->children[0]->type!=root->children[1]->type))
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Type Mismatch in expression\n"); 
@@ -1533,7 +1535,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    {
 			if(pass_no==1 && (root->children[1]->type==boolean)) 
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Arithmetic operations cannot have boolean operands\n"); 
@@ -1543,7 +1545,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			if(pass_no==1 && root->children[2]->type!=NONE &&
 				(root->children[1]->type!=root->children[2]->type))
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Type Mismatch in expression\n"); 
@@ -1564,7 +1566,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    {
 			if(pass_no==1 && root->children[0]->type==boolean)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Arithmetic operations cannot boolean operands\n"); 
@@ -1573,7 +1575,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			if(pass_no==1 && root->children[1]->type!=NONE &&
 				(root->children[0]->type!=root->children[1]->type))
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Type Mismatch in expression\n"); 
@@ -1601,7 +1603,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    {
 			if(pass_no==1 && (root->children[1]->type==boolean)) 
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Arithmetic operations cannot have boolean operands\n"); 
@@ -1611,7 +1613,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			if(pass_no==1 && root->children[2]->type!=NONE&&
 				(root->children[1]->type!=root->children[2]->type))
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Type Mismatch in expression\n"); 
@@ -1669,7 +1671,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    if(var->isarr == true)
 		    {
 			if(pass_no==1){
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[1]->lexeme->line_no);
 			    reset();
 			    printf("Cannot have array as argument to switch\n"); 
@@ -1680,7 +1682,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    {
 			if(root->children[0]->type != root->children[1]->type)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[1]->lexeme->line_no);
 			    reset();
 			    printf("Case type does not match argument type\n"); 
@@ -1688,7 +1690,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			}  //ERROR: case type does not match argument type
 			if(root->children[2]->tok==EPS)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("No default case provided for integer argument\n"); 
@@ -1705,7 +1707,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    {
 			if(root->children[0]->type != root->children[1]->type)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[1]->lexeme->line_no);
 			    reset();
 			    printf("Case type does not match argument type.\n"); 
@@ -1713,7 +1715,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			}//ERROR: case type does not match argument type
 			if(root->children[2]->tok!=EPS)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[2]->lexeme->line_no);
 			    reset();
 			    printf("Boolean argument does not require default case.\n"); 
@@ -1729,7 +1731,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    {
 			if(pass_no==1)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->lexeme->line_no);
 			    reset();
 			    printf("Switch can only have integer or boolean type\n"); 
@@ -1748,7 +1750,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    
 		    if(pass_no==1 && root->children[2]->type!=NONE && (root->children[0]->type!=root->children[2]->type))
 		    {
-			blue();
+			blue(); semantic_error = true;
 			printf("Line no: %d ", root->children[0]->lexeme->line_no);
 			reset();
 			printf("Case type does not match argument type.\n"); 
@@ -1769,7 +1771,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			{
 			    if(pass_no==1 && root->children[2]->type!=NONE && (root->children[0]->type!=root->children[2]->type))
 			    {
-				blue();
+				blue(); semantic_error = true;
 				printf("Line no: %d ", root->children[0]->lexeme->line_no);
 				reset();
 				printf("Case type does not match argument type.\n"); 
@@ -1807,7 +1809,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			symbol_table_node* a = searchSymbolTable(current_table, root->children[1]->lexeme->str);
 			if(pass_no==1&&root->children[1]->type!=integer) 
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[1]->lexeme->line_no);
 			    reset();
 			    printf("Loop variable must be of integer type\n"); 
@@ -1815,7 +1817,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			}//ERROR: The variable must be an integer
 			if(pass_no==1 && a->isarr==true)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[1]->lexeme->line_no);
 			    reset();
 			    printf("Loop iterator cannot be array variable\n"); 
@@ -1824,14 +1826,14 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			
 			if(pass_no==1 && !checkFor(root->children[1],root->children[3]))
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
 			    reset();
 			    printf("Loop variable cannot be updated in the body of the loop.\n");
 			}
 			if(pass_no==1 && !checkForDeclare(root->children[1],root->children[3]))
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
 			    reset();
 			    printf("Loop variable cannot be Redeclared.\n");
@@ -1860,7 +1862,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			
 			if(pass_no==1 && !checkWhile(check_table,root->children[2]))
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
 			    reset();
 			    printf("No variable in the condition of while loop is updated in the body of the loop.\n"); 
@@ -1871,7 +1873,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			type_semantics(root->children[1],current_table);
 			if(pass_no==1 && root->children[1]->type!=boolean)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
 			    reset();
 			    printf("Condition in the while loop must evaluate to boolean\n"); 
@@ -1907,7 +1909,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    //           INDEX1!=integer                                    INDEX2!=integer
 		    if(pass_no==1&&(root->children[0]->children[0]->type!=integer || root->children[1]->children[0]->type!=integer))
 		    {
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
 			    reset();
 			    printf("Arguments of range must be integers\n"); 
@@ -1920,7 +1922,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			    (atoi(root->children[0]->children[0]->lexeme->str)>atoi(root->children[1]->children[0]->lexeme->str))))
 		    {
 		    
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no: %d ", root->children[0]->lexeme->line_no);
 			    reset();
 			  printf("Invalid range, %d is greater than %d\n",
@@ -1973,7 +1975,7 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 							    //and the symbol is reported only once
 			if(pass_no==1)
 			{
-			    blue();
+			    blue(); semantic_error = true;
 			    printf("Line no %d: ",root->lexeme->line_no);
 			    reset();
 			    printf("Symbol '%s' Not Recognized. (Each symbol is reported only once)\n",

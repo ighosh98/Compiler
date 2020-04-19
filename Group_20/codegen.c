@@ -19,6 +19,8 @@ int output_no = 0;
 int input_no = 0;
 FILE* code_file;
 
+symbolTable* top_table;
+
 void makeCaseJumps(astnode* root,symbolTable* current_table) //also assigns the switch number to case statements
 {
     root->casehandle = no_switch;
@@ -373,7 +375,11 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			
 		
 			symbolTable* input_table = getSymbolTable(100); //input_list scope
-			input_table->parent = NULL; //new function has no parent scope
+			input_table->parent = top_table; //new function has no parent scope
+			top_table->children[top_table->no_children++] =input_table;
+
+			symbol_table_node* x = insertSymbolTable(input_table, "_currentfunction",0,0,NULL,NULL,-1,-1,NULL,NONE);
+			x->iplist = searchSymbolTable(function_table, root->children[0]->lexeme->str);
 
 			symbolTable* new_table = getSymbolTable(100); //table for the function scope.
 			new_table->parent =  input_table;		  //function scope shadows input scope
@@ -462,8 +468,12 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		{
 		    //create symbol table for the program
 		    symbolTable* new_table = getSymbolTable(100);
-		    new_table->parent = NULL;
-		    
+		    new_table->parent = top_table;
+		    top_table->children[top_table->no_children++]=new_table;
+		    symbol_table_node* x = insertSymbolTable(new_table, "_currentfunction",0,0,NULL,NULL,-1,-1,NULL,NONE);
+		    x->iplist = searchSymbolTable(function_table, "driver");
+
+  
 		    ///// produce code to define the main procedure in asm//////////////
 		    fprintf(code_file,"main:\n");
 		    fprintf(code_file,"	sub esp,%d  ;allocating space on the stack\n",searchSymbolTable(function_table,"driver")->stackSize);
@@ -1747,8 +1757,11 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 		    //create a new scope(symbol table) and make the current table as the parent of the new table.
 		    symbolTable* new_table = getSymbolTable(100);
-		    new_table->parent = current_table;
 		    
+		    new_table->parent = current_table;
+		    current_table->children[current_table->no_children++]=new_table;
+		    
+
 		    
 		    no_switch++;
 		    curr_offset = codegen(root->children[0],new_table,curr_offset); //evaluate ID
@@ -1877,7 +1890,11 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 			//for loop
 			symbolTable* new_table = getSymbolTable(100);
+	
 			new_table->parent = current_table;
+			current_table->children[current_table->no_children++]=new_table;
+		    
+
 			curr_offset = codegen(root->children[3],new_table,curr_offset);
 
 			fprintf(code_file,"	push edx\n");
@@ -1932,6 +1949,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			//then move forward
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
+			current_table->children[current_table->no_children++]=new_table;
+		    
+
 			curr_offset = codegen(root->children[2],new_table,curr_offset);
 		    
 			fprintf(code_file,"	jmp WHILE_LABEL_%d\n",root->casehandle);

@@ -78,33 +78,52 @@ int main(int argc,char **argv)
 	}
 	else if(choice == 2)
 	{
-	    FILE * fptr = fopen(argv[2],"w");
-	    if(!fptr)
-	    {
-		printf("could not open file %s\n",argv[2]);
-		break;
-	    }
+	    parsing_error = false;
 	    red();
 	    printf("\n##############  Parsing Input File  ##############\n");
 	    reset();
-	    //makeFirstAndFollow(p, PROGRAM);
-	    //makeParsingTable(p);
 	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
-	    inorder(t,fptr);
-	    //printTree(t.root);
-	    fclose(fptr);
 	}
 	else if(choice == 3)
 	{
-	    //print ast in inorder manner
-	}
-	else if(choice == 4)
-	{
+	    parsing_error = false;
 	    pass_no = 0; //reset the semantic analyser so that the option can be used multiple times
 	    
 	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
-	    AST a = makeAST(t.root);
 
+	    AST a;
+	    if(parsing_error == false)
+		a = makeAST(t.root);
+	    else
+	    {
+		red();
+		printf("Could not parse input file\n");
+		reset();
+		continue;
+	    }
+
+	    red();
+	    printf("Printing AST in PREORDER traversal\n");
+	    reset();
+	    printAST(a.root);
+	}
+	else if(choice == 4)
+	{
+	    parsing_error = false;
+	    pass_no = 0; //reset the semantic analyser so that the option can be used multiple times
+	    
+	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
+	    
+	    AST a;
+	    if(parsing_error == false)
+		a = makeAST(t.root);
+	    else
+	    {
+		red();
+		printf("Could Not parse Input file\n");
+		reset();
+		continue;
+	    }
 	    red();
 	    printf("############## Created AST ##############\n");
 	    reset();
@@ -117,76 +136,74 @@ int main(int argc,char **argv)
 	    printf("Compression Percentage: %lf\n", (((a1-b1)/(double)a1))*100);
 
 	}
-	else if(choice == 40)
-	{
-	    clock_t start_time, end_time;
-	    double total_cpu_time, total_cpu_time_secs;
-	    start_time = clock();
-
-	    FILE * fptr = fopen(argv[2],"w");
-	    if(!fptr)
-	    {
-		printf("could not open file %s\n",argv[2]);
-		break;
-	    }
-
-	    red();
-    printf("\n##############  Parsing Input File  ##############\n");
-	    reset();
-	    
-	    //makeFirstAndFollow(p, PROGRAM);
-	    //makeParsingTable(p);
-	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
-	    inorder(t,fptr);
-	    fclose(fptr);
-	    
-	    end_time = clock();
-	    total_cpu_time = (double)(end_time - start_time);
-	    total_cpu_time_secs = total_cpu_time/CLOCKS_PER_SEC;
-	    printf("Total CPU time: %lf\nTotal CPU time in secs: %lf\n",
-		    total_cpu_time, total_cpu_time_secs);
-	    
-	}
-	//////////////
 	else if(choice == 5)
 	{
-
-
+	    parsing_error = false;
+	    semantic_error = false;
 	    pass_no = 0; //reset the semantic analyser so that the option can be used multiple times
-	    
-	    FILE * fptr = fopen(argv[2],"w");
-	    if(!fptr)
-	    {
-		printf("could not open file %s\n",argv[2]);
-		break;
-	    }
+	    red();
 	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
-	    AST a = makeAST(t.root);
+	    
+	    AST a;
+	    if(parsing_error == false)
+		a = makeAST(t.root);
+	    else
+	    {
+		red();
+		printf("Could not Parse Input file\n");
+		reset();
+		continue;
+	    }
 
 	    symbolTable* symbol_table;
 	    symbol_table = check_semantics(a.root); //helper function that does 2 passes automatically
-	    
-	    red();
-	    printf("############ Printing Symbol tables ############\n");
-	    reset();
-	    for(int i=0;i<symbol_table->no_children;i++)
-		printSymbolTables(symbol_table->children[i]);
-	    fclose(fptr);
-	  
-	}
-	else if(choice == 6)
-	{
-	    pass_no = 0; //reset the semantic analyser so that the option can be used multiple times
-	    FILE * fptr = fopen(argv[2],"w");
-	    if(!fptr)
+
+	    top_table= getSymbolTable(10);
+
+
+	    if(semantic_error == true)
 	    {
-		printf("could not open file %s\n",argv[2]);
-		break;
+		red();
+		printf("\nFile contains semantic errors. Therefore the symbol tables may not be correct\n");
+		reset();
+		for(int i=0;i<symbol_table->no_children;i++)
+		{
+		    printSymbolTables(symbol_table->children[i],0);
+		}
 	    }
+	    else
+	    {
+		code_file = fopen("unused.asm","w");
+		codegen(a.root,NULL,0);
+		fclose(code_file);
+		red();
+		printf("############ Printing Symbol tables ############\n");
+		reset();
+
+		for(int i=0;i<top_table->no_children;i++)
+		{
+		    printSymbolTables(top_table->children[i],0);
+		}
+	    }
+	}
+	else if (choice == 6)
+	{
+	    parsing_error = false;
+	    semantic_error = false;
+	    pass_no = 0; //reset the semantic analyser so that the option can be used multiple times
 	    red();
 	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
-	    AST a = makeAST(t.root);
-
+	    AST a;
+	    if(parsing_error == false)
+		a = makeAST(t.root);
+	    else
+	    {
+		red();
+		printf("Could not parse input file\n");
+		reset();
+		continue;
+	    }
+	    
 	    symbolTable* symbol_table;
 	    symbol_table = check_semantics(a.root); //helper function that does 2 passes automatically
 	    
@@ -203,16 +220,100 @@ int main(int argc,char **argv)
 		}
 	    }
 	    
+	}
+	else if(choice == 7)
+	{
+	    printf("PRINT ARRAYS\n");
+	}
+	else if(choice == 8 )
+	{
+	    parsing_error = false;
+	    semantic_error = false;
+	    pass_no = 0;
+	    clock_t start_time, end_time;
+	    double total_cpu_time, total_cpu_time_secs;
+	    start_time = clock();
 
 	    red();
-	    printf("\nWriting code to file\n");
+	    printf("\n##############  Parsing Input File  ##############\n");
 	    reset();
 	    
-	    code_file = fopen("test.asm","w");
-	    codegen(a.root,NULL,0);
-	    fclose(code_file);
-	    fclose(fptr);
+	    //makeFirstAndFollow(p, PROGRAM);
+	    //makeParsingTable(p);
+	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
+	   
+	    AST a;
+	    if(parsing_error == false)
+	    {
+		a = makeAST(t.root);
+		red();
+		printf("\n##############  Checking Semantics  ##############\n");
+		reset();
+		symbolTable* symbol_table;
+		symbol_table = check_semantics(a.root); //helper function that does 2 passes automatically
+	    }
+	    else
+	    {
+		red();
+		printf("Could not parse input file\n");
+		reset();
+	    }
+
+	    end_time = clock();
+	    total_cpu_time = (double)(end_time - start_time);
+	    total_cpu_time_secs = total_cpu_time/CLOCKS_PER_SEC;
+	    printf("Total CPU time: %lf\nTotal CPU time in secs: %lf\n",
+		    total_cpu_time, total_cpu_time_secs);
 	
+	}
+	else if(choice == 9)
+	{
+	    parsing_error = false;
+	    semantic_error = false;
+	    pass_no = 0; //reset the semantic analyser so that the option can be used multiple times
+	    FILE * fptr = fopen(argv[2],"w");
+	    if(!fptr)
+	    {
+		red();
+		printf("could not open file %s\n",argv[2]);
+		reset();
+		break;
+	    }
+	    red();
+	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
+	    
+	    AST a;
+	    if(parsing_error == false)
+		a = makeAST(t.root);
+	    else
+	    {
+		red();
+		printf("Could not Parse Input file\n");
+		reset();
+		continue;
+	    }
+	    symbolTable* symbol_table;
+	    symbol_table = check_semantics(a.root); //helper function that does 2 passes automatically
+	    
+	    if(semantic_error == false)
+	    {
+
+		red();
+		printf("\nWriting code to file\n");
+		reset();
+
+		top_table = getSymbolTable(10);
+		code_file = fptr;
+		codegen(a.root,NULL,0);
+	    }
+	    else
+	    {
+		red();
+		printf("Code contains Semantic Errors. Could not generate ASM code\n");
+		reset();
+	    }
+	    fclose(fptr);
+
 	}
 	else
 	{
