@@ -17,9 +17,9 @@ declare flag: boolean;
 flag:=(a>=30)AND(b<30);
 switch(flag)
 	start
-	case FALSE :print(100);
+	case false :print(100);
 	break;
-	case TRUE :use mod1 with parameters a, b;
+	case true :use mod1 with parameters a, b;
 	break;
 end
 end
