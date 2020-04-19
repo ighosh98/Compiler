@@ -1,44 +1,39 @@
 <<<driver program>>>
 start
-	declare k,j,p,s,m,r,q,temp:integer;
-	p:=0;
-	s:=4;
-	m:=0;
-	r:=5;
-	q:=4;
-
-	declare A: array[s..8] of integer;
-
-	for(k in s..8)
+declare k, j, p, s, m, r, q, temp : integer;
+p:=0;
+s:=4;
+m:=0;
+q:=4;
+declare A: array[4..8] of integer;
+for(k in s..8)
+start
+	A[k] :=k*2;
+	print(A[k]);
+	for(j in 3..5)
 	start
-		A[k] :=k*2;
-		print(A[k]);
-		for(j in 3..5)
+		temp:=2*j;
+		print(temp);
+		for(p in 0..s)
 		start
-			temp:=2*j;
-			print(temp);
-			for(p in 0..s)
-			start
-				print(p);
-			end
+			print(p);
 		end
-		m:=s;
-		while(m<=k)
-		start
-			print(m);
-			r:=5;
-			while(r<10)
-			start
-				print(r);
-				r:=r+1;
-			end
-			for(q in 4..6)
-			start
-				print(q);
-			end
-			m:=m+1;
-			
-		end
-
 	end
+	m:=s;
+	while(m<=k)
+	start
+		print(m);
+		r:=5;
+		while(r<10)
+		start
+			print(r);
+			r:=r+1;
+		end
+		for(q in 4..6)
+		start
+			print(q);
+		end
+		m:=m+1;
+	end
+end
 end
