@@ -1,0 +1,47 @@
+<<driver Program>>
+start
+	declare k,j,p,s,m,r,q:integer;
+	k := 4;
+	j := 3;
+	p := 0;
+	s := 4;
+	m := 0;
+	r := 5;
+	q := 4;
+	declare dynarr:array[s..8] of integer;
+	
+	for(k in s..8)
+	start
+		dynarr[k] := k*2;
+		print(dynarr[k]);
+		for(j in 3..5)
+		start
+			print(2*j);
+			for(p in 0..s)
+			start
+				print(p);
+			end
+		end
+
+		m := s;
+
+		while(m <= k)
+		start
+			print(m);
+
+			while(r<10)
+			start
+				print(r);
+				r := r+1;
+			end
+
+			for(q in 4..6)
+			start
+				print(q);
+			end
+			
+			r := 5;
+			m := m+1;
+		end
+	end
+end
