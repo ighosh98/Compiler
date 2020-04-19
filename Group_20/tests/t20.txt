@@ -22,4 +22,6 @@ start
 	end
 	[num]:=use module arraysum with parameters A;
 	print(num);
-end
+end0
+subl t21.txt
+
