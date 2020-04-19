@@ -17,3 +17,16 @@ start
     print(B[i]);
 end
 end
+** Output
+Output: false true true true true true true true true true true 
+Output: 1
+Output: 2
+Output: 3
+Output: 4
+Output: 5
+Output: 6
+Output: 7
+Output: 8
+Output: 9
+Output: 10
+**
