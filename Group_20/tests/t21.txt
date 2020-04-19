@@ -1,6 +1,6 @@
 <<<driver program>>>
 start
-	declare k,j,p;
+	declare k,j,p:integer;
 	declare	s,m,r,q,temp:integer;
 	p := 0;
 	s := 4;

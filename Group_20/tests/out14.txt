@@ -1,0 +1,628 @@
+----                	1    	EPS                 	NaN       	MODULEDECLARATIONS  	Yes	                    	
+----                	1    	MODULEDECLARATIONS  	NaN       	PROGRAM             	No 	MODULEDECLARATIONS  	
+----                	1    	PROGRAM             	NaN       	ROOT                	No 	PROGRAM             	
+----                	1    	EPS                 	NaN       	OTHERMODULES        	Yes	                    	
+----                	1    	OTHERMODULES        	NaN       	PROGRAM             	No 	OTHERMODULES        	
+<<<                 	1    	DRIVERDEF           	NaN       	DRIVERMODULE        	Yes	                    	
+----                	1    	DRIVERMODULE        	NaN       	PROGRAM             	No 	DRIVERMODULE        	
+driver              	1    	DRIVER              	NaN       	DRIVERMODULE        	Yes	                    	
+program             	1    	PROGRAMT            	NaN       	DRIVERMODULE        	Yes	                    	
+>>>                 	1    	DRIVERENDDEF        	NaN       	DRIVERMODULE        	Yes	                    	
+start               	2    	START               	NaN       	MODULEDEF           	Yes	                    	
+----                	2    	MODULEDEF           	NaN       	DRIVERMODULE        	No 	MODULEDEF           	
+declare             	3    	DECLARE             	NaN       	DECLARESTMT         	Yes	                    	
+----                	3    	DECLARESTMT         	NaN       	STATEMENT           	No 	DECLARESTMT         	
+k                   	3    	ID                  	NaN       	IDLIST              	Yes	                    	
+----                	3    	IDLIST              	NaN       	DECLARESTMT         	No 	IDLIST              	
+,                   	3    	COMMA               	NaN       	N3                  	Yes	                    	
+----                	3    	N3                  	NaN       	IDLIST              	No 	N3                  	
+j                   	3    	ID                  	NaN       	N3                  	Yes	                    	
+,                   	3    	COMMA               	NaN       	N3                  	Yes	                    	
+----                	3    	N3                  	NaN       	N3                  	No 	N3                  	
+p                   	3    	ID                  	NaN       	N3                  	Yes	                    	
+----                	1    	EPS                 	NaN       	N3                  	Yes	                    	
+----                	3    	N3                  	NaN       	N3                  	No 	N3                  	
+:                   	3    	COLON               	NaN       	DECLARESTMT         	Yes	                    	
+integer             	3    	INTEGER             	NaN       	DATATYPE            	Yes	                    	
+----                	3    	DATATYPE            	NaN       	DECLARESTMT         	No 	DATATYPE            	
+;                   	3    	SEMICOL             	NaN       	DECLARESTMT         	Yes	                    	
+----                	3    	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	3    	STATEMENTS          	NaN       	MODULEDEF           	No 	STATEMENTS          	
+declare             	4    	DECLARE             	NaN       	DECLARESTMT         	Yes	                    	
+----                	4    	DECLARESTMT         	NaN       	STATEMENT           	No 	DECLARESTMT         	
+s                   	4    	ID                  	NaN       	IDLIST              	Yes	                    	
+----                	4    	IDLIST              	NaN       	DECLARESTMT         	No 	IDLIST              	
+,                   	4    	COMMA               	NaN       	N3                  	Yes	                    	
+----                	4    	N3                  	NaN       	IDLIST              	No 	N3                  	
+m                   	4    	ID                  	NaN       	N3                  	Yes	                    	
+,                   	4    	COMMA               	NaN       	N3                  	Yes	                    	
+----                	4    	N3                  	NaN       	N3                  	No 	N3                  	
+r                   	4    	ID                  	NaN       	N3                  	Yes	                    	
+,                   	4    	COMMA               	NaN       	N3                  	Yes	                    	
+----                	4    	N3                  	NaN       	N3                  	No 	N3                  	
+q                   	4    	ID                  	NaN       	N3                  	Yes	                    	
+,                   	4    	COMMA               	NaN       	N3                  	Yes	                    	
+----                	4    	N3                  	NaN       	N3                  	No 	N3                  	
+temp                	4    	ID                  	NaN       	N3                  	Yes	                    	
+----                	1    	EPS                 	NaN       	N3                  	Yes	                    	
+----                	4    	N3                  	NaN       	N3                  	No 	N3                  	
+:                   	4    	COLON               	NaN       	DECLARESTMT         	Yes	                    	
+integer             	4    	INTEGER             	NaN       	DATATYPE            	Yes	                    	
+----                	4    	DATATYPE            	NaN       	DECLARESTMT         	No 	DATATYPE            	
+;                   	4    	SEMICOL             	NaN       	DECLARESTMT         	Yes	                    	
+----                	4    	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	4    	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+p                   	5    	ID                  	NaN       	ASSIGNMENTSTMT      	Yes	                    	
+----                	5    	ASSIGNMENTSTMT      	NaN       	SIMPLESTMT          	No 	ASSIGNMENTSTMT      	
+:=                  	5    	ASSIGNOP            	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	5    	LVALUEIDSTMT        	NaN       	WHICHSTMT           	No 	LVALUEIDSTMT        	
+0                   	5    	NUM                 	0         	VAR_ID_NUM          	Yes	                    	
+----                	5    	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	5    	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	5    	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	5    	N5                  	NaN       	TERM                	No 	N5                  	
+----                	5    	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	5    	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	5    	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	5    	N8                  	NaN       	ANYTERM             	No 	N8                  	
+----                	5    	ARITHMETICORBOOLEANEXPR	NaN       	EXPRESSION          	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	5    	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+----                	5    	EXPRESSION          	NaN       	LVALUEIDSTMT        	No 	EXPRESSION          	
+;                   	5    	SEMICOL             	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	5    	WHICHSTMT           	NaN       	ASSIGNMENTSTMT      	No 	WHICHSTMT           	
+----                	5    	SIMPLESTMT          	NaN       	STATEMENT           	No 	SIMPLESTMT          	
+----                	5    	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	5    	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+s                   	6    	ID                  	NaN       	ASSIGNMENTSTMT      	Yes	                    	
+----                	6    	ASSIGNMENTSTMT      	NaN       	SIMPLESTMT          	No 	ASSIGNMENTSTMT      	
+:=                  	6    	ASSIGNOP            	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	6    	LVALUEIDSTMT        	NaN       	WHICHSTMT           	No 	LVALUEIDSTMT        	
+4                   	6    	NUM                 	4         	VAR_ID_NUM          	Yes	                    	
+----                	6    	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	6    	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	6    	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	6    	N5                  	NaN       	TERM                	No 	N5                  	
+----                	6    	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	6    	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	6    	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	6    	N8                  	NaN       	ANYTERM             	No 	N8                  	
+----                	6    	ARITHMETICORBOOLEANEXPR	NaN       	EXPRESSION          	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	6    	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+----                	6    	EXPRESSION          	NaN       	LVALUEIDSTMT        	No 	EXPRESSION          	
+;                   	6    	SEMICOL             	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	6    	WHICHSTMT           	NaN       	ASSIGNMENTSTMT      	No 	WHICHSTMT           	
+----                	6    	SIMPLESTMT          	NaN       	STATEMENT           	No 	SIMPLESTMT          	
+----                	6    	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	6    	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+m                   	7    	ID                  	NaN       	ASSIGNMENTSTMT      	Yes	                    	
+----                	7    	ASSIGNMENTSTMT      	NaN       	SIMPLESTMT          	No 	ASSIGNMENTSTMT      	
+:=                  	7    	ASSIGNOP            	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	7    	LVALUEIDSTMT        	NaN       	WHICHSTMT           	No 	LVALUEIDSTMT        	
+0                   	7    	NUM                 	0         	VAR_ID_NUM          	Yes	                    	
+----                	7    	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	7    	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	7    	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	7    	N5                  	NaN       	TERM                	No 	N5                  	
+----                	7    	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	7    	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	7    	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	7    	N8                  	NaN       	ANYTERM             	No 	N8                  	
+----                	7    	ARITHMETICORBOOLEANEXPR	NaN       	EXPRESSION          	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	7    	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+----                	7    	EXPRESSION          	NaN       	LVALUEIDSTMT        	No 	EXPRESSION          	
+;                   	7    	SEMICOL             	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	7    	WHICHSTMT           	NaN       	ASSIGNMENTSTMT      	No 	WHICHSTMT           	
+----                	7    	SIMPLESTMT          	NaN       	STATEMENT           	No 	SIMPLESTMT          	
+----                	7    	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	7    	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+r                   	8    	ID                  	NaN       	ASSIGNMENTSTMT      	Yes	                    	
+----                	8    	ASSIGNMENTSTMT      	NaN       	SIMPLESTMT          	No 	ASSIGNMENTSTMT      	
+:=                  	8    	ASSIGNOP            	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	8    	LVALUEIDSTMT        	NaN       	WHICHSTMT           	No 	LVALUEIDSTMT        	
+5                   	8    	NUM                 	5         	VAR_ID_NUM          	Yes	                    	
+----                	8    	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	8    	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	8    	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	8    	N5                  	NaN       	TERM                	No 	N5                  	
+----                	8    	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	8    	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	8    	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	8    	N8                  	NaN       	ANYTERM             	No 	N8                  	
+----                	8    	ARITHMETICORBOOLEANEXPR	NaN       	EXPRESSION          	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	8    	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+----                	8    	EXPRESSION          	NaN       	LVALUEIDSTMT        	No 	EXPRESSION          	
+;                   	8    	SEMICOL             	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	8    	WHICHSTMT           	NaN       	ASSIGNMENTSTMT      	No 	WHICHSTMT           	
+----                	8    	SIMPLESTMT          	NaN       	STATEMENT           	No 	SIMPLESTMT          	
+----                	8    	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	8    	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+q                   	9    	ID                  	NaN       	ASSIGNMENTSTMT      	Yes	                    	
+----                	9    	ASSIGNMENTSTMT      	NaN       	SIMPLESTMT          	No 	ASSIGNMENTSTMT      	
+:=                  	9    	ASSIGNOP            	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	9    	LVALUEIDSTMT        	NaN       	WHICHSTMT           	No 	LVALUEIDSTMT        	
+4                   	9    	NUM                 	4         	VAR_ID_NUM          	Yes	                    	
+----                	9    	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	9    	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	9    	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	9    	N5                  	NaN       	TERM                	No 	N5                  	
+----                	9    	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	9    	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	9    	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	9    	N8                  	NaN       	ANYTERM             	No 	N8                  	
+----                	9    	ARITHMETICORBOOLEANEXPR	NaN       	EXPRESSION          	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	9    	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+----                	9    	EXPRESSION          	NaN       	LVALUEIDSTMT        	No 	EXPRESSION          	
+;                   	9    	SEMICOL             	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	9    	WHICHSTMT           	NaN       	ASSIGNMENTSTMT      	No 	WHICHSTMT           	
+----                	9    	SIMPLESTMT          	NaN       	STATEMENT           	No 	SIMPLESTMT          	
+----                	9    	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	9    	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+declare             	10   	DECLARE             	NaN       	DECLARESTMT         	Yes	                    	
+----                	10   	DECLARESTMT         	NaN       	STATEMENT           	No 	DECLARESTMT         	
+A                   	10   	ID                  	NaN       	IDLIST              	Yes	                    	
+----                	10   	IDLIST              	NaN       	DECLARESTMT         	No 	IDLIST              	
+----                	1    	EPS                 	NaN       	N3                  	Yes	                    	
+----                	10   	N3                  	NaN       	IDLIST              	No 	N3                  	
+:                   	10   	COLON               	NaN       	DECLARESTMT         	Yes	                    	
+array               	10   	ARRAY               	NaN       	DATATYPE            	Yes	                    	
+----                	10   	DATATYPE            	NaN       	DECLARESTMT         	No 	DATATYPE            	
+[                   	10   	SQBO                	NaN       	DATATYPE            	Yes	                    	
+s                   	10   	ID                  	NaN       	INDEX               	Yes	                    	
+----                	10   	INDEX               	NaN       	RANGE_ARRAYS        	No 	INDEX               	
+----                	10   	RANGE_ARRAYS        	NaN       	DATATYPE            	No 	RANGE_ARRAYS        	
+..                  	10   	RANGEOP             	NaN       	RANGE_ARRAYS        	Yes	                    	
+8                   	10   	NUM                 	8         	INDEX               	Yes	                    	
+----                	10   	INDEX               	NaN       	RANGE_ARRAYS        	No 	INDEX               	
+]                   	10   	SQBC                	NaN       	DATATYPE            	Yes	                    	
+of                  	10   	OF                  	NaN       	DATATYPE            	Yes	                    	
+integer             	10   	INTEGER             	NaN       	TYPE                	Yes	                    	
+----                	10   	TYPE                	NaN       	DATATYPE            	No 	TYPE                	
+;                   	10   	SEMICOL             	NaN       	DECLARESTMT         	Yes	                    	
+----                	10   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	10   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+for                 	12   	FOR                 	NaN       	ITERATIVESTMT       	Yes	                    	
+----                	12   	ITERATIVESTMT       	NaN       	STATEMENT           	No 	ITERATIVESTMT       	
+(                   	12   	BO                  	NaN       	ITERATIVESTMT       	Yes	                    	
+k                   	12   	ID                  	NaN       	ITERATIVESTMT       	Yes	                    	
+in                  	12   	IN                  	NaN       	ITERATIVESTMT       	Yes	                    	
+s                   	12   	ID                  	NaN       	INDEX               	Yes	                    	
+----                	12   	INDEX               	NaN       	RANGE               	No 	INDEX               	
+----                	12   	RANGE               	NaN       	ITERATIVESTMT       	No 	RANGE               	
+..                  	12   	RANGEOP             	NaN       	RANGE               	Yes	                    	
+8                   	12   	NUM                 	8         	INDEX               	Yes	                    	
+----                	12   	INDEX               	NaN       	RANGE               	No 	INDEX               	
+)                   	12   	BC                  	NaN       	ITERATIVESTMT       	Yes	                    	
+start               	13   	START               	NaN       	ITERATIVESTMT       	Yes	                    	
+A                   	14   	ID                  	NaN       	ASSIGNMENTSTMT      	Yes	                    	
+----                	14   	ASSIGNMENTSTMT      	NaN       	SIMPLESTMT          	No 	ASSIGNMENTSTMT      	
+[                   	14   	SQBO                	NaN       	LVALUEARRSTMT       	Yes	                    	
+----                	14   	LVALUEARRSTMT       	NaN       	WHICHSTMT           	No 	LVALUEARRSTMT       	
+k                   	14   	ID                  	NaN       	INDEX               	Yes	                    	
+----                	14   	INDEX               	NaN       	LVALUEARRSTMT       	No 	INDEX               	
+]                   	14   	SQBC                	NaN       	LVALUEARRSTMT       	Yes	                    	
+:=                  	14   	ASSIGNOP            	NaN       	LVALUEARRSTMT       	Yes	                    	
+k                   	14   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	14   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	14   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	14   	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	14   	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+*                   	14   	MUL                 	NaN       	OP2                 	Yes	                    	
+----                	14   	OP2                 	NaN       	N5                  	No 	OP2                 	
+----                	14   	N5                  	NaN       	TERM                	No 	N5                  	
+2                   	14   	NUM                 	2         	VAR_ID_NUM          	Yes	                    	
+----                	14   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	14   	FACTOR              	NaN       	N5                  	No 	FACTOR              	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	14   	N5                  	NaN       	N5                  	No 	N5                  	
+----                	14   	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	14   	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	14   	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	14   	N8                  	NaN       	ANYTERM             	No 	N8                  	
+----                	14   	ARITHMETICORBOOLEANEXPR	NaN       	EXPRESSION          	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	14   	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+----                	14   	EXPRESSION          	NaN       	LVALUEARRSTMT       	No 	EXPRESSION          	
+;                   	14   	SEMICOL             	NaN       	LVALUEARRSTMT       	Yes	                    	
+----                	14   	WHICHSTMT           	NaN       	ASSIGNMENTSTMT      	No 	WHICHSTMT           	
+----                	14   	SIMPLESTMT          	NaN       	STATEMENT           	No 	SIMPLESTMT          	
+----                	14   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	14   	STATEMENTS          	NaN       	ITERATIVESTMT       	No 	STATEMENTS          	
+print               	15   	PRINT               	NaN       	IOSTMT              	Yes	                    	
+----                	15   	IOSTMT              	NaN       	STATEMENT           	No 	IOSTMT              	
+(                   	15   	BO                  	NaN       	IOSTMT              	Yes	                    	
+A                   	15   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	15   	VAR_ID_NUM          	NaN       	VAR                 	No 	VAR_ID_NUM          	
+[                   	15   	SQBO                	NaN       	WHICHID             	Yes	                    	
+----                	15   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+k                   	15   	ID                  	NaN       	INDEX               	Yes	                    	
+----                	15   	INDEX               	NaN       	WHICHID             	No 	INDEX               	
+]                   	15   	SQBC                	NaN       	WHICHID             	Yes	                    	
+----                	15   	VAR                 	NaN       	IOSTMT              	No 	VAR                 	
+)                   	15   	BC                  	NaN       	IOSTMT              	Yes	                    	
+;                   	15   	SEMICOL             	NaN       	IOSTMT              	Yes	                    	
+----                	15   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	15   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+for                 	16   	FOR                 	NaN       	ITERATIVESTMT       	Yes	                    	
+----                	16   	ITERATIVESTMT       	NaN       	STATEMENT           	No 	ITERATIVESTMT       	
+(                   	16   	BO                  	NaN       	ITERATIVESTMT       	Yes	                    	
+j                   	16   	ID                  	NaN       	ITERATIVESTMT       	Yes	                    	
+in                  	16   	IN                  	NaN       	ITERATIVESTMT       	Yes	                    	
+3                   	16   	NUM                 	3         	INDEX               	Yes	                    	
+----                	16   	INDEX               	NaN       	RANGE               	No 	INDEX               	
+----                	16   	RANGE               	NaN       	ITERATIVESTMT       	No 	RANGE               	
+..                  	16   	RANGEOP             	NaN       	RANGE               	Yes	                    	
+5                   	16   	NUM                 	5         	INDEX               	Yes	                    	
+----                	16   	INDEX               	NaN       	RANGE               	No 	INDEX               	
+)                   	16   	BC                  	NaN       	ITERATIVESTMT       	Yes	                    	
+start               	17   	START               	NaN       	ITERATIVESTMT       	Yes	                    	
+temp                	18   	ID                  	NaN       	ASSIGNMENTSTMT      	Yes	                    	
+----                	18   	ASSIGNMENTSTMT      	NaN       	SIMPLESTMT          	No 	ASSIGNMENTSTMT      	
+:=                  	18   	ASSIGNOP            	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	18   	LVALUEIDSTMT        	NaN       	WHICHSTMT           	No 	LVALUEIDSTMT        	
+2                   	18   	NUM                 	2         	VAR_ID_NUM          	Yes	                    	
+----                	18   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	18   	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	18   	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+*                   	18   	MUL                 	NaN       	OP2                 	Yes	                    	
+----                	18   	OP2                 	NaN       	N5                  	No 	OP2                 	
+----                	18   	N5                  	NaN       	TERM                	No 	N5                  	
+j                   	18   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	18   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	18   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	18   	FACTOR              	NaN       	N5                  	No 	FACTOR              	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	18   	N5                  	NaN       	N5                  	No 	N5                  	
+----                	18   	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	18   	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	18   	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	18   	N8                  	NaN       	ANYTERM             	No 	N8                  	
+----                	18   	ARITHMETICORBOOLEANEXPR	NaN       	EXPRESSION          	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	18   	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+----                	18   	EXPRESSION          	NaN       	LVALUEIDSTMT        	No 	EXPRESSION          	
+;                   	18   	SEMICOL             	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	18   	WHICHSTMT           	NaN       	ASSIGNMENTSTMT      	No 	WHICHSTMT           	
+----                	18   	SIMPLESTMT          	NaN       	STATEMENT           	No 	SIMPLESTMT          	
+----                	18   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	18   	STATEMENTS          	NaN       	ITERATIVESTMT       	No 	STATEMENTS          	
+print               	19   	PRINT               	NaN       	IOSTMT              	Yes	                    	
+----                	19   	IOSTMT              	NaN       	STATEMENT           	No 	IOSTMT              	
+(                   	19   	BO                  	NaN       	IOSTMT              	Yes	                    	
+temp                	19   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	19   	VAR_ID_NUM          	NaN       	VAR                 	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	19   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	19   	VAR                 	NaN       	IOSTMT              	No 	VAR                 	
+)                   	19   	BC                  	NaN       	IOSTMT              	Yes	                    	
+;                   	19   	SEMICOL             	NaN       	IOSTMT              	Yes	                    	
+----                	19   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	19   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+for                 	20   	FOR                 	NaN       	ITERATIVESTMT       	Yes	                    	
+----                	20   	ITERATIVESTMT       	NaN       	STATEMENT           	No 	ITERATIVESTMT       	
+(                   	20   	BO                  	NaN       	ITERATIVESTMT       	Yes	                    	
+p                   	20   	ID                  	NaN       	ITERATIVESTMT       	Yes	                    	
+in                  	20   	IN                  	NaN       	ITERATIVESTMT       	Yes	                    	
+0                   	20   	NUM                 	0         	INDEX               	Yes	                    	
+----                	20   	INDEX               	NaN       	RANGE               	No 	INDEX               	
+----                	20   	RANGE               	NaN       	ITERATIVESTMT       	No 	RANGE               	
+..                  	20   	RANGEOP             	NaN       	RANGE               	Yes	                    	
+s                   	20   	ID                  	NaN       	INDEX               	Yes	                    	
+----                	20   	INDEX               	NaN       	RANGE               	No 	INDEX               	
+)                   	20   	BC                  	NaN       	ITERATIVESTMT       	Yes	                    	
+start               	21   	START               	NaN       	ITERATIVESTMT       	Yes	                    	
+print               	22   	PRINT               	NaN       	IOSTMT              	Yes	                    	
+----                	22   	IOSTMT              	NaN       	STATEMENT           	No 	IOSTMT              	
+(                   	22   	BO                  	NaN       	IOSTMT              	Yes	                    	
+p                   	22   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	22   	VAR_ID_NUM          	NaN       	VAR                 	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	22   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	22   	VAR                 	NaN       	IOSTMT              	No 	VAR                 	
+)                   	22   	BC                  	NaN       	IOSTMT              	Yes	                    	
+;                   	22   	SEMICOL             	NaN       	IOSTMT              	Yes	                    	
+----                	22   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	22   	STATEMENTS          	NaN       	ITERATIVESTMT       	No 	STATEMENTS          	
+----                	1    	EPS                 	NaN       	STATEMENTS          	Yes	                    	
+----                	23   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+end                 	23   	END                 	NaN       	ITERATIVESTMT       	Yes	                    	
+----                	20   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	20   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+----                	1    	EPS                 	NaN       	STATEMENTS          	Yes	                    	
+----                	24   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+end                 	24   	END                 	NaN       	ITERATIVESTMT       	Yes	                    	
+----                	16   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	16   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+m                   	26   	ID                  	NaN       	ASSIGNMENTSTMT      	Yes	                    	
+----                	26   	ASSIGNMENTSTMT      	NaN       	SIMPLESTMT          	No 	ASSIGNMENTSTMT      	
+:=                  	26   	ASSIGNOP            	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	26   	LVALUEIDSTMT        	NaN       	WHICHSTMT           	No 	LVALUEIDSTMT        	
+s                   	26   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	26   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	26   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	26   	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	26   	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	26   	N5                  	NaN       	TERM                	No 	N5                  	
+----                	26   	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	26   	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	26   	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	26   	N8                  	NaN       	ANYTERM             	No 	N8                  	
+----                	26   	ARITHMETICORBOOLEANEXPR	NaN       	EXPRESSION          	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	26   	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+----                	26   	EXPRESSION          	NaN       	LVALUEIDSTMT        	No 	EXPRESSION          	
+;                   	26   	SEMICOL             	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	26   	WHICHSTMT           	NaN       	ASSIGNMENTSTMT      	No 	WHICHSTMT           	
+----                	26   	SIMPLESTMT          	NaN       	STATEMENT           	No 	SIMPLESTMT          	
+----                	26   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	26   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+while               	28   	WHILE               	NaN       	ITERATIVESTMT       	Yes	                    	
+----                	28   	ITERATIVESTMT       	NaN       	STATEMENT           	No 	ITERATIVESTMT       	
+(                   	28   	BO                  	NaN       	ITERATIVESTMT       	Yes	                    	
+m                   	28   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	28   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	28   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	28   	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	28   	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	28   	N5                  	NaN       	TERM                	No 	N5                  	
+----                	28   	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	28   	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	28   	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+<=                  	28   	LE                  	NaN       	RELATIONALOP        	Yes	                    	
+----                	28   	RELATIONALOP        	NaN       	N8                  	No 	RELATIONALOP        	
+----                	28   	N8                  	NaN       	ANYTERM             	No 	N8                  	
+k                   	28   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	28   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	28   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	28   	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	28   	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	28   	N5                  	NaN       	TERM                	No 	N5                  	
+----                	28   	ARITHMETICEXPR      	NaN       	N8                  	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	28   	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	28   	N8                  	NaN       	N8                  	No 	N8                  	
+----                	28   	ARITHMETICORBOOLEANEXPR	NaN       	ITERATIVESTMT       	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	28   	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+)                   	28   	BC                  	NaN       	ITERATIVESTMT       	Yes	                    	
+start               	29   	START               	NaN       	ITERATIVESTMT       	Yes	                    	
+print               	30   	PRINT               	NaN       	IOSTMT              	Yes	                    	
+----                	30   	IOSTMT              	NaN       	STATEMENT           	No 	IOSTMT              	
+(                   	30   	BO                  	NaN       	IOSTMT              	Yes	                    	
+m                   	30   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	30   	VAR_ID_NUM          	NaN       	VAR                 	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	30   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	30   	VAR                 	NaN       	IOSTMT              	No 	VAR                 	
+)                   	30   	BC                  	NaN       	IOSTMT              	Yes	                    	
+;                   	30   	SEMICOL             	NaN       	IOSTMT              	Yes	                    	
+----                	30   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	30   	STATEMENTS          	NaN       	ITERATIVESTMT       	No 	STATEMENTS          	
+r                   	31   	ID                  	NaN       	ASSIGNMENTSTMT      	Yes	                    	
+----                	31   	ASSIGNMENTSTMT      	NaN       	SIMPLESTMT          	No 	ASSIGNMENTSTMT      	
+:=                  	31   	ASSIGNOP            	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	31   	LVALUEIDSTMT        	NaN       	WHICHSTMT           	No 	LVALUEIDSTMT        	
+5                   	31   	NUM                 	5         	VAR_ID_NUM          	Yes	                    	
+----                	31   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	31   	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	31   	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	31   	N5                  	NaN       	TERM                	No 	N5                  	
+----                	31   	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	31   	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	31   	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	31   	N8                  	NaN       	ANYTERM             	No 	N8                  	
+----                	31   	ARITHMETICORBOOLEANEXPR	NaN       	EXPRESSION          	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	31   	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+----                	31   	EXPRESSION          	NaN       	LVALUEIDSTMT        	No 	EXPRESSION          	
+;                   	31   	SEMICOL             	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	31   	WHICHSTMT           	NaN       	ASSIGNMENTSTMT      	No 	WHICHSTMT           	
+----                	31   	SIMPLESTMT          	NaN       	STATEMENT           	No 	SIMPLESTMT          	
+----                	31   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	31   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+m                   	32   	ID                  	NaN       	ASSIGNMENTSTMT      	Yes	                    	
+----                	32   	ASSIGNMENTSTMT      	NaN       	SIMPLESTMT          	No 	ASSIGNMENTSTMT      	
+:=                  	32   	ASSIGNOP            	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	32   	LVALUEIDSTMT        	NaN       	WHICHSTMT           	No 	LVALUEIDSTMT        	
+m                   	32   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	32   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	32   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	32   	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	32   	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	32   	N5                  	NaN       	TERM                	No 	N5                  	
+----                	32   	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
++                   	32   	PLUS                	NaN       	OP1                 	Yes	                    	
+----                	32   	OP1                 	NaN       	N4                  	No 	OP1                 	
+----                	32   	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+1                   	32   	NUM                 	1         	VAR_ID_NUM          	Yes	                    	
+----                	32   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	32   	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	32   	TERM                	NaN       	N4                  	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	32   	N5                  	NaN       	TERM                	No 	N5                  	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	32   	N4                  	NaN       	N4                  	No 	N4                  	
+----                	32   	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	32   	N8                  	NaN       	ANYTERM             	No 	N8                  	
+----                	32   	ARITHMETICORBOOLEANEXPR	NaN       	EXPRESSION          	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	32   	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+----                	32   	EXPRESSION          	NaN       	LVALUEIDSTMT        	No 	EXPRESSION          	
+;                   	32   	SEMICOL             	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	32   	WHICHSTMT           	NaN       	ASSIGNMENTSTMT      	No 	WHICHSTMT           	
+----                	32   	SIMPLESTMT          	NaN       	STATEMENT           	No 	SIMPLESTMT          	
+----                	32   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	32   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+while               	34   	WHILE               	NaN       	ITERATIVESTMT       	Yes	                    	
+----                	34   	ITERATIVESTMT       	NaN       	STATEMENT           	No 	ITERATIVESTMT       	
+(                   	34   	BO                  	NaN       	ITERATIVESTMT       	Yes	                    	
+r                   	34   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	34   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	34   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	34   	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	34   	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	34   	N5                  	NaN       	TERM                	No 	N5                  	
+----                	34   	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	34   	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	34   	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+<                   	34   	LT                  	NaN       	RELATIONALOP        	Yes	                    	
+----                	34   	RELATIONALOP        	NaN       	N8                  	No 	RELATIONALOP        	
+----                	34   	N8                  	NaN       	ANYTERM             	No 	N8                  	
+10                  	34   	NUM                 	10        	VAR_ID_NUM          	Yes	                    	
+----                	34   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	34   	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	34   	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	34   	N5                  	NaN       	TERM                	No 	N5                  	
+----                	34   	ARITHMETICEXPR      	NaN       	N8                  	No 	ARITHMETICEXPR      	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	34   	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	34   	N8                  	NaN       	N8                  	No 	N8                  	
+----                	34   	ARITHMETICORBOOLEANEXPR	NaN       	ITERATIVESTMT       	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	34   	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+)                   	34   	BC                  	NaN       	ITERATIVESTMT       	Yes	                    	
+start               	35   	START               	NaN       	ITERATIVESTMT       	Yes	                    	
+print               	36   	PRINT               	NaN       	IOSTMT              	Yes	                    	
+----                	36   	IOSTMT              	NaN       	STATEMENT           	No 	IOSTMT              	
+(                   	36   	BO                  	NaN       	IOSTMT              	Yes	                    	
+r                   	36   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	36   	VAR_ID_NUM          	NaN       	VAR                 	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	36   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	36   	VAR                 	NaN       	IOSTMT              	No 	VAR                 	
+)                   	36   	BC                  	NaN       	IOSTMT              	Yes	                    	
+;                   	36   	SEMICOL             	NaN       	IOSTMT              	Yes	                    	
+----                	36   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	36   	STATEMENTS          	NaN       	ITERATIVESTMT       	No 	STATEMENTS          	
+r                   	37   	ID                  	NaN       	ASSIGNMENTSTMT      	Yes	                    	
+----                	37   	ASSIGNMENTSTMT      	NaN       	SIMPLESTMT          	No 	ASSIGNMENTSTMT      	
+:=                  	37   	ASSIGNOP            	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	37   	LVALUEIDSTMT        	NaN       	WHICHSTMT           	No 	LVALUEIDSTMT        	
+r                   	37   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	37   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	37   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	37   	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	37   	TERM                	NaN       	ARITHMETICEXPR      	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	37   	N5                  	NaN       	TERM                	No 	N5                  	
+----                	37   	ARITHMETICEXPR      	NaN       	ANYTERM             	No 	ARITHMETICEXPR      	
++                   	37   	PLUS                	NaN       	OP1                 	Yes	                    	
+----                	37   	OP1                 	NaN       	N4                  	No 	OP1                 	
+----                	37   	N4                  	NaN       	ARITHMETICEXPR      	No 	N4                  	
+1                   	37   	NUM                 	1         	VAR_ID_NUM          	Yes	                    	
+----                	37   	VAR_ID_NUM          	NaN       	FACTOR              	No 	VAR_ID_NUM          	
+----                	37   	FACTOR              	NaN       	TERM                	No 	FACTOR              	
+----                	37   	TERM                	NaN       	N4                  	No 	TERM                	
+----                	1    	EPS                 	NaN       	N5                  	Yes	                    	
+----                	37   	N5                  	NaN       	TERM                	No 	N5                  	
+----                	1    	EPS                 	NaN       	N4                  	Yes	                    	
+----                	37   	N4                  	NaN       	N4                  	No 	N4                  	
+----                	37   	ANYTERM             	NaN       	ARITHMETICORBOOLEANEXPR	No 	ANYTERM             	
+----                	1    	EPS                 	NaN       	N8                  	Yes	                    	
+----                	37   	N8                  	NaN       	ANYTERM             	No 	N8                  	
+----                	37   	ARITHMETICORBOOLEANEXPR	NaN       	EXPRESSION          	No 	ARITHMETICORBOOLEANEXPR	
+----                	1    	EPS                 	NaN       	N7                  	Yes	                    	
+----                	37   	N7                  	NaN       	ARITHMETICORBOOLEANEXPR	No 	N7                  	
+----                	37   	EXPRESSION          	NaN       	LVALUEIDSTMT        	No 	EXPRESSION          	
+;                   	37   	SEMICOL             	NaN       	LVALUEIDSTMT        	Yes	                    	
+----                	37   	WHICHSTMT           	NaN       	ASSIGNMENTSTMT      	No 	WHICHSTMT           	
+----                	37   	SIMPLESTMT          	NaN       	STATEMENT           	No 	SIMPLESTMT          	
+----                	37   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	37   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+----                	1    	EPS                 	NaN       	STATEMENTS          	Yes	                    	
+----                	38   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+end                 	38   	END                 	NaN       	ITERATIVESTMT       	Yes	                    	
+----                	34   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	34   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+for                 	40   	FOR                 	NaN       	ITERATIVESTMT       	Yes	                    	
+----                	40   	ITERATIVESTMT       	NaN       	STATEMENT           	No 	ITERATIVESTMT       	
+(                   	40   	BO                  	NaN       	ITERATIVESTMT       	Yes	                    	
+q                   	40   	ID                  	NaN       	ITERATIVESTMT       	Yes	                    	
+in                  	40   	IN                  	NaN       	ITERATIVESTMT       	Yes	                    	
+4                   	40   	NUM                 	4         	INDEX               	Yes	                    	
+----                	40   	INDEX               	NaN       	RANGE               	No 	INDEX               	
+----                	40   	RANGE               	NaN       	ITERATIVESTMT       	No 	RANGE               	
+..                  	40   	RANGEOP             	NaN       	RANGE               	Yes	                    	
+6                   	40   	NUM                 	6         	INDEX               	Yes	                    	
+----                	40   	INDEX               	NaN       	RANGE               	No 	INDEX               	
+)                   	40   	BC                  	NaN       	ITERATIVESTMT       	Yes	                    	
+start               	41   	START               	NaN       	ITERATIVESTMT       	Yes	                    	
+print               	42   	PRINT               	NaN       	IOSTMT              	Yes	                    	
+----                	42   	IOSTMT              	NaN       	STATEMENT           	No 	IOSTMT              	
+(                   	42   	BO                  	NaN       	IOSTMT              	Yes	                    	
+q                   	42   	ID                  	NaN       	VAR_ID_NUM          	Yes	                    	
+----                	42   	VAR_ID_NUM          	NaN       	VAR                 	No 	VAR_ID_NUM          	
+----                	1    	EPS                 	NaN       	WHICHID             	Yes	                    	
+----                	42   	WHICHID             	NaN       	VAR_ID_NUM          	No 	WHICHID             	
+----                	42   	VAR                 	NaN       	IOSTMT              	No 	VAR                 	
+)                   	42   	BC                  	NaN       	IOSTMT              	Yes	                    	
+;                   	42   	SEMICOL             	NaN       	IOSTMT              	Yes	                    	
+----                	42   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	42   	STATEMENTS          	NaN       	ITERATIVESTMT       	No 	STATEMENTS          	
+----                	1    	EPS                 	NaN       	STATEMENTS          	Yes	                    	
+----                	43   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+end                 	43   	END                 	NaN       	ITERATIVESTMT       	Yes	                    	
+----                	40   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	40   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+----                	1    	EPS                 	NaN       	STATEMENTS          	Yes	                    	
+----                	45   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+end                 	45   	END                 	NaN       	ITERATIVESTMT       	Yes	                    	
+----                	28   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	28   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+----                	1    	EPS                 	NaN       	STATEMENTS          	Yes	                    	
+----                	46   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+end                 	46   	END                 	NaN       	ITERATIVESTMT       	Yes	                    	
+----                	12   	STATEMENT           	NaN       	STATEMENTS          	No 	STATEMENT           	
+----                	12   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+----                	1    	EPS                 	NaN       	STATEMENTS          	Yes	                    	
+----                	47   	STATEMENTS          	NaN       	STATEMENTS          	No 	STATEMENTS          	
+end                 	47   	END                 	NaN       	MODULEDEF           	Yes	                    	
+----                	1    	EPS                 	NaN       	OTHERMODULES        	Yes	                    	
+----                	48   	OTHERMODULES        	NaN       	PROGRAM             	No 	OTHERMODULES        	
