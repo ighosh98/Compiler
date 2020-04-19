@@ -24,93 +24,90 @@ bits 32
 global main
 
 main:
-	sub esp,20  ;allocating space on the stack
+	sub esp,16  ;allocating space on the stack
 	mov ebp, esp	;ebp accesses upwards, while stack grows downwards
-	mov edx, 0
-	mov [ebp+0], edx   ;assign value to a variable
-	mov edx, 1
-	mov [ebp+4], edx   ;assign value to a variable
 	pushad
-	push dword 48
-	call malloc
-	mov [ebp+8],eax	;store the allocated memory pointer
+	push dword input_str_int
+	call printf
 	pop eax
-	mov edi,[ebp+8]	;base pointer to the array
-	mov [edi], dword 1
-	mov [edi+4], dword 10
 	popad
 	pushad
-	mov eax,[ebp+4]	    ;value of index 2
-	sub eax,[ebp+0]	    ;subtract value of index1
-	add eax, 1
-	push edx
-	mov edx,4
-	imul edx ;eax has the result of 4*eax the multiplication
-	pop edx
-	add eax, 8   ;space for index values
+	mov eax, ebp
+	add eax, 0
 	push eax
-	call malloc
-	mov [ebp+12],eax	;store the allocated memory pointer
-	pop eax
-	mov edi,[ebp+12]	;base pointer to the array
-	mov eax, [ebp+0]
-	mov [edi], eax
-	mov eax, [ebp+4]
-	mov [edi+4], eax
+	push dword input_format_int
+	call scanf
+	add esp, 8
 	popad
-	push ecx    ;save ecx before loop start
-	mov ecx,1
-	mov [ebp+16],ecx   ;mov first index into loop var
-FOR_LOOP_1:
-	mov edx, [ebp+16]
-	mov esi, [ebp+16]  ;place value of index var
-	mov edi,[ebp+8]   ;edi has base address of array
-	cmp esi,[edi]
-	jl BOUND_ERROR
-	cmp esi,[edi+4]
-	jg BOUND_ERROR
-	sub esi, [edi]  ;subtract base index of the array
-	mov [edi+4*esi+2*4],edx    ;first 2 bytes store the bounds
-	push edx
-	mov edx,10
-	mov ecx, [ebp+16]
-	add ecx,1
-	mov [ebp+16],ecx	;add 1 to loop variable
-	cmp ecx,edx
-	pop edx
-	jle FOR_LOOP_1
-	pop ecx	;restore ecx after the loop
+	mov edx, 5
+	mov [ebp+4], edx   ;assign value to a variable
+	sub esp, 20
+	mov edx, [ebp+0]
+	mov  [esp+0], edx
+	mov edx, [ebp+4]
+	mov  [esp+4], edx
 	mov edx, [ebp+8]
-	mov [ebp+12],edx   ;assign pointer of the array
-	push ecx    ;save ecx before loop start
-	mov ecx,1
-	mov [ebp+16],ecx   ;mov first index into loop var
-FOR_LOOP_2:
-	mov edi, [ebp+12]
-	mov esi, [ebp+16]
-	cmp esi,[edi]
-	jl BOUND_ERROR
-	cmp esi,[edi+4]
-	jg BOUND_ERROR
-	sub esi, [edi]	;subtract the base index
-	mov edx, [edi+esi*4+2*4]
+	mov  [esp+8], edx
+	mov edx, [ebp+12]
+	mov  [esp+12], edx
+	push ebp
+	mov ebp, esp
+	add ebp, 4
+	call mod1
+	pop ebp
+	mov edx, [esp+8]
+	mov  [ebp+8], edx
+	mov edx, [esp+12]
+	mov  [ebp+12], edx
+	add esp, 20
+	mov edx, [ebp+8]
 	pushad
 	push edx
 	push dword integer_output
 	call printf
 	add esp, 8
 	popad
+	mov edx, [ebp+12]
+	pushad
 	push edx
-	mov edx,10
-	mov ecx, [ebp+16]
-	add ecx,1
-	mov [ebp+16],ecx	;add 1 to loop variable
-	cmp ecx,edx
-	pop edx
-	jle FOR_LOOP_2
-	pop ecx	;restore ecx after the loop
+	push dword integer_output
+	call printf
+	add esp, 8
+	popad
 exit_main:  call exit
 
+mod1:
+	pushad
+	mov edx, 10
+	mov [ebp+16], edx   ;assign value to a variable
+	mov edx, [ebp+0]
+	push edx 
+	mov edx, [ebp+4]
+	push edx 
+	mov edx, 10
+	pop eax
+	sub eax, edx    ;perform (eax - edx) subtraction
+	mov edx, eax    ;store result of subtraction in edx
+	pop eax
+	add edx, eax
+	mov [ebp+8], edx   ;assign value to a variable
+	mov edx, [ebp+4]
+	push edx 
+	mov edx, 5
+	pop eax
+	push ebx
+	mov ebx,edx
+	mov edx, 0
+	idiv ebx	;edx:eax divided by ebx result stored in eax
+	mov edx, eax    ;move the quotient into edx
+	pop ebx
+	push edx 
+	mov edx, [ebp+16]
+	pop eax
+	add edx, eax
+	mov [ebp+12], edx   ;assign value to a variable
+	popad
+ret
 	BOUND_ERROR:
 	pushad
 	push dword bound_error_str

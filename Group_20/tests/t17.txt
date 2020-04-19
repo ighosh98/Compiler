@@ -1,15 +1,16 @@
-<<driver program>>
+<<<driver program>>>
 start
 declare a,b:integer;
 declare c:boolean;
 a:=21;
-b:=23:
-c:=(b-a>3);
+b:=23;
+c:=(a>b);
 switch(c)
-	start
-	case TRUE: b:=100;
+start
+	case true: b:=100;
 		break;
-	case FALSE: b:= -100;
+	case false: b:= -100;
 		break;
 end
+print(b);
 end
