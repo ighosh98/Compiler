@@ -1,4 +1,4 @@
-<<driver Program>>
+<<driver program>>
 start
 	declare k,j,p,s,m,r,q:integer;
 	k := 4;
@@ -8,9 +8,9 @@ start
 	m := 0;
 	r := 5;
 	q := 4;
-	declare dynarr:array[s..8] of integer;
+	declare dynarr:array[4..8] of integer;
 	
-	for(k in s..8)
+	for(k in 4..8)
 	start
 		dynarr[k] := k*2;
 		print(dynarr[k]);

@@ -24,37 +24,24 @@ bits 32
 global main
 
 main:
-	sub esp,48  ;allocating space on the stack
+	sub esp,20  ;allocating space on the stack
 	mov ebp, esp	;ebp accesses upwards, while stack grows downwards
+	mov edx, 0
+	mov [ebp+0], edx   ;assign value to a variable
+	mov edx, 1
+	mov [ebp+4], edx   ;assign value to a variable
 	pushad
-	push dword input_str_int
-	call printf
+	push dword 48
+	call malloc
+	mov [ebp+8],eax	;store the allocated memory pointer
 	pop eax
+	mov edi,[ebp+8]	;base pointer to the array
+	mov [edi], dword 1
+	mov [edi+4], dword 10
 	popad
 	pushad
-	mov eax, ebp
-	add eax, 28
-	push eax
-	push dword input_format_int
-	call scanf
-	add esp, 8
-	popad
-	pushad
-	push dword input_str_int
-	call printf
-	pop eax
-	popad
-	pushad
-	mov eax, ebp
-	add eax, 32
-	push eax
-	push dword input_format_int
-	call scanf
-	add esp, 8
-	popad
-	pushad
-	mov eax,[ebp+32]	    ;value of index 2
-	sub eax,[ebp+28]	    ;subtract value of index1
+	mov eax,[ebp+4]	    ;value of index 2
+	sub eax,[ebp+0]	    ;subtract value of index1
 	add eax, 1
 	push edx
 	mov edx,4
@@ -63,235 +50,64 @@ main:
 	add eax, 8   ;space for index values
 	push eax
 	call malloc
-	mov [ebp+36],eax	;store the allocated memory pointer
+	mov [ebp+12],eax	;store the allocated memory pointer
 	pop eax
-	mov edi,[ebp+36]	;base pointer to the array
-	mov eax, [ebp+28]
+	mov edi,[ebp+12]	;base pointer to the array
+	mov eax, [ebp+0]
 	mov [edi], eax
-	mov eax, [ebp+32]
+	mov eax, [ebp+4]
 	mov [edi+4], eax
 	popad
-	pushad
-	mov eax,[ebp+32]	    ;value of index 2
-	sub eax,[ebp+28]	    ;subtract value of index1
-	add eax, 1
-	push edx
-	mov edx,4
-	imul edx ;eax has the result of 4*eax the multiplication
-	pop edx
-	add eax, 8   ;space for index values
-	push eax
-	call malloc
-	mov [ebp+40],eax	;store the allocated memory pointer
-	pop eax
-	mov edi,[ebp+40]	;base pointer to the array
-	mov eax, [ebp+28]
-	mov [edi], eax
-	mov eax, [ebp+32]
-	mov [edi+4], eax
-	popad
-	pushad
-	mov eax,[ebp+32]	    ;value of index 2
-	sub eax,[ebp+28]	    ;subtract value of index1
-	add eax, 1
-	push edx
-	mov edx,4
-	imul edx ;eax has the result of 4*eax the multiplication
-	pop edx
-	add eax, 8   ;space for index values
-	push eax
-	call malloc
-	mov [ebp+44],eax	;store the allocated memory pointer
-	pop eax
-	mov edi,[ebp+44]	;base pointer to the array
-	mov eax, [ebp+28]
-	mov [edi], eax
-	mov eax, [ebp+32]
-	mov [edi+4], eax
-	popad
-	pushad
-	mov edi, [ebp+36]
-	push dword [edi+4]
-	push dword [edi]
-	mov eax, [edi+4]
-	sub eax, [edi]
-	add eax, 1
-	push eax
-	push dword input_arr_int
-	call printf
-	add esp, 16
-	popad
-	pushad
-	mov edi, [ebp+36]
-	mov ebx, [edi]
-	mov eax, [edi+4]
-	sub eax, ebx
-	mov ecx, 0
-	add edi, 4
-INPUT_LABEL_1:
-	add edi, 4
-	pushad
-	push edi
-	push dword input_format_int
-	call scanf
-	add esp, 8
-	popad
-	add ecx,1
-	cmp ecx,eax
-	jle INPUT_LABEL_1
-	popad
-	pushad
-	mov edi, [ebp+40]
-	push dword [edi+4]
-	push dword [edi]
-	mov eax, [edi+4]
-	sub eax, [edi]
-	add eax, 1
-	push eax
-	push dword input_arr_int
-	call printf
-	add esp, 16
-	popad
-	pushad
-	mov edi, [ebp+40]
-	mov ebx, [edi]
-	mov eax, [edi+4]
-	sub eax, ebx
-	mov ecx, 0
-	add edi, 4
-INPUT_LABEL_2:
-	add edi, 4
-	pushad
-	push edi
-	push dword input_format_int
-	call scanf
-	add esp, 8
-	popad
-	add ecx,1
-	cmp ecx,eax
-	jle INPUT_LABEL_2
-	popad
-	mov edx, 7
-	mov [ebp+8], edx   ;assign value to a variable
 	push ecx    ;save ecx before loop start
 	mov ecx,1
-	mov [ebp+12],ecx   ;mov first index into loop var
+	mov [ebp+16],ecx   ;mov first index into loop var
 FOR_LOOP_1:
-	pushad
-	push dword input_str_int
-	call printf
-	pop eax
-	popad
-	pushad
-	mov eax, ebp
-	add eax, 0
-	push eax
-	push dword input_format_int
-	call scanf
-	add esp, 8
-	popad
-	pushad
-	push dword input_str_int
-	call printf
-	pop eax
-	popad
-	pushad
-	mov eax, ebp
-	add eax, 4
-	push eax
-	push dword input_format_int
-	call scanf
-	add esp, 8
-	popad
-	mov edi, [ebp+36]
-	mov esi, [ebp+0]
-	cmp esi,[edi]
-	jl BOUND_ERROR
-	cmp esi,[edi+4]
-	jg BOUND_ERROR
-	sub esi, [edi]	;subtract the base index
-	mov edx, [edi+esi*4+2*4]
-	push edx 
-	mov edi, [ebp+40]
-	mov esi, [ebp+4]
-	cmp esi,[edi]
-	jl BOUND_ERROR
-	cmp esi,[edi+4]
-	jg BOUND_ERROR
-	sub esi, [edi]	;subtract the base index
-	mov edx, [edi+esi*4+2*4]
-	pop eax
-	add edx, eax
-	mov [ebp+16], edx   ;assign value to a variable
-	mov edi, [ebp+36]
-	mov esi, [ebp+8]
-	cmp esi,[edi]
-	jl BOUND_ERROR
-	cmp esi,[edi+4]
-	jg BOUND_ERROR
-	sub esi, [edi]	;subtract the base index
-	mov edx, [edi+esi*4+2*4]
-	push edx 
-	mov edi, [ebp+40]
-	mov esi, [ebp+4]
-	cmp esi,[edi]
-	jl BOUND_ERROR
-	cmp esi,[edi+4]
-	jg BOUND_ERROR
-	sub esi, [edi]	;subtract the base index
-	mov edx, [edi+esi*4+2*4]
-	pop eax
-	add edx, eax
-	mov [ebp+20], edx   ;assign value to a variable
-	mov edi, [ebp+36]
-	mov esi, [ebp+0]
-	cmp esi,[edi]
-	jl BOUND_ERROR
-	cmp esi,[edi+4]
-	jg BOUND_ERROR
-	sub esi, [edi]	;subtract the base index
-	mov edx, [edi+esi*4+2*4]
-	push edx 
-	mov edi, [ebp+40]
-	mov esi, [ebp+8]
-	cmp esi,[edi]
-	jl BOUND_ERROR
-	cmp esi,[edi+4]
-	jg BOUND_ERROR
-	sub esi, [edi]	;subtract the base index
-	mov edx, [edi+esi*4+2*4]
-	pop eax
-	add edx, eax
-	mov [ebp+24], edx   ;assign value to a variable
 	mov edx, [ebp+16]
-	pushad
+	mov esi, [ebp+16]  ;place value of index var
+	mov edi,[ebp+8]   ;edi has base address of array
+	cmp esi,[edi]
+	jl BOUND_ERROR
+	cmp esi,[edi+4]
+	jg BOUND_ERROR
+	sub esi, [edi]  ;subtract base index of the array
+	mov [edi+4*esi+2*4],edx    ;first 2 bytes store the bounds
 	push edx
-	push dword integer_output
-	call printf
-	add esp, 8
-	popad
-	mov edx, [ebp+20]
-	pushad
-	push edx
-	push dword integer_output
-	call printf
-	add esp, 8
-	popad
-	mov edx, [ebp+24]
-	pushad
-	push edx
-	push dword integer_output
-	call printf
-	add esp, 8
-	popad
-	push edx
-	mov edx,3
-	mov ecx, [ebp+12]
+	mov edx,10
+	mov ecx, [ebp+16]
 	add ecx,1
-	mov [ebp+12],ecx	;add 1 to loop variable
+	mov [ebp+16],ecx	;add 1 to loop variable
 	cmp ecx,edx
 	pop edx
 	jle FOR_LOOP_1
+	pop ecx	;restore ecx after the loop
+	mov edx, [ebp+8]
+	mov [ebp+12],edx   ;assign pointer of the array
+	push ecx    ;save ecx before loop start
+	mov ecx,1
+	mov [ebp+16],ecx   ;mov first index into loop var
+FOR_LOOP_2:
+	mov edi, [ebp+12]
+	mov esi, [ebp+16]
+	cmp esi,[edi]
+	jl BOUND_ERROR
+	cmp esi,[edi+4]
+	jg BOUND_ERROR
+	sub esi, [edi]	;subtract the base index
+	mov edx, [edi+esi*4+2*4]
+	pushad
+	push edx
+	push dword integer_output
+	call printf
+	add esp, 8
+	popad
+	push edx
+	mov edx,10
+	mov ecx, [ebp+16]
+	add ecx,1
+	mov [ebp+16],ecx	;add 1 to loop variable
+	cmp ecx,edx
+	pop edx
+	jle FOR_LOOP_2
 	pop ecx	;restore ecx after the loop
 exit_main:  call exit
 
