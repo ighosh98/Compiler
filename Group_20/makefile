@@ -13,6 +13,6 @@ output: codegen.c symboltable.c semantic.c ast.c lexer.c parser.c hashtable.c ha
 	gcc -c color.c
 	gcc -c set.c
 	gcc -c treefiles.c
-	gcc codegen.o treefiles.o symboltable.o semantic.o ast.o stack.o nary_tree.o lexer.o parser.o hashtable.o hash.o color.o set.o driver.c -o stage1exe
+	gcc codegen.o treefiles.o symboltable.o semantic.o ast.o stack.o nary_tree.o lexer.o parser.o hashtable.o hash.o color.o set.o driver.c -o compiler
 	rm -vf *.o out *~
 

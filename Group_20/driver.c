@@ -32,10 +32,7 @@ void printSymbolTableDriver(symbolTable* symbol_table)
 int main(int argc,char **argv)
 {
     printf("############ Implementation Status ##############\n");
-    printf("a) First Set and Follow Set Automated.\n");
-    printf("b) Lexer and Syntax Analyser implemented completely.\n");
-    printf("c) Code runs successfully for all given test cases.\n");
-    printf("d) Parse Tree generated Successfully for all cases.\n");
+    printf("Level 4: Symbol Table/AST/Type Checker/Semantic Rules/Code Generator moudles work.\n");
 
     //verify both input and output files***********************
     if(argc<2)
@@ -48,13 +45,17 @@ int main(int argc,char **argv)
     productions p = read_grammar();
     int n = p.no_productions;
 
-    int choice;
+    int choice = 9;
 
+    int vari = -1;
     while(1)
     {
-	printf("\nEnter Choice: ");
-	scanf("%d",&choice);
-	
+	vari++;
+	if(vari != 0 )
+	{   
+	    printf("\nEnter Choice: ");
+	    scanf("%d",&choice);
+	}
 	if(choice == 0)
 	    break;
 	else if(choice == 1)
@@ -341,13 +342,15 @@ int main(int argc,char **argv)
 	    if(semantic_error == false)
 	    {
 
-		red();
-		printf("\nWriting code to file\n");
-		reset();
-
 		top_table = getSymbolTable(10);
 		code_file = fptr;
 		codegen(a.root,NULL,0);
+		
+		red();
+		printf("\nCode Compiles Successfully...\n");
+		reset();
+
+
 	    }
 	    else
 	    {
