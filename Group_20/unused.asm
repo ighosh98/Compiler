@@ -37,7 +37,7 @@ array_parameter_demo:
 	mov eax, [edi+4]
 	sub eax, ebx
 	mov ecx, 0
-OUTPUT_LABEL_1:
+OUTPUT_LABEL_9:
 	mov ebx, [edi+ecx*4+2*4]
 	pushad
 	push ebx
@@ -47,7 +47,7 @@ OUTPUT_LABEL_1:
 	popad
 	add ecx,1
 	cmp ecx,eax
-	jle OUTPUT_LABEL_1
+	jle OUTPUT_LABEL_9
 	popad
 	pushad
 	push dword nextline
@@ -66,7 +66,7 @@ OUTPUT_LABEL_1:
 	mov eax, [edi+4]
 	sub eax, ebx
 	mov ecx, 0
-OUTPUT_LABEL_2:
+OUTPUT_LABEL_10:
 	mov ebx, [edi+ecx*4+2*4]
 	pushad
 	push ebx
@@ -76,7 +76,7 @@ OUTPUT_LABEL_2:
 	popad
 	add ecx,1
 	cmp ecx,eax
-	jle OUTPUT_LABEL_2
+	jle OUTPUT_LABEL_10
 	popad
 	pushad
 	push dword nextline
@@ -165,7 +165,7 @@ OUTPUT_LABEL_2:
 	sub eax, ebx
 	mov ecx, 0
 	add edi, 4
-INPUT_LABEL_1:
+INPUT_LABEL_5:
 	add edi, 4
 	pushad
 	push edi
@@ -175,7 +175,7 @@ INPUT_LABEL_1:
 	popad
 	add ecx,1
 	cmp ecx,eax
-	jle INPUT_LABEL_1
+	jle INPUT_LABEL_5
 	popad
 	pushad
 	mov edi, [ebp+52]
@@ -196,7 +196,7 @@ INPUT_LABEL_1:
 	sub eax, ebx
 	mov ecx, 0
 	add edi, 4
-INPUT_LABEL_2:
+INPUT_LABEL_6:
 	add edi, 4
 	pushad
 	push edi
@@ -206,7 +206,7 @@ INPUT_LABEL_2:
 	popad
 	add ecx,1
 	cmp ecx,eax
-	jle INPUT_LABEL_2
+	jle INPUT_LABEL_6
 	popad
 	mov edx, [ebp+44]
 	pushad
@@ -220,7 +220,7 @@ INPUT_LABEL_2:
 	mov eax, [edi+4]
 	sub eax, ebx
 	mov ecx, 0
-OUTPUT_LABEL_3:
+OUTPUT_LABEL_11:
 	mov ebx, [edi+ecx*4+2*4]
 	pushad
 	push ebx
@@ -230,7 +230,7 @@ OUTPUT_LABEL_3:
 	popad
 	add ecx,1
 	cmp ecx,eax
-	jle OUTPUT_LABEL_3
+	jle OUTPUT_LABEL_11
 	popad
 	pushad
 	push dword nextline
@@ -242,7 +242,7 @@ OUTPUT_LABEL_3:
 	push ecx    ;save ecx before loop start
 	mov ecx,10
 	mov [ebp+28],ecx   ;mov first index into loop var
-FOR_LOOP_1:
+FOR_LOOP_4:
 	mov edi, [ebp+44]
 	mov esi, [ebp+28]
 	cmp esi,[edi]
@@ -284,7 +284,7 @@ FOR_LOOP_1:
 	mov [ebp+28],ecx	;add 1 to loop variable
 	cmp ecx,edx
 	pop edx
-	jle FOR_LOOP_1
+	jle FOR_LOOP_4
 	pop ecx	;restore ecx after the loop
 	mov edx, [ebp+44]
 	pushad
@@ -298,7 +298,7 @@ FOR_LOOP_1:
 	mov eax, [edi+4]
 	sub eax, ebx
 	mov ecx, 0
-OUTPUT_LABEL_4:
+OUTPUT_LABEL_12:
 	mov ebx, [edi+ecx*4+2*4]
 	pushad
 	push ebx
@@ -308,7 +308,7 @@ OUTPUT_LABEL_4:
 	popad
 	add ecx,1
 	cmp ecx,eax
-	jle OUTPUT_LABEL_4
+	jle OUTPUT_LABEL_12
 	popad
 	pushad
 	push dword nextline
@@ -361,7 +361,7 @@ OUTPUT_LABEL_4:
 	mov eax, [edi+4]
 	sub eax, ebx
 	mov ecx, 0
-OUTPUT_LABEL_5:
+OUTPUT_LABEL_13:
 	mov ebx, [edi+ecx*4+2*4]
 	pushad
 	push ebx
@@ -371,7 +371,7 @@ OUTPUT_LABEL_5:
 	popad
 	add ecx,1
 	cmp ecx,eax
-	jle OUTPUT_LABEL_5
+	jle OUTPUT_LABEL_13
 	popad
 	pushad
 	push dword nextline
@@ -394,7 +394,7 @@ OUTPUT_LABEL_5:
 	mov eax, [edi+4]
 	sub eax, ebx
 	mov ecx, 0
-OUTPUT_LABEL_6:
+OUTPUT_LABEL_14:
 	mov ebx, [edi+ecx*4+2*4]
 	pushad
 	push ebx
@@ -404,7 +404,7 @@ OUTPUT_LABEL_6:
 	popad
 	add ecx,1
 	cmp ecx,eax
-	jle OUTPUT_LABEL_6
+	jle OUTPUT_LABEL_14
 	popad
 	pushad
 	push dword nextline
@@ -414,7 +414,7 @@ OUTPUT_LABEL_6:
 	push ecx    ;save ecx before loop start
 	mov ecx,10
 	mov [ebp+32],ecx   ;mov first index into loop var
-FOR_LOOP_2:
+FOR_LOOP_5:
 	mov edi, [ebp+48]
 	mov esi, [ebp+32]
 	cmp esi,[edi]
@@ -456,7 +456,7 @@ FOR_LOOP_2:
 	mov [ebp+32],ecx	;add 1 to loop variable
 	cmp ecx,edx
 	pop edx
-	jle FOR_LOOP_2
+	jle FOR_LOOP_5
 	pop ecx	;restore ecx after the loop
 	mov edx, [ebp+48]
 	pushad
@@ -470,7 +470,7 @@ FOR_LOOP_2:
 	mov eax, [edi+4]
 	sub eax, ebx
 	mov ecx, 0
-OUTPUT_LABEL_7:
+OUTPUT_LABEL_15:
 	mov ebx, [edi+ecx*4+2*4]
 	pushad
 	push ebx
@@ -480,7 +480,7 @@ OUTPUT_LABEL_7:
 	popad
 	add ecx,1
 	cmp ecx,eax
-	jle OUTPUT_LABEL_7
+	jle OUTPUT_LABEL_15
 	popad
 	pushad
 	push dword nextline
@@ -508,7 +508,7 @@ OUTPUT_LABEL_7:
 	mov eax, [edi+4]
 	sub eax, ebx
 	mov ecx, 0
-OUTPUT_LABEL_8:
+OUTPUT_LABEL_16:
 	mov ebx, [edi+ecx*4+2*4]
 	pushad
 	push ebx
@@ -518,7 +518,7 @@ OUTPUT_LABEL_8:
 	popad
 	add ecx,1
 	cmp ecx,eax
-	jle OUTPUT_LABEL_8
+	jle OUTPUT_LABEL_16
 	popad
 	pushad
 	push dword nextline
@@ -528,7 +528,7 @@ OUTPUT_LABEL_8:
 	push ecx    ;save ecx before loop start
 	mov ecx,1
 	mov [ebp+20],ecx   ;mov first index into loop var
-FOR_LOOP_3:
+FOR_LOOP_6:
 	pushad
 	push dword input_str_int
 	call printf
@@ -569,7 +569,7 @@ FOR_LOOP_3:
 	mov [ebp+20],ecx	;add 1 to loop variable
 	cmp ecx,edx
 	pop edx
-	jle FOR_LOOP_3
+	jle FOR_LOOP_6
 	pop ecx	;restore ecx after the loop
 	mov edx, [ebp+16]
 	pushad
@@ -656,7 +656,7 @@ main:
 	sub eax, ebx
 	mov ecx, 0
 	add edi, 4
-INPUT_LABEL_3:
+INPUT_LABEL_7:
 	add edi, 4
 	pushad
 	push edi
@@ -666,7 +666,7 @@ INPUT_LABEL_3:
 	popad
 	add ecx,1
 	cmp ecx,eax
-	jle INPUT_LABEL_3
+	jle INPUT_LABEL_7
 	popad
 	pushad
 	mov edi, [ebp+24]
@@ -687,7 +687,7 @@ INPUT_LABEL_3:
 	sub eax, ebx
 	mov ecx, 0
 	add edi, 4
-INPUT_LABEL_4:
+INPUT_LABEL_8:
 	add edi, 4
 	pushad
 	push edi
@@ -697,7 +697,7 @@ INPUT_LABEL_4:
 	popad
 	add ecx,1
 	cmp ecx,eax
-	jle INPUT_LABEL_4
+	jle INPUT_LABEL_8
 	popad
 	sub esp, 56
 	mov edx, [ebp+20]

@@ -33,20 +33,40 @@ void printSymbolNodeArr(symbol_table_node* a, symbol_table_node* curr_func, int 
 
 
     int width = -1; //calculate width of the variable 
+
     if(a->isarr)
     {
-    printf("%10s  %10s  %d-%d  ?isarray?  ?static/dynamic?  [array range]  %3d  %3d  %10s  %2d  %2d",a->name, 
-				    curr_func->name,
-				    start,
-				    end,
-				    width,
-				    nesting, 
-				    datatype_map[a->type],
-				    a->offset, 
-				    nesting);
+	if(a->isdynamic)
+	{
+	    width = 12;
+	    if(a->isdynamic==1)
+	    {
+		printf("%20s	%d-%d	%10s	dynamic array	[%d, %s]    %10s", 
+				    curr_func->name,start,end,a->name,a->crange1, a->drange2->name,datatype_map[a->type]);
+	    }
+	    else if(a->isdynamic==2)
+	    {
+		printf("%20s	%d-%d	%10s	dynamic array	[%s, %d]    %10s", 
+				    curr_func->name,start,end,a->name,a->drange1->name,a->crange2,datatype_map[a->type]);
+	    }
+	    else if(a->isdynamic == 3)
+	    {
+		printf("%20s	%d-%d	%10s	dynamic array	[%s, %s]    %10s", 
+				    curr_func->name,start,end,a->name,a->drange1->name,a->drange2->name,datatype_map[a->type]);
+	    }
+	}
+	else
+	{
+	    if(a->type == real) width = (a->crange2 - a->crange1)*8 + 12;
+	    else width = (a->crange2 - a->crange1)*4 +12;
+	    printf("%20s    %d-%d	%10s	static array	[%d, %d]    %10s", 
+				    curr_func->name,start,end,a->name,a->crange1,a->crange2,datatype_map[a->type]);
+	}
+    
     printf("\n");
     }
 }
+
 
 void printSymbolTablesArr(symbolTable* table,int nesting)
 {
@@ -83,17 +103,17 @@ void printSymbolNode(symbol_table_node* a, symbol_table_node* curr_func, int nes
 	    width = 12;
 	    if(a->isdynamic==1)
 	    {
-		printf("%10s  %20s  %d-%d  %3d yes  dynamic array  [%d, %s]  %10s  %3d  %2d",a->name, 
+		printf("%10s  %20s  %d-%d  %3d yes  dynamic array  [%d, %s]	%10s  %3d  %2d",a->name, 
 				    curr_func->name,start,end,width,a->crange1, a->drange2->name,datatype_map[a->type],a->offset,nesting);
 	    }
 	    else if(a->isdynamic==2)
 	    {
-		printf("%10s  %20s  %d-%d  %3d yes  dynamic array  [%s, %d]  %10s  %3d  %2d",a->name, 
+		printf("%10s  %20s  %d-%d  %3d yes  dynamic array  [%s, %d]	%10s  %3d  %2d",a->name, 
 				    curr_func->name,start,end,width,a->drange1->name,a->crange2,datatype_map[a->type],a->offset,nesting);
 	    }
 	    else if(a->isdynamic == 3)
 	    {
-		printf("%10s  %20s  %d-%d  %3d yes  dynamic array  [%s, %s]  %10s  %3d  %2d",a->name, 
+		printf("%10s  %20s  %d-%d  %3d yes  dynamic array  [%s, %s]	 %10s  %3d  %2d",a->name, 
 				    curr_func->name,start,end,width,a->drange1->name,a->drange2->name,datatype_map[a->type],a->offset,nesting);
 	    }
 	}
@@ -101,7 +121,7 @@ void printSymbolNode(symbol_table_node* a, symbol_table_node* curr_func, int nes
 	{
 	    if(a->type == real) width = (a->crange2 - a->crange1)*8 + 12;
 	    else width = (a->crange2 - a->crange1)*4 +12;
-	    printf("%10s  %20s  %d-%d  %3d yes  static array  [%d, %d]  %10s  %3d %2d",a->name, 
+	    printf("%10s  %20s  %d-%d  %3d yes  static array  [%d, %d]	    %10s  %3d %2d",a->name, 
 				    curr_func->name,start,end,width,a->crange1,a->crange2,datatype_map[a->type],a->offset,nesting);
 	}
     }
@@ -109,7 +129,7 @@ void printSymbolNode(symbol_table_node* a, symbol_table_node* curr_func, int nes
     {
 	if(a->type == real)width = 8;
 	else width = 4;
-	printf("%10s  %20s  %d-%d  %3d no   --------      ------       %10s  %3d  %2d",a->name, 
+	printf("%10s  %20s  %d-%d  %3d no   --------      --------	%10s  %3d  %2d",a->name, 
 				    curr_func->name,start,end,width,datatype_map[a->type],a->offset,nesting);
 
     }
