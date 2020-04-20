@@ -24,39 +24,12 @@ bits 32
 global main
 
 main:
-	sub esp,36  ;allocating space on the stack
+	sub esp,24  ;allocating space on the stack
 	mov ebp, esp	;ebp accesses upwards, while stack grows downwards
-	pushad
-	push dword 20
-	call malloc
-	mov [ebp+0],eax	;store the allocated memory pointer
-	pop eax
-	mov edi,[ebp+0]	;base pointer to the array
-	mov [edi], dword 1
-	mov [edi+4], dword 3
-	popad
-	pushad
-	push dword 20
-	call malloc
-	mov [ebp+4],eax	;store the allocated memory pointer
-	pop eax
-	mov edi,[ebp+4]	;base pointer to the array
-	mov [edi], dword 1
-	mov [edi+4], dword 3
-	popad
-	pushad
-	push dword 20
-	call malloc
-	mov [ebp+8],eax	;store the allocated memory pointer
-	pop eax
-	mov edi,[ebp+8]	;base pointer to the array
-	mov [edi], dword 1
-	mov [edi+4], dword 3
-	popad
 	mov edx, 5
-	mov [ebp+24], edx   ;assign value to a variable
+	mov [ebp+12], edx   ;assign value to a variable
 	mov edx, 9
-	mov [ebp+28], edx   ;assign value to a variable
+	mov [ebp+16], edx   ;assign value to a variable
 	pushad
 	push dword input_str_int
 	call printf
@@ -64,7 +37,7 @@ main:
 	popad
 	pushad
 	mov eax, ebp
-	add eax, 12
+	add eax, 0
 	push eax
 	push dword input_format_int
 	call scanf
@@ -77,43 +50,43 @@ main:
 	popad
 	pushad
 	mov eax, ebp
-	add eax, 16
+	add eax, 4
 	push eax
 	push dword input_format_int
 	call scanf
 	add esp, 8
 	popad
-	mov edx, [ebp+12]
+	mov edx, [ebp+0]
+	push edx 
+	mov edx, [ebp+4]
 	push edx 
 	mov edx, [ebp+16]
-	push edx 
-	mov edx, [ebp+28]
 	pop eax
 	imul edx	;eax*edx stored in edx:eax 
 	mov edx, eax    ;truncated result moved to edx 
 	push edx 
-	mov edx, [ebp+24]
+	mov edx, [ebp+12]
 	push edx 
-	mov edx, [ebp+28]
+	mov edx, [ebp+16]
 	pop eax
 	sub eax, edx    ;perform (eax - edx) subtraction
 	mov edx, eax    ;store result of subtraction in edx
 	push edx 
-	mov edx, [ebp+16]
+	mov edx, [ebp+4]
 	pop eax
 	imul edx	;eax*edx stored in edx:eax 
 	mov edx, eax    ;truncated result moved to edx 
 	push edx 
-	mov edx, [ebp+24]
+	mov edx, [ebp+12]
 	push edx 
 	mov edx, 2
 	pop eax
 	imul edx	;eax*edx stored in edx:eax 
 	mov edx, eax    ;truncated result moved to edx 
 	push edx 
-	mov edx, [ebp+28]
+	mov edx, [ebp+16]
 	push edx 
-	mov edx, [ebp+12]
+	mov edx, [ebp+0]
 	pop eax
 	imul edx	;eax*edx stored in edx:eax 
 	mov edx, eax    ;truncated result moved to edx 
@@ -126,8 +99,8 @@ main:
 	add edx, eax
 	pop eax
 	add edx, eax
-	mov [ebp+20], edx   ;assign value to a variable
-	mov edx, [ebp+20]
+	mov [ebp+8], edx   ;assign value to a variable
+	mov edx, [ebp+8]
 	pushad
 	push edx
 	push dword integer_output

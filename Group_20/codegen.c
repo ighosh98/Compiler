@@ -329,7 +329,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			curr_offset = codegen(root->children[i], current_table,0); //the program 
 		  
 
-		    fprintf(code_file, "\tBOUND_ERROR:\n"
+		    fprintf(code_file, "BOUND_ERROR:\n"
 					"\tpushad\n"  
 					"\tpush dword bound_error_str\n"  
 					"\tcall printf\n"  

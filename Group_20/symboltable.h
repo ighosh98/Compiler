@@ -46,11 +46,16 @@ typedef struct symbolTable{
     struct symbolTable* children[50];
     int no_children;
 
+    int start_line;
+    int end_line;
+
 } symbolTable;
 
 void deleteSymbolTable(symbolTable* table);
-void printSymbolNode(symbol_table_node * a, symbol_table_node* curr_func, int nesting);
+void printSymbolNode(symbol_table_node * a, symbol_table_node* curr_func, int nesting, int start, int end);
 void printSymbolTables(symbolTable* table, int nesting);
+void printSymbolNodeArr(symbol_table_node * a, symbol_table_node* curr_func, int nesting, int start, int end);
+void printSymbolTablesArr(symbolTable* table, int nesting);
 symbol_table_node * makeSymbolNode(char* name , bool isarr,
        	int isdyn, symbol_table_node * d_range1, 
 	symbol_table_node* d_range2, int c_range1, 

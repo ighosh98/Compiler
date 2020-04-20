@@ -14,17 +14,23 @@ void printTree(treenode* root)
     if(root==NULL)return;
     
     if(root->children){
+	blue();
+	printf("Nonterminal RUle: ");
+	reset();
 	printf("%s --> ",symbol_map[root->tok]);
 	for(int i=0;i<root->n;i++)
 	    if(root->children[i])
 		printf("%s  ", symbol_map[root->children[i]->tok]);
-	printf("\n\n");
+	printf("\n");
 	for(int i=0;i<root->n;i++)
 	    printTree(root->children[i]);
     }
     else
     {
-	printf("%s\n\n",symbol_map[root->tok]);
+	blue();
+	printf("Terminal: ");
+	reset();
+	printf("%s\n",symbol_map[root->tok]);
 	
     }
 }

@@ -27,13 +27,64 @@ void deleteSymbolTable(symbolTable* table)
     table->ar = NULL;
     table->size = 0;
 }
-
-
-void printSymbolNode(symbol_table_node* a, symbol_table_node* curr_func, int nesting)
+void printSymbolNodeArr(symbol_table_node* a, symbol_table_node* curr_func, int nesting, int start, int end)
 {
     if(strcmp(a->name,"_currentfunction")==0) return;
 
-    printf("%s %s %d %s %d",a->name, curr_func->name,nesting, datatype_map[a->type],a->offset);
+
+    int width = -1; //calculate width of the variable 
+    if(a->isarr)
+    {
+    printf("%10s  %10s  %d-%d  ?isarray?  ?static/dynamic?  [array range]  %3d  %3d  %10s  %2d  %2d",a->name, 
+				    curr_func->name,
+				    start,
+				    end,
+				    width,
+				    nesting, 
+				    datatype_map[a->type],
+				    a->offset, 
+				    nesting);
+    printf("\n");
+    }
+}
+
+void printSymbolTablesArr(symbolTable* table,int nesting)
+{
+    if(table == NULL)return;
+    //print the current symbol table
+    for(int i=0;i<table->size;i++)
+    {
+	symbol_table_node* head = table->ar[i];
+	while(head)
+	{
+	    printSymbolNodeArr(head,searchSymbolTable(table,"_currentfunction")->iplist,nesting, table->start_line, table->end_line);
+	    head = head->next;
+	}
+    }
+
+    //print the rest of the tables
+    for(int i=0;i<table->no_children;i++)
+	printSymbolTablesArr(table->children[0],nesting+1);
+}
+
+
+
+void printSymbolNode(symbol_table_node* a, symbol_table_node* curr_func, int nesting, int start, int end)
+{
+    if(strcmp(a->name,"_currentfunction")==0) return;
+
+
+    int width = -1; //calculate width of the variable 
+
+    printf("%10s  %10s  %d-%d  ?isarray?  ?static/dynamic?  [array range]  %3d  %3d  %10s  %2d  %2d",a->name, 
+				    curr_func->name,
+				    start,
+				    end,
+				    width,
+				    nesting, 
+				    datatype_map[a->type],
+				    a->offset, 
+				    nesting);
     printf("\n");
 }
 
@@ -46,7 +97,7 @@ void printSymbolTables(symbolTable* table,int nesting)
 	symbol_table_node* head = table->ar[i];
 	while(head)
 	{
-	    printSymbolNode(head,searchSymbolTable(table,"_currentfunction")->iplist,nesting);
+	    printSymbolNode(head,searchSymbolTable(table,"_currentfunction")->iplist,nesting, table->start_line, table->end_line);
 	    head = head->next;
 	}
     }
@@ -152,6 +203,8 @@ symbolTable* getSymbolTable(unsigned int n)
     for(int i=0;i<20;i++)
 	temp->children[i] = NULL;
 
+    temp->start_line = 0;
+    temp->end_line = 0;
     return temp;
 }
 

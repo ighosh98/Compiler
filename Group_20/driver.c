@@ -80,9 +80,10 @@ int main(int argc,char **argv)
 	{
 	    parsing_error = false;
 	    red();
-	    printf("\n##############  Parsing Input File  ##############\n");
+	    printf("\n##############  Printing Parse Tree  ##############\n");
 	    reset();
 	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
+	    printTree(t.root);
 	}
 	else if(choice == 3)
 	{
@@ -223,7 +224,53 @@ int main(int argc,char **argv)
 	}
 	else if(choice == 7)
 	{
-	    printf("PRINT ARRAYS\n");
+	    parsing_error = false;
+	    semantic_error = false;
+	    pass_no = 0; //reset the semantic analyser so that the option can be used multiple times
+	    red();
+	    Nary_tree t = parse_input(PROGRAM, argv[1],p);
+	    
+	    AST a;
+	    if(parsing_error == false)
+		a = makeAST(t.root);
+	    else
+	    {
+		red();
+		printf("Could not Parse Input file\n");
+		reset();
+		continue;
+	    }
+
+	    symbolTable* symbol_table;
+	    symbol_table = check_semantics(a.root); //helper function that does 2 passes automatically
+
+	    top_table= getSymbolTable(10);
+
+
+	    if(semantic_error == true)
+	    {
+		red();
+		printf("\nFile contains semantic errors. Therefore output may not be correct\n");
+		reset();
+		for(int i=0;i<symbol_table->no_children;i++)
+		{
+		    printSymbolTables(symbol_table->children[i],0);
+		}
+	    }
+	    else
+	    {
+		code_file = fopen("unused.asm","w");
+		codegen(a.root,NULL,0);
+		fclose(code_file);
+		red();
+		printf("############ Printing Arrays ############\n");
+		reset();
+
+		for(int i=0;i<top_table->no_children;i++)
+		{
+		    printSymbolTablesArr(top_table->children[i],0);
+		}
+	    }
 	}
 	else if(choice == 8 )
 	{
