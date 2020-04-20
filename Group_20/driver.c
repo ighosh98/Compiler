@@ -57,10 +57,6 @@ int main(int argc,char **argv)
 	
 	if(choice == 0)
 	    break;
-	else if(choice == 10)
-	{
-	    removeComments(argv[1]);
-	}
 	else if(choice == 1)
 	{
 	    openfile(argv[1]);
@@ -74,7 +70,7 @@ int main(int argc,char **argv)
 		if(a->tag == $)
 		    break;
 	    }
-
+	   // closefile();
 	}
 	else if(choice == 2)
 	{

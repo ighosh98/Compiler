@@ -910,6 +910,8 @@ token* getNextToken()
     }
     if(check)
     {
+		lexflag = 0; 
+		forflag = 0;
 		check = 0;
 		init_lextable();
 		int count = fread(buffer0, 1, BUFFER_LEN,fptr);
