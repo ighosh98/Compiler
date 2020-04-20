@@ -388,6 +388,7 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 
 			symbolTable* new_table = getSymbolTable(100); //table for the function scope.
 			new_table->parent =  input_table;		  //function scope shadows input scope
+			input_table->children[input_table->no_children++] = new_table;
 
 		    //go onto moduledef with a new symbol table which has
 		    //the entries for input_plist vars and out_plist vars
@@ -464,6 +465,10 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    ////////////////////////////////////////////////////////////
 		    fprintf(code_file,"\tpopad\n");
 		    fprintf(code_file,"ret\n");
+
+		    input_table->start_line = new_table->start_line;
+		    input_table->end_line = new_table->end_line;
+
 		    //fprintf(code_file,"%s endp\n\n",temp->name);
 		    return curr_offset; /////////// ################### this is changed after testing for offsets ####################
 					//				therefore it may lead to errors.
@@ -555,6 +560,8 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 	    
 	    case MODULEDEF:
 		{
+		    current_table->start_line = root->lexeme->line_no;
+		    current_table->end_line = root->children[1]->lexeme->line_no;
 		    // produce code by moving forward
 		    //move forward
 		    for(int i =0;i<root->n;i++)
@@ -1766,7 +1773,8 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 		    new_table->parent = current_table;
 		    current_table->children[current_table->no_children++]=new_table;
 		    
-
+		    new_table->start_line = root->lexeme->line_no;
+		    new_table->end_line = root->children[3]->lexeme->line_no;
 		    
 		    no_switch++;
 		    curr_offset = codegen(root->children[0],new_table,curr_offset); //evaluate ID
@@ -1899,7 +1907,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			new_table->parent = current_table;
 			current_table->children[current_table->no_children++]=new_table;
 		    
-
+	    		new_table->start_line = root->lexeme->line_no;
+			new_table->end_line = root->children[4]->lexeme->line_no;
+		
 			curr_offset = codegen(root->children[3],new_table,curr_offset);
 
 			fprintf(code_file,"	push edx\n");
@@ -1955,7 +1965,9 @@ int codegen(astnode* root, symbolTable* current_table,int curr_offset)
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
 			current_table->children[current_table->no_children++]=new_table;
-		    
+			new_table->start_line = root->lexeme->line_no;
+			new_table->end_line = root->children[3]->lexeme->line_no;
+			    
 
 			curr_offset = codegen(root->children[2],new_table,curr_offset);
 		    

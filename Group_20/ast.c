@@ -265,10 +265,11 @@ astnode* makeAST_helper(treenode* root)
 	    case MODULEDEF:
 		{
 		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(1*sizeof(astnode*));
-		    temp->n = 1;
+		    temp->children = (astnode**)malloc(2*sizeof(astnode*));
+		    temp->n = 2;
 
 		    temp->children[0] = makeAST_helper(root->children[1]);
+		    temp->children[1] = makeAST_helper(root->children[2]);
 		    return temp;
 		}break;
 	    case STATEMENTS:
@@ -723,13 +724,15 @@ astnode* makeAST_helper(treenode* root)
 		}break;
 	    case CONDITIONALSTMT:
 		{
+
 		    astnode* temp = root->node = make_astnode(root);
-		    temp->children = (astnode**)malloc(3*sizeof(astnode*));
-		    temp->n = 3;
+		    temp->children = (astnode**)malloc(4*sizeof(astnode*));
+		    temp->n = 4;
 
 		    temp->children[0] = makeAST_helper(root->children[2]);
 		    temp->children[1] = makeAST_helper(root->children[5]);
 		    temp->children[2] = makeAST_helper(root->children[6]);
+		    temp->children[3] = makeAST_helper(root->children[7]);
 		    return temp;
 		}break;
 	    case CASESTMTS:
@@ -787,24 +790,26 @@ astnode* makeAST_helper(treenode* root)
 		    if(root->children[0]->tok==FOR)
 		    {
 			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(3*sizeof(astnode*));
-			temp->n = 3+1;
+			temp->children = (astnode**)malloc(5*sizeof(astnode*));
+			temp->n = 5;
 
 			temp->children[0] = makeAST_helper(root->children[0]);
 			temp->children[1] = makeAST_helper(root->children[2]);
 			temp->children[2] = makeAST_helper(root->children[4]);
 			temp->children[3] = makeAST_helper(root->children[7]);
+			temp->children[4] = makeAST_helper(root->children[8]);
 			return temp;
 		    }
 		    else
 		    {
 			astnode* temp = root->node = make_astnode(root);
-			temp->children = (astnode**)malloc(2*sizeof(astnode*));
-			temp->n = 2+1;
+			temp->children = (astnode**)malloc(4*sizeof(astnode*));
+			temp->n = 4;
 
 			temp->children[0] = makeAST_helper(root->children[0]);
 			temp->children[1] = makeAST_helper(root->children[2]);
 			temp->children[2] = makeAST_helper(root->children[5]);
+			temp->children[3] = makeAST_helper(root->children[6]);
 			return temp;
 		    }
 		}break;

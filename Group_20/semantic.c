@@ -811,6 +811,9 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 
 		    //call moduledef
 		    type_semantics(root->children[3],new_table);
+
+		    input_table->start_line = new_table->start_line;
+		    input_table->end_line = new_table->end_line;
 		    return;  
 		}break;
 
@@ -1668,6 +1671,10 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 		    current_table->children[current_table->no_children++] = new_table; 
 		    //move forward. type of ID is handled by the symbol table when it is called.
 		    
+
+		    new_table->start_line = root->lexeme->line_no;
+		    new_table->end_line = root->children[3]->lexeme->line_no;
+
 		    for(int i =0;i<root->n;i++)
 			    type_semantics(root->children[i], new_table);
 		    
@@ -1855,6 +1862,8 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			new_table->parent = current_table;
 			current_table->children[current_table->no_children++] = new_table; 
 
+			new_table->start_line = root->lexeme->line_no;
+			new_table->end_line = root->children[4]->lexeme->line_no;
 			type_semantics(root->children[3],new_table);
 
 		    }
@@ -1893,7 +1902,9 @@ void type_semantics(astnode* root, symbolTable* current_table)   //pass a table 
 			symbolTable* new_table = getSymbolTable(100);
 			new_table->parent = current_table;
 			current_table->children[current_table->no_children++] = new_table; 
-
+	    		new_table->start_line = root->lexeme->line_no;
+			new_table->end_line = root->children[3]->lexeme->line_no;
+		
 			type_semantics(root->children[2],new_table);
 		    }
 		    return;
