@@ -34,11 +34,11 @@ void printAST(astnode* root)
     if(root->children){
 	//printf("%s\n",symbol_map[root->tok]);
 	blue();
-	printf("Nonterminal Rule: ");
+	printf("Nonterminal: ");
 	reset();
-	printf("%s --> ",symbol_map[root->tok]);
-	for(int i=0;i<root->n;i++)
-	    printf("%s  ", symbol_map[root->children[i]->tok]);
+	printf("%s ",symbol_map[root->tok]);
+	//for(int i=0;i<root->n;i++)
+	  //  printf("%s  ", symbol_map[root->children[i]->tok]);
 	printf("\n");
 	for(int i=0;i<root->n;i++)
 	    printAST(root->children[i]);

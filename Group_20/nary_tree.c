@@ -15,12 +15,12 @@ void printTree(treenode* root)
     
     if(root->children){
 	blue();
-	printf("Nonterminal RUle: ");
+	printf("Nonterminal: ");
 	reset();
-	printf("%s --> ",symbol_map[root->tok]);
-	for(int i=0;i<root->n;i++)
-	    if(root->children[i])
-		printf("%s  ", symbol_map[root->children[i]->tok]);
+	printf("%s ",symbol_map[root->tok]);
+	//for(int i=0;i<root->n;i++)
+	  //  if(root->children[i])
+	//	printf("%s  ", symbol_map[root->children[i]->tok]);
 	printf("\n");
 	for(int i=0;i<root->n;i++)
 	    printTree(root->children[i]);
