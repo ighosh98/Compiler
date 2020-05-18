@@ -11,16 +11,16 @@ G Adityan	 2016B1A70929P
 #define UNDERFLOW -1
 typedef struct stacknode
 {
-    treenode* val;
-    struct stacknode* next;
+	treenode* val;
+	struct stacknode* next;
 } stacknode;
 
 typedef struct stack
 {
-    stacknode** head;
+	stacknode** head;
 } stack;
 
-void stack_push(stack s,treenode* a);
+void stack_push(stack s, treenode* a);
 
 void stack_pop(stack s);
 

@@ -10,25 +10,25 @@ G Adityan	 2016B1A70929P
 
 void red ()
 {
-  printf("\033[1;31m");
+	printf("\033[1;31m");
 }
 
 void yellow()
 {
-  printf("\033[01;33m");
+	printf("\033[01;33m");
 }
 
 void blue()
 {
-  printf("\033[1;34m");
+	printf("\033[1;34m");
 }
 
 void green()
 {
-  printf("\033[1;32m");
+	printf("\033[1;32m");
 }
 
 void reset ()
 {
-  printf("\033[0m");
+	printf("\033[0m");
 }

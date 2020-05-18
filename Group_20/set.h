@@ -12,7 +12,7 @@ G Adityan	 2016B1A70929P
 #include <stdbool.h>
 typedef struct set
 {
-    hashtable set;
+	hashtable set;
 } set;
 
 void insertSet(set s, tokentype t);

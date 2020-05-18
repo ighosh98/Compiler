@@ -2,7 +2,7 @@
 Group 20
 Ayush Vachaspati 2016B3A70398P
 Indraneel Ghosh  2016B1A70938P
-G Adityan	 2016B1A70929P
+G Adityan    2016B1A70929P
 */
 #include<stdio.h>
 #include"stack.h"
@@ -21,12 +21,12 @@ void stack_push(stack s , treenode* a)
     stacknode* head = *(s.head);
     temp->next = NULL;
     temp->val = a;
-    if(head==NULL)
-	head = temp;
+    if (head == NULL)
+        head = temp;
     else
     {
-	temp->next = head;
-	head = temp;
+        temp->next = head;
+        head = temp;
     }
     *(s.head) = head;
 }
@@ -34,24 +34,24 @@ void stack_push(stack s , treenode* a)
 void stack_pop(stack s)
 {
     stacknode* head = *(s.head);
-    if(head == NULL)
+    if (head == NULL)
     {
-	printf("UnderFlow\n");
+        printf("UnderFlow\n");
     }
     else
     {
-	stacknode* temp = head;
-	head = head->next;
-	free(temp);
+        stacknode* temp = head;
+        head = head->next;
+        free(temp);
     }
-    *(s.head)= head;
+    *(s.head) = head;
 }
 
 treenode* stack_top(stack s)
 {
     stacknode* head = *(s.head);
-    if(head==NULL)
-	return make_treenode(UNDERFLOW,NULL);    //stack error condition
+    if (head == NULL)
+        return make_treenode(UNDERFLOW, NULL);   //stack error condition
     else
-	return head->val;
+        return head->val;
 }

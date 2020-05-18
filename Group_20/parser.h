@@ -11,7 +11,7 @@ G Adityan	 2016B1A70929P
 #include"hashtable.h"
 #include "parserDef.h"
 #include "nary_tree.h"
-Nary_tree parse_input(tokentype start_symbol, char* sourcefile,productions grammar);
+Nary_tree parse_input(tokentype start_symbol, char* sourcefile, productions grammar);
 
 void make_str_to_enum();
 
@@ -19,7 +19,7 @@ productions read_grammar();
 
 void getFirstSet(productions grammar);
 
-void getFollowSet(productions grammar,tokentype start_symbol);
+void getFollowSet(productions grammar, tokentype start_symbol);
 
 void makeFirstAndFollow(productions grammar, tokentype start_symbol);
 

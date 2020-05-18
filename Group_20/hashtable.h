@@ -9,16 +9,16 @@ G Adityan	 2016B1A70929P
 #include<stdio.h>
 #include "lexer.h"
 
-typedef struct hashnode{
-    char * str;
-    int val;
-    struct hashnode* next;
+typedef struct hashnode {
+	char * str;
+	int val;
+	struct hashnode* next;
 } hashnode;
 
 typedef struct hashtable
 {
-    struct hashnode** ar;
-    unsigned int size;
+	struct hashnode** ar;
+	unsigned int size;
 
 } hashtable;
 

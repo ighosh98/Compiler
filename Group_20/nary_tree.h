@@ -9,16 +9,16 @@ G Adityan	 2016B1A70929P
 #include <stdio.h>
 #include "lexerDef.h"
 #include "astdef.h"
-typedef struct treenode{
-    token* lexeme;
-    int tok;
-    struct treenode** children;
-    int n;
-    astnode * node;
+typedef struct treenode {
+	token* lexeme;
+	int tok;
+	struct treenode** children;
+	int n;
+	astnode * node;
 } treenode;
 
-typedef struct Nary_tree{
-    treenode* root;
+typedef struct Nary_tree {
+	treenode* root;
 } Nary_tree;
 
 void printTree(treenode * root);
@@ -27,8 +27,8 @@ Nary_tree* get_nary_tree();
 
 treenode* make_treenode(int a, token* lex);
 
-void insert_children(treenode* node, tokentype* children,int n,token* lex);
+void insert_children(treenode* node, tokentype* children, int n, token* lex);
 
-void inorder(Nary_tree root,FILE* fptr);
+void inorder(Nary_tree root, FILE* fptr);
 
 #endif

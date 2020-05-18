@@ -11,15 +11,15 @@ G Adityan	 2016B1A70929P
 
 extern bool parsing_error;
 
-typedef  struct prodn{
-    tokentype* rule;
-    tokentype non_terminal;
-    int size;
+typedef  struct prodn {
+	tokentype* rule;
+	tokentype non_terminal;
+	int size;
 } prodn;
 
-typedef struct productions{
-    prodn* rules;
-    int no_productions;
-}productions;
+typedef struct productions {
+	prodn* rules;
+	int no_productions;
+} productions;
 
 #endif

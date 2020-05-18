@@ -9,13 +9,13 @@ G Adityan	 2016B1A70929P
 
 unsigned int hashf(char* str)
 {
-    unsigned int ans = 5381;
-    char c = *str;
-    while(c!='\0')
-    {
-	ans = ((ans<<5)+ans)+c;
-	str++;
-	c = *str;
-    }
-    return ans;
+	unsigned int ans = 5381;
+	char c = *str;
+	while (c != '\0')
+	{
+		ans = ((ans << 5) + ans) + c;
+		str++;
+		c = *str;
+	}
+	return ans;
 }
